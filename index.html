@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v4.7</title>
+<title>PRsonal v4.8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ─── LIGHT / DARK ─── */
@@ -132,7 +132,7 @@ select option{background:var(--bg3);}
 .btn-s{background:var(--bg3);color:var(--text);border:0.5px solid var(--border2);}
 .btn-s:hover{background:var(--bg4);}
 .btn-sm{display:inline-block;width:auto;padding:5px 11px;font-size:12px;}
-.ghost{background:transparent;color:var(--acc);border:0.5px solid var(--acc);font-size:12px;padding:6px 12px;border-radius:var(--rs);cursor:pointer;font-weight:700;}
+.ghost{background:transparent;color:var(--acc);border:0.5px solid var(--acc);font-size:12px;padding:6px 12px;border-radius:var(--rs);cursor:pointer;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;}
 .dangr{background:transparent;color:var(--red);border:0.5px solid rgba(255,85,85,0.3);font-size:12px;padding:5px 10px;border-radius:var(--rs);cursor:pointer;}
 
 /* ─── 1RM PREVIEW ─── */
@@ -224,7 +224,7 @@ select option{background:var(--bg3);}
 .ov.on{display:block;}
 .ov-in{max-width:480px;margin:0 auto;}
 .ov-hd{display:flex;align-items:center;gap:11px;margin-bottom:16px;padding-bottom:11px;border-bottom:0.5px solid var(--border);}
-.backbtn{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:12px;padding:6px 12px;cursor:pointer;}
+.backbtn{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;font-weight:600;padding:8px 14px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;}
 
 /* ─── ZONES TABLE ─── */
 .zt{width:100%;border-collapse:collapse;font-size:12px;}
@@ -289,7 +289,7 @@ select option{background:var(--bg3);}
 /* ─── GOALS OVERLAY ─── */
 .goals-ov{display:none;position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:auto;}
 .goals-ov.on{display:block;}
-.goals-hero{padding:24px 16px 16px;text-align:center;border-bottom:0.5px solid var(--border);}
+.goals-hero{padding:14px 16px 16px;text-align:center;border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:10;background:var(--bg);}
 .goals-hero-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:2px;}
 .goals-hero-sub{font-size:12px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
 .goal-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;transition:border-color .3s;}
@@ -453,14 +453,14 @@ select option{background:var(--bg3);}
   width:46px;height:46px;border-radius:50%;border:none;
   font-size:23px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  background:var(--bg3);
+  background:var(--bg4);
   transition:transform .2s, background .2s;
   animation:hdrIconBounce .6s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 .hdr-icon-btn:nth-child(1){animation-delay:.05s;}
 .hdr-icon-btn:nth-child(2){animation-delay:.15s;}
 .hdr-icon-btn:nth-child(3){animation-delay:.25s;}
-.hdr-icon-btn:hover{transform:scale(1.18) rotate(-8deg);background:var(--bg4);}
+.hdr-icon-btn:hover{transform:scale(1.18) rotate(-8deg);background:var(--bg5);}
 .hdr-icon-btn:active{transform:scale(0.9);}
 @keyframes hdrIconBounce{
   0%{opacity:0;transform:translateY(-10px) rotate(-20deg) scale(0.4);}
@@ -527,6 +527,12 @@ select option{background:var(--bg3);}
 .toast.on{opacity:1;}
 .empty{text-align:center;padding:22px 14px;color:var(--text3);font-size:12px;}
 ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ─── SWIPE MODE TRANSITION ─── */
+@keyframes slideInFromRight{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInFromLeft{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:translateX(0)}}
+.swipe-in-right{animation:slideInFromRight 0.28s cubic-bezier(0.25,0.46,0.45,0.94) forwards;}
+.swipe-in-left{animation:slideInFromLeft 0.28s cubic-bezier(0.25,0.46,0.45,0.94) forwards;}
 </style>
 </head>
 <body>
@@ -1134,7 +1140,7 @@ select option{background:var(--bg3);}
   <div class="ov-in">
     <div class="goals-hero" style="padding:0 0 16px;margin:-14px -14px 14px;border-radius:0">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 14px 0">
-        <button class="backbtn" onclick="closeAj()">← Tornar</button>
+        <button class="backbtn" onclick="closeAj()" style="font-size:14px;font-weight:700;padding:9px 16px;border-radius:10px">← Tornar</button>
         <div style="width:62px"></div>
       </div>
       <div style="margin-top:16px">
@@ -1244,13 +1250,13 @@ select option{background:var(--bg3);}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:12px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v4.7<br>
+        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v4.8<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)">⚠️ App privada en fase de proves. No distribuir.</strong><br><br>
         <strong style="color:var(--text)">Com es guarden les dades?</strong><br>
         El codi de l'app està allotjat a GitHub i és igual per a tothom. Les teves dades (entrenaments, exercicis, plantilles, objectius) es guarden <strong>només al teu dispositiu</strong> (localStorage del navegador) — mai s'envien a cap servidor ni són accessibles per a ningú més, només per a tu.<br><br>
-        💡 Com el navegador podria esborrar aquestes dades (esborrar dades de navegació, reinstal·lar, canviar de dispositiu...), es recomana fer una <strong>còpia de seguretat (Exportar JSON)</strong> de tant en tant des d'aquí mateix.<br><br>
+        💡 El navegador podria esborrar les teves dades (per exemple, si esborres freqüentment les dades de navegació, reinstal·les el sistema o canvies de dispositiu sense importar una còpia de seguretat...). Recomanem fer una <strong>còpia de seguretat (Exportar JSON)</strong> de tant en tant des d'aquí mateix. Amb la còpia, sempre podràs recuperar totes les dades.<br><br>
         <strong>1RM Epley:</strong> pes × (1 + reps/30)<br>
         <strong>Implícit:</strong> pes ÷ (% / 100)<br><br>
         <strong style="color:var(--text)">Suggeriments o comentaris?</strong><br>
@@ -1263,7 +1269,7 @@ select option{background:var(--bg3);}
 </div><!-- end .app -->
 
 <!-- ACCESS GATE -->
-<div id="gateOv" style="display:none;position:fixed;inset:0;z-index:500;background:radial-gradient(circle at 50% 30%, rgba(242,174,62,0.10), transparent 60%),var(--bg);overflow:hidden">
+<div id="gateOv" style="display:none;position:fixed;inset:0;z-index:500;background:radial-gradient(circle at 50% 30%, rgba(242,174,62,0.10), transparent 60%),var(--bg);overflow:hidden;overscroll-behavior:none;touch-action:none">
   <div style="max-width:380px;margin:0 auto;padding:48px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center">
 
     <div style="text-align:center;margin-bottom:32px">
@@ -1296,7 +1302,7 @@ select option{background:var(--bg3);}
 </div>
 
 <!-- ONBOARDING -->
-<div id="setupOv" style="display:none;position:fixed;inset:0;z-index:400;background:var(--bg);overflow:hidden">
+<div id="setupOv" style="display:none;position:fixed;inset:0;z-index:400;background:var(--bg);overflow:hidden;overscroll-behavior:none;touch-action:none">
   <div style="max-width:420px;margin:0 auto;padding:0 16px 48px">
 
     <!-- Slide indicator -->
@@ -1400,12 +1406,12 @@ select option{background:var(--bg3);}
 <!-- GOALS OVERLAY -->
 <div class="goals-ov" id="goalsOv">
   <div style="max-width:480px;margin:0 auto;padding:0 14px 80px">
-    <div class="goals-hero">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <button class="backbtn" onclick="closeGoals()">← Tornar</button>
-        <button class="ghost btn-sm" onclick="closeGoals();showH('exs',document.querySelector('#navH .snav-btn:nth-child(5)'))" style="font-size:11px">+ Nou objectiu</button>
+    <div class="goals-hero" style="padding:14px 16px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <button class="backbtn" onclick="closeGoals()" style="font-size:14px;font-weight:700;padding:9px 16px;border-radius:10px;white-space:nowrap;flex-shrink:0">← Tornar</button>
+        <button class="ghost btn-sm" onclick="closeGoals();showH('exs',document.querySelector('#navH .snav-btn:nth-child(5)'))" style="font-size:13px;font-weight:700;padding:9px 14px;border-radius:10px;white-space:nowrap;flex-shrink:0">+ Nou objectiu</button>
       </div>
-      <div style="margin-top:16px">
+      <div style="margin-top:14px">
         <div class="goals-hero-title">🎯 Els teus objectius</div>
         <div class="goals-hero-sub" id="goalsHeroSub">carregant...</div>
       </div>
@@ -1463,12 +1469,12 @@ select option{background:var(--bg3);}
 <!-- METRICS OVERLAY -->
 <div class="goals-ov" id="metricsOv">
   <div style="max-width:480px;margin:0 auto;padding:0 14px 80px">
-    <div class="goals-hero">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <button class="backbtn" onclick="closeMetrics()">← Tornar</button>
-        <div style="font-size:11px;color:var(--text3)" id="metricsProfileLine"></div>
+    <div class="goals-hero" style="padding:14px 16px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <button class="backbtn" onclick="closeMetrics()" style="font-size:14px;font-weight:700;padding:9px 16px;border-radius:10px;white-space:nowrap;flex-shrink:0">← Tornar</button>
+        <div style="font-size:12px;color:var(--text3);text-align:right;line-height:1.4" id="metricsProfileLine"></div>
       </div>
-      <div style="margin-top:16px">
+      <div style="margin-top:14px">
         <div class="goals-hero-title">📊 Mètriques de força</div>
         <div class="goals-hero-sub" id="metricsHeroSub">calculant...</div>
       </div>
@@ -2009,8 +2015,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     const active = document.activeElement;
     if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
     if (document.querySelector('.ov.on, .sheet.on, .goals-ov.on')) return;
-    if (dx < 0 && mode === 'h') setMode('w');       // swipe left → WoD
-    else if (dx > 0 && mode === 'w') setMode('h'); // swipe right → Haltero
+    if (dx < 0 && mode === 'h') { setMode('w'); animateSwipe('right'); }       // swipe left → WoD
+    else if (dx > 0 && mode === 'w') { setMode('h'); animateSwipe('left'); } // swipe right → Haltero
   }, {passive:true});
 })();
 
@@ -3050,6 +3056,26 @@ function saveNewBench(){const nm=document.getElementById('benchName').value.trim
 
 // Bench confirm sheet: reuse calcSheet with bench mode
 
+function animateSwipe(dir) {
+  // Animate active section sliding in from direction
+  const activeSec = document.querySelector('.sec.on');
+  if (!activeSec) return;
+  const cls = dir === 'right' ? 'swipe-in-right' : 'swipe-in-left';
+  activeSec.classList.remove('swipe-in-right','swipe-in-left');
+  void activeSec.offsetWidth; // reflow
+  activeSec.classList.add(cls);
+  setTimeout(() => activeSec.classList.remove(cls), 300);
+  // Also animate nav bars
+  const navH = document.getElementById('navH');
+  const navW = document.getElementById('navW');
+  const activeNav = navH && navH.style.display !== 'none' ? navH : navW;
+  if (activeNav) {
+    activeNav.classList.remove('swipe-in-right','swipe-in-left');
+    void activeNav.offsetWidth;
+    activeNav.classList.add(cls);
+    setTimeout(() => activeNav.classList.remove(cls), 300);
+  }
+}
 function closeSheet(){
   document.getElementById('calcSheet').classList.remove('on');
   document.getElementById('calcSheet').dataset.mode='';
