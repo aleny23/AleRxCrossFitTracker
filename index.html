@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v4.8</title>
+<title>PRsonal v5.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ─── LIGHT / DARK ─── */
@@ -38,7 +38,7 @@
 }
 /* ─── BASE ─── */
 *{box-sizing:border-box;margin:0;padding:0;}html{overflow-x:clip;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;font-size:15px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;font-size:15px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-y:contain;}
 .app{max-width:480px;margin:0 auto;padding:0 0 48px;padding-top:var(--total-header,186px);}
 
 /* ─── ANIMATIONS ─── */
@@ -53,7 +53,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .anim-delay-4{animation-delay:160ms}.anim-delay-5{animation-delay:200ms}.anim-delay-6{animation-delay:240ms}
 
 /* ─── HEADER ─── */
-.header{padding:10px 16px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:200;background:var(--bg);max-width:480px;margin:0 auto;}
+.header{padding:10px 16px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid var(--glass-border);position:fixed;top:0;left:0;right:0;z-index:200;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);max-width:480px;margin:0 auto;}
 .hlogo{display:flex;align-items:center;gap:16px;}
 .hlogo img{height:82px;width:82px;object-fit:cover;border-radius:50%;flex-shrink:0;}
 .hname{
@@ -75,7 +75,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .mode-badge.w{background:var(--w-dim);color:var(--w-acc);}
 
 /* ─── MODE BAR ─── */
-.mode-bar{display:flex;background:var(--bg2);border-bottom:0.5px solid var(--border);position:fixed;top:var(--header-h,106px);left:0;right:0;z-index:190;max-width:480px;margin:0 auto;}
+.mode-bar{display:flex;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:0.5px solid var(--glass-border);position:fixed;top:var(--header-h,106px);left:0;right:0;z-index:190;max-width:480px;margin:0 auto;}
 .modeBtn{flex:1;padding:13px 8px;text-align:center;font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--text3);transition:color .2s;position:relative;}
 .modeBtn.active::after{content:'';position:absolute;bottom:0;left:12%;right:12%;height:2px;border-radius:1px;}
 .modeBtn.mH.active{color:var(--h-acc);}
@@ -84,7 +84,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .modeBtn.mW.active::after{background:var(--w-acc);}
 
 /* ─── SUB-NAV ─── */
-.snav{display:flex;gap:3px;padding:7px 9px;background:var(--bg);position:fixed;top:var(--nav-top,146px);left:0;right:0;z-index:180;border-bottom:0.5px solid var(--border);max-width:480px;margin:0 auto;}
+.snav{display:flex;gap:3px;padding:7px 9px;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);position:fixed;top:var(--nav-top,146px);left:0;right:0;z-index:180;border-bottom:0.5px solid var(--glass-border);max-width:480px;margin:0 auto;}
 .snav-btn{flex:1;padding:6px 2px;border-radius:var(--rs);background:transparent;border:0.5px solid var(--border);color:var(--text3);font-size:9.5px;cursor:pointer;text-align:center;transition:all .15s;line-height:1.3;font-weight:700;}
 .snav-btn.active{border-color:var(--acc);color:var(--acc);background:var(--dim);}
 
@@ -220,7 +220,7 @@ select option{background:var(--bg3);}
 .pill.off{opacity:0.35;text-decoration:line-through;}
 
 /* ─── OVERLAYS ─── */
-.ov{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;padding:14px;}
+.ov{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:14px;}
 .ov.on{display:block;}
 .ov-in{max-width:480px;margin:0 auto;}
 .ov-hd{display:flex;align-items:center;gap:11px;margin-bottom:16px;padding-bottom:11px;border-bottom:0.5px solid var(--border);}
@@ -287,7 +287,7 @@ select option{background:var(--bg3);}
 .tpl-wod-badge{display:inline-block;padding:2px 8px;border-radius:20px;background:var(--w-dim);color:var(--w-acc);font-size:10px;font-weight:700;margin-bottom:6px;}
 .goal-line-label{font-size:10px;font-weight:700;}
 /* ─── GOALS OVERLAY ─── */
-.goals-ov{display:none;position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:auto;}
+.goals-ov{display:none;position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
 .goals-ov.on{display:block;}
 .goals-hero{padding:14px 16px 16px;text-align:center;border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:10;background:var(--bg);}
 .goals-hero-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:2px;}
@@ -533,6 +533,195 @@ select option{background:var(--bg3);}
 @keyframes slideInFromLeft{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:translateX(0)}}
 .swipe-in-right{animation:slideInFromRight 0.28s cubic-bezier(0.25,0.46,0.45,0.94) forwards;}
 .swipe-in-left{animation:slideInFromLeft 0.28s cubic-bezier(0.25,0.46,0.45,0.94) forwards;}
+
+/* ─── LIQUID GLASS SYSTEM ─────────────────────────────────────── */
+:root {
+  --glass-bg: rgba(30,30,30,0.72);
+  --glass-border: rgba(255,255,255,0.10);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.36);
+  --glass-blur: blur(20px) saturate(1.4);
+  --glass-radius: 18px;
+}
+@media(prefers-color-scheme:light){
+  :root{
+    --glass-bg: rgba(255,255,255,0.72);
+    --glass-border: rgba(0,0,0,0.08);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+}
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 0.5px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--glass-shadow);
+}
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow: var(--glass-shadow);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+/* ─── APP NAV BAR (Tornar + Title + Action) ───────────────────── */
+.app-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 0.5px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  gap: 8px;
+  min-height: 56px;
+}
+.app-navbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-navbar-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 1px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+.app-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--h-acc);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 4px 6px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-width: 60px;
+}
+.app-back-btn::before {
+  content: '‹';
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+  margin-right: 1px;
+  color: var(--h-acc);
+}
+.app-navbar-action {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--h-acc);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0 6px 4px;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ─── SCROLL FEEL ──────────────────────────────────────────────── */
+.scroll-content {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ─── HAPTIC PULSE (visual feedback) ──────────────────────────── */
+@keyframes hapticPulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.96); }
+  70%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+.haptic-pop { animation: hapticPulse 0.22s ease forwards; }
+
+/* ─── HOME CHART CARD ───────────────────────────────────────────── */
+.home-chart-card {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 13px;
+  margin-bottom: 11px;
+  overflow: hidden;
+}
+.home-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.home-chart-ex-sel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--acc);
+  background: var(--dim);
+  border: 0.5px solid var(--acc);
+  border-radius: 20px;
+  padding: 3px 10px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.home-chart-wrap { position: relative; width: 100%; height: 120px; }
+.home-stat-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.home-stat-pill {
+  flex: 1;
+  background: var(--bg3);
+  border-radius: var(--rs);
+  padding: 8px 10px;
+  text-align: center;
+}
+.home-stat-pill .v { font-size: 16px; font-weight: 800; color: var(--acc); }
+.home-stat-pill .l { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-top: 1px; }
+
+/* ─── ONBOARDING VALUE PREVIEW ─────────────────────────────────── */
+.ob-preview-card {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeUp 0.3s ease forwards;
+}
+.ob-preview-icon { font-size: 28px; flex-shrink: 0; }
+.ob-preview-body { flex: 1; min-width: 0; }
+.ob-preview-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.ob-preview-sub { font-size: 11px; color: var(--text2); line-height: 1.4; }
+.ob-preview-val { font-size: 18px; font-weight: 800; color: var(--h-acc); flex-shrink: 0; }
+
 </style>
 </head>
 <body>
@@ -599,6 +788,25 @@ select option{background:var(--bg3);}
 
 <!-- H-LOG -->
 <div id="h-log" class="sec on">
+
+  <!-- ── HOME PROGRESS SPARK ── -->
+  <div class="home-chart-card anim-fadeup" id="homeChartCard" style="display:none">
+    <div class="home-chart-header">
+      <div>
+        <div class="ctitle" style="margin:0">Progrés recent</div>
+        <div id="homeChartExName" style="font-size:13px;font-weight:700;color:var(--text);margin-top:2px"></div>
+      </div>
+      <select class="home-chart-ex-sel" id="homeChartSel" onchange="renderHomeChart()"></select>
+    </div>
+    <div class="home-chart-wrap"><canvas id="homeChart" role="img" aria-label="Progrés recent"></canvas></div>
+    <div class="home-stat-row">
+      <div class="home-stat-pill"><div class="v" id="homeStatRM">—</div><div class="l">1RM est.</div></div>
+      <div class="home-stat-pill"><div class="v" id="homeStatMax">—</div><div class="l">Pes màx.</div></div>
+      <div class="home-stat-pill"><div class="v" id="homeStatTrend">—</div><div class="l">Tendència</div></div>
+      <div class="home-stat-pill"><div class="v" id="homeStatSess">—</div><div class="l">Sessions</div></div>
+    </div>
+  </div>
+
   <!-- ── WEEKLY SUMMARY (Monday only) ── -->
   <div id="weeklySummaryCard" style="display:none;margin-bottom:12px">
     <div style="background:linear-gradient(135deg,rgba(242,174,62,0.12),rgba(78,203,113,0.08));border:0.5px solid rgba(242,174,62,0.3);border-radius:var(--r);padding:14px;position:relative">
@@ -1138,15 +1346,10 @@ select option{background:var(--bg3);}
 <!-- Ajustaments overlay -->
 <div class="ov" id="ajOv">
   <div class="ov-in">
-    <div class="goals-hero" style="padding:0 0 16px;margin:-14px -14px 14px;border-radius:0">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 14px 0">
-        <button class="backbtn" onclick="closeAj()" style="font-size:14px;font-weight:700;padding:9px 16px;border-radius:10px">← Tornar</button>
-        <div style="width:62px"></div>
-      </div>
-      <div style="margin-top:16px">
-        <div class="goals-hero-title">⚙️ Ajustaments</div>
-        <div class="goals-hero-sub">configuració i dades</div>
-      </div>
+    <div class="app-navbar" style="margin:-14px -14px 14px;border-radius:0">
+      <button class="app-back-btn" onclick="closeAj()">Tornar</button>
+      <div class="app-navbar-title">⚙️ Ajustaments<span class="app-navbar-sub">configuració i dades</span></div>
+      <div style="min-width:60px"></div>
     </div>
 
     <!-- ── HALTERO edit (amber) ── -->
@@ -1250,7 +1453,7 @@ select option{background:var(--bg3);}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:12px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v4.8<br>
+        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v5.0<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)">⚠️ App privada en fase de proves. No distribuir.</strong><br><br>
@@ -1340,29 +1543,52 @@ select option{background:var(--bg3);}
         <button class="btn btn-p" onclick="obNext()" style="font-size:15px">Comencem →</button>
       </div>
 
-      <!-- SLIDE 1: Key features -->
+      <!-- SLIDE 1: Value preview (what you'll track) -->
       <div class="ob-slide" id="ob1" style="display:none">
-        <div style="text-align:center;padding:20px 0 18px">
-          <div style="font-size:48px;margin-bottom:8px">🎯</div>
-          <div style="font-size:20px;font-weight:800;margin-bottom:6px">Funcionalitats clau</div>
-          <div style="font-size:13px;color:var(--text2)">Tot el que trobaràs a l'app</div>
+        <div style="text-align:center;padding:16px 0 14px">
+          <div style="font-size:20px;font-weight:800;margin-bottom:4px">El teu registre personal</div>
+          <div style="font-size:13px;color:var(--text2)">Tot centralitzat. Sempre disponible.</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px">
-          <div style="background:var(--bg2);border-radius:var(--r);padding:12px 14px;border:0.5px solid var(--border)">
-            <div style="font-size:12px;font-weight:700;color:var(--h-acc);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">% Calc</div>
-            <div style="font-size:12px;color:var(--text2)">Selecciona un exercici i veus al moment tots els percentatges del 40% al 100% amb el pes exacte i els discos a posar a cada costat de la barra.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+          <div class="ob-preview-card" style="animation-delay:0ms">
+            <div class="ob-preview-icon">🏋️</div>
+            <div class="ob-preview-body">
+              <div class="ob-preview-title">Força &amp; Halterofília</div>
+              <div class="ob-preview-sub">Registra sèries, calcula el 1RM automàticament i segueix la progressió amb gràfics</div>
+            </div>
+            <div class="ob-preview-val">1RM</div>
           </div>
-          <div style="background:var(--bg2);border-radius:var(--r);padding:12px 14px;border:0.5px solid var(--border)">
-            <div style="font-size:12px;font-weight:700;color:var(--h-acc);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Plantilles de sessió</div>
-            <div style="font-size:12px;color:var(--text2)">Desa la estructura d'una sessió (exercicis + sèries + %) i carrega-la amb un tap. Ideal per replicar sessions del box.</div>
+          <div class="ob-preview-card" style="animation-delay:60ms">
+            <div class="ob-preview-icon">⚡</div>
+            <div class="ob-preview-body">
+              <div class="ob-preview-title">WoDs &amp; Metcons</div>
+              <div class="ob-preview-sub">AMRAP, EMOM, For Time, Tabata, Chipper. Resultat, escala i notes.</div>
+            </div>
+            <div class="ob-preview-val" style="color:var(--w-acc)">WoD</div>
           </div>
-          <div style="background:var(--bg2);border-radius:var(--r);padding:12px 14px;border:0.5px solid var(--border)">
-            <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Celebració de PRs</div>
-            <div style="font-size:12px;color:var(--text2)">Quan superes un 1RM, l'app ho celebra amb confeti i genera una targeta per compartir.</div>
+          <div class="ob-preview-card" style="animation-delay:120ms">
+            <div class="ob-preview-icon">📊</div>
+            <div class="ob-preview-body">
+              <div class="ob-preview-title">% Calc instantani</div>
+              <div class="ob-preview-sub">Selecciona exercici → veus tots els % i els discos a posar. Sense càlculs.</div>
+            </div>
+            <div class="ob-preview-val" style="font-size:13px;color:var(--h-acc)">80%<br><span style="font-size:10px;color:var(--text3);font-weight:400">= 96 kg</span></div>
           </div>
-          <div style="background:var(--bg2);border-radius:var(--r);padding:12px 14px;border:0.5px solid var(--border)">
-            <div style="font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Objectius i mètriques</div>
-            <div style="font-size:12px;color:var(--text2)">Defineix objectius per exercici amb data límit. Wilks, classificació de força i força relativa calculats automàticament.</div>
+          <div class="ob-preview-card" style="animation-delay:180ms">
+            <div class="ob-preview-icon">🏆</div>
+            <div class="ob-preview-body">
+              <div class="ob-preview-title">PRs &amp; Objectius</div>
+              <div class="ob-preview-sub">Celebra nous rècords amb confeti. Defineix objectius amb data límit i segueix-los.</div>
+            </div>
+            <div class="ob-preview-val" style="color:var(--green);font-size:13px">+2.5 kg</div>
+          </div>
+          <div class="ob-preview-card" style="animation-delay:240ms">
+            <div class="ob-preview-icon">🔒</div>
+            <div class="ob-preview-body">
+              <div class="ob-preview-title">100% privat</div>
+              <div class="ob-preview-sub">Totes les dades al teu dispositiu. Cap servidor. Cap subscripció.</div>
+            </div>
+            <div class="ob-preview-val" style="font-size:13px;color:var(--text3)">local</div>
           </div>
         </div>
         <div style="display:flex;gap:8px">
@@ -1406,15 +1632,10 @@ select option{background:var(--bg3);}
 <!-- GOALS OVERLAY -->
 <div class="goals-ov" id="goalsOv">
   <div style="max-width:480px;margin:0 auto;padding:0 14px 80px">
-    <div class="goals-hero" style="padding:14px 16px 16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <button class="backbtn" onclick="closeGoals()" style="font-size:14px;font-weight:700;padding:9px 16px;border-radius:10px;white-space:nowrap;flex-shrink:0">← Tornar</button>
-        <button class="ghost btn-sm" onclick="closeGoals();showH('exs',document.querySelector('#navH .snav-btn:nth-child(5)'))" style="font-size:13px;font-weight:700;padding:9px 14px;border-radius:10px;white-space:nowrap;flex-shrink:0">+ Nou objectiu</button>
-      </div>
-      <div style="margin-top:14px">
-        <div class="goals-hero-title">🎯 Els teus objectius</div>
-        <div class="goals-hero-sub" id="goalsHeroSub">carregant...</div>
-      </div>
+    <div class="app-navbar">
+      <button class="app-back-btn" onclick="closeGoals()">Tornar</button>
+      <div class="app-navbar-title">🎯 Els teus objectius<span class="app-navbar-sub" id="goalsHeroSub"></span></div>
+      <button class="app-navbar-action" onclick="closeGoals();showH('exs',document.querySelector('#navH .snav-btn:nth-child(5)'))">+ Afegir</button>
     </div>
     <div id="goalsContent" style="padding-top:16px"></div>
   </div>
@@ -1469,15 +1690,10 @@ select option{background:var(--bg3);}
 <!-- METRICS OVERLAY -->
 <div class="goals-ov" id="metricsOv">
   <div style="max-width:480px;margin:0 auto;padding:0 14px 80px">
-    <div class="goals-hero" style="padding:14px 16px 16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <button class="backbtn" onclick="closeMetrics()" style="font-size:14px;font-weight:700;padding:9px 16px;border-radius:10px;white-space:nowrap;flex-shrink:0">← Tornar</button>
-        <div style="font-size:12px;color:var(--text3);text-align:right;line-height:1.4" id="metricsProfileLine"></div>
-      </div>
-      <div style="margin-top:14px">
-        <div class="goals-hero-title">📊 Mètriques de força</div>
-        <div class="goals-hero-sub" id="metricsHeroSub">calculant...</div>
-      </div>
+    <div class="app-navbar">
+      <button class="app-back-btn" onclick="closeMetrics()">Tornar</button>
+      <div class="app-navbar-title">📊 Mètriques<span class="app-navbar-sub" id="metricsHeroSub"></span></div>
+      <div style="min-width:60px;text-align:right;font-size:11px;color:var(--text3);line-height:1.3" id="metricsProfileLine"></div>
     </div>
     <div id="metricsContent" style="padding-top:16px"></div>
   </div>
@@ -1960,6 +2176,106 @@ function updateStickyTops() {
   document.documentElement.style.setProperty('--total-header', (hh + mh + sh) + 'px');
 }
 
+
+// ── Haptic feedback ────────────────────────────────────────────
+function haptic(type) {
+  // Visual pulse on the triggering element (fallback always works)
+  // Web Vibration API for Android; iOS requires native — not supported in web
+  try {
+    if (navigator.vibrate) {
+      if (type === 'success') navigator.vibrate([10, 30, 10]);
+      else if (type === 'light')   navigator.vibrate(8);
+      else if (type === 'warning') navigator.vibrate([20, 10, 20]);
+      else navigator.vibrate(12);
+    }
+  } catch(e) {}
+}
+function hapticBtn(el, type) {
+  haptic(type || 'light');
+  if (el) {
+    el.classList.remove('haptic-pop');
+    void el.offsetWidth;
+    el.classList.add('haptic-pop');
+    setTimeout(() => el.classList.remove('haptic-pop'), 250);
+  }
+}
+
+
+// ── Home screen progress chart ─────────────────────────────────
+let homeChartCI = null;
+function initHomeChart() {
+  // Populate selector with exercises that have entries
+  const sel = document.getElementById('homeChartSel');
+  if (!sel) return;
+  const exsWithData = D.hEx.filter(e => e.cat !== 'gym' && D.hEnt.some(en => en.exId === e.id));
+  if (!exsWithData.length) { document.getElementById('homeChartCard').style.display = 'none'; return; }
+  // Sort by most recent entry
+  exsWithData.sort((a, b) => {
+    const la = [...D.hEnt.filter(e=>e.exId===a.id)].sort((x,y)=>y.date.localeCompare(x.date))[0]?.date || '';
+    const lb = [...D.hEnt.filter(e=>e.exId===b.id)].sort((x,y)=>y.date.localeCompare(x.date))[0]?.date || '';
+    return lb.localeCompare(la);
+  });
+  sel.innerHTML = exsWithData.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('homeChartCard').style.display = 'block';
+  renderHomeChart();
+}
+function renderHomeChart() {
+  const exId = document.getElementById('homeChartSel')?.value;
+  if (!exId) return;
+  const ex = D.hEx.find(e => e.id === exId);
+  const ents = D.hEnt.filter(e => e.exId === exId).sort((a,b) => a.date.localeCompare(b.date)).slice(-10);
+  if (!ents.length) return;
+  document.getElementById('homeChartExName').textContent = ex ? ex.name : '';
+  const labels = ents.map(e => e.date.slice(5));
+  const rm1Data = ents.map(e => { const v = sessImpl(e); return v || null; });
+  const maxW = ents.map(e => Math.max(...(e.sets||[{w:0}]).map(s=>s.w||0)));
+  // Stats
+  const latestRM = rm1Data.filter(Boolean).slice(-1)[0];
+  const latestMax = maxW.slice(-1)[0];
+  const rm1 = best1RM(exId);
+  document.getElementById('homeStatRM').textContent = rm1 ? rm1.toFixed(1)+' kg' : '—';
+  document.getElementById('homeStatMax').textContent = latestMax ? latestMax+' kg' : '—';
+  document.getElementById('homeStatSess').textContent = D.hEnt.filter(e=>e.exId===exId).length;
+  // Trend
+  let trend = '→';
+  if (rm1Data.length >= 4) {
+    const recent = rm1Data.filter(Boolean).slice(-3);
+    const older = rm1Data.filter(Boolean).slice(-6,-3);
+    if (older.length) {
+      const rA = recent.reduce((s,v)=>s+v,0)/recent.length;
+      const oA = older.reduce((s,v)=>s+v,0)/older.length;
+      trend = rA > oA * 1.01 ? '↑' : rA < oA * 0.99 ? '↓' : '→';
+    }
+  }
+  document.getElementById('homeStatTrend').textContent = trend;
+  // Chart
+  if (homeChartCI) { homeChartCI.destroy(); homeChartCI = null; }
+  const ctx = document.getElementById('homeChart');
+  if (!ctx) return;
+  homeChartCI = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '1RM est.',
+        data: rm1Data,
+        borderColor: 'var(--h-acc)',
+        backgroundColor: 'rgba(242,174,62,0.10)',
+        pointBackgroundColor: 'var(--h-acc)',
+        tension: 0.4, fill: true, pointRadius: 3, borderWidth: 2, spanGaps: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw?.toFixed(1)+' kg' } } },
+      scales: {
+        x: { ticks: { color: '#666', maxRotation: 0, autoSkip: true, maxTicksLimit: 5 }, grid: { display: false } },
+        y: { ticks: { color: '#666', callback: v => v+' kg' }, grid: { color: 'rgba(128,128,128,0.07)' } }
+      }
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   checkAccessGate();
   setMotivSubtitle();
@@ -1996,6 +2312,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   refreshHeaderName();
   checkShowSetup();
   checkWeeklySummary();
+  initHomeChart();
 
 // ── Swipe left/right to toggle Haltero ↔ WoD ───────────────────────────
 (function(){
@@ -2123,14 +2440,14 @@ function saveHEntry(){
       const oldRM=ex.rm1||null;
       ex.rm1=Math.round(imp*10)/10;
       // Trigger PR celebration
-      setTimeout(()=>showPR(ex.name, oldRM, ex.rm1, date), 300);
+      setTimeout(()=>{showPR(ex.name, oldRM, ex.rm1, date);haptic('success');}, 300);
     }
   }
   save(); initSets(); selTags=[]; renderTagBtns();
   document.getElementById('logNote').value='';
   document.getElementById('logPct').value='';
   document.getElementById('rmPrev').classList.remove('on');
-  renderTodaySummary(); toast('Entrada guardada ✓');
+  renderTodaySummary(); haptic('success'); toast('Entrada guardada ✓');
 }
 
 // ══ TODAY ══
@@ -2713,6 +3030,7 @@ function saveWod(){
   const ent={id:Date.now(),date,name,type:wodType,result,scale:wodScale,wodData,exercises,note,tags:[]};
   D.wEnt.push(ent);
   save();renderRecentWods();
+  haptic('success');
   document.getElementById('wName').value='';document.getElementById('wNote').value='';
   renderWodTypeForm();
   toast('WoD guardat ✓');
@@ -3691,7 +4009,7 @@ function saveGoalFromForm() {
   document.getElementById('detGoalForm').style.display = 'none';
   document.getElementById('detGoalToggleBtn').textContent = '+ Afegir objectiu';
   updateGoalsFab();
-  toast('Objectiu guardat ✓');
+  haptic('success'); toast('Objectiu guardat ✓');
   // Re-render progress chart if visible
   if (document.getElementById('h-prog').classList.contains('on')) renderProg();
 }
