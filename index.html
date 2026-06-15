@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v6.2</title>
+<title>PRsonal v6.3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ─── LIGHT / DARK ─── */
@@ -762,19 +762,17 @@ select option{background:var(--bg3);}
   position: relative;
 }
 .tab-btn svg { width: 25px; height: 25px; stroke-width: 1.8; }
-.tab-btn::before {
-  content: '';
-  position: absolute;
-  top: 6px; left: 50%;
-  transform: translateX(-50%);
-  width: 48px; height: 30px;
+.tab-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 30px;
   border-radius: 16px;
   background: transparent;
   transition: background 0.18s;
-  z-index: 0;
 }
-.tab-btn.active::before { background: rgba(242,174,62,0.16); }
-.tab-btn svg, .tab-btn span { position: relative; z-index: 1; }
+.tab-btn.active .tab-ico { background: rgba(242,174,62,0.16); }
 .tab-btn.active { color: var(--h-acc); font-weight: 700; }
 .tab-btn.active svg { stroke: var(--h-acc); }
 .tab-btn:not(.active) svg { stroke: var(--text3); }
@@ -870,6 +868,8 @@ select option{background:var(--bg3);}
   transition: background 0.15s;
 }
 .cal-day.today { background: var(--bg3); }
+.cal-day.has-act { cursor: pointer; }
+.cal-day.has-act:active { background: var(--bg4); }
 .cal-day-label { font-size: 9px; color: var(--text3); text-transform: uppercase; font-weight: 500; }
 .cal-day-num { font-size: 15px; font-weight: 700; color: var(--text); }
 .cal-day.today .cal-day-num { color: var(--h-acc); }
@@ -1076,6 +1076,27 @@ select option{background:var(--bg3);}
   text-transform: uppercase; letter-spacing: 0.6px; margin: 4px 2px 9px;
 }
 
+
+/* ─── First-time hint banners ────────────────────────────────── */
+.hint-banner {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-left: 3px solid var(--h-acc);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  display: flex; gap: 9px; align-items: flex-start;
+  font-size: 12px; color: var(--text2); line-height: 1.45;
+  animation: fadeUp 0.3s ease;
+}
+.hint-banner.w { border-left-color: var(--w-acc); }
+.hint-icon { flex-shrink: 0; font-size: 14px; line-height: 1.3; }
+.hint-x {
+  margin-left: auto; background: none; border: none;
+  color: var(--text3); font-size: 17px; cursor: pointer;
+  line-height: 1; flex-shrink: 0; padding: 0 2px;
+}
+
 </style>
 </head>
 <body>
@@ -1084,24 +1105,24 @@ select option{background:var(--bg3);}
 <!-- ═══════════ V6 BOTTOM TAB BAR ═══════════ -->
 <nav class="tab-bar" id="tabBar">
   <button class="tab-btn active" id="tab-inici" onclick="switchTab('inici')">
-    <i data-lucide="home"></i>
+    <span class="tab-ico"><i data-lucide="home"></i></span>
     <span>Inici</span>
   </button>
   <button class="tab-btn" id="tab-entrenar" onclick="switchTab('entrenar')">
-    <i data-lucide="dumbbell"></i>
+    <span class="tab-ico"><i data-lucide="dumbbell"></i></span>
     <span>Entrenar</span>
   </button>
   <button class="tab-btn" id="tab-objectius" onclick="switchTab('objectius')">
-    <i data-lucide="target"></i>
+    <span class="tab-ico"><i data-lucide="target"></i></span>
     <span>Objectius</span>
     <span class="tab-badge" id="tabBadgeObj"></span>
   </button>
   <button class="tab-btn" id="tab-metriques" onclick="switchTab('metriques')">
-    <i data-lucide="bar-chart-2"></i>
+    <span class="tab-ico"><i data-lucide="bar-chart-2"></i></span>
     <span>Mètriques</span>
   </button>
   <button class="tab-btn" id="tab-ajustaments" onclick="switchTab('ajustaments')">
-    <i data-lucide="settings"></i>
+    <span class="tab-ico"><i data-lucide="settings"></i></span>
     <span>Ajustaments</span>
   </button>
 </nav>
@@ -1213,6 +1234,9 @@ select option{background:var(--bg3);}
     <div id="goalsHeroSubTab" style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;display:block"></div>
     </div>
   </div>
+  <div style="padding:0 12px 10px">
+    <button class="btn btn-s btn-sm" style="width:100%" onclick="gotoExercicisForGoal()">+ Afegir objectiu (des d'Exercicis)</button>
+  </div>
   <div class="tab-page-body" id="tabObjectiusBody">
     <!-- goals content rendered here -->
   </div>
@@ -1248,7 +1272,7 @@ select option{background:var(--bg3);}
       <div class="hsub" id="hSubText"></div>
       <script>
         (function(){
-          var SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d’avui.","Força, consitència, progrés.","Avui és un bon dia per batre un rècord.","Quants quilos més tens per descobrir?","La barra no es mou sola. Tu sí.","Entrena dur. Registra-ho tot. Millora.","Progressar és lent, abandonar massa ràpid.","Pateix avui, gaudeix-ho demà.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro. O fer veure que el mous.","El WoD no es farà sol... malauradament.","Si no et fa mal, és que no has comptat bé les reps.","La mobilitat és per als que volen poder seure demà.","Avui et toca sopar amb agulletes. Bon profit.","Si no sues, porta un ventilador al box.","La barra et mira. Tu la mires. Algú ha de cedir.","Escales? No, avui tot Rx. (Ja veurem a la primera sèrie.)","Si marxes ara, probablement t’estalvies burpees. Probablement."];
+          var SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d’avui.","Força, consitència, progrés.","Avui és un bon dia per batre un rècord.","Quants quilos més tens per descobrir?","Dona-li un cop de mà.","Entrena dur. Registra-ho tot. Millora.","Progressar és lent, abandonar massa ràpid.","Pateix avui, gaudeix-ho demà.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro. O fer veure que el mous.","El WoD no es farà sol... malauradament.","Si no et fa mal, és que no has comptat bé les reps.","La mobilitat és per als que volen poder seure demà.","Avui et toca sopar amb agulletes. Bon profit.","Si no sues, porta un ventilador al box.","La barra et mira. Tu la mires. Algú ha de cedir.","Escales? No, avui tot Rx. (Ja veurem a la primera sèrie.)","Si marxes ara, probablement t’estalvies burpees. Probablement."];
           var d=Math.floor((new Date()-(new Date(new Date().getFullYear(),0,0)))/86400000);
           var el=document.getElementById("hSubText");
           if(el) el.textContent=SUBS[d%SUBS.length];
@@ -1302,23 +1326,6 @@ select option{background:var(--bg3);}
 <div id="h-log" class="sec on">
 
   <!-- ── HOME PROGRESS SPARK ── -->
-  <div class="home-chart-card anim-fadeup" id="homeChartCard" style="display:none">
-    <div class="home-chart-header">
-      <div>
-        <div class="ctitle" style="margin:0">Progrés recent</div>
-        <div id="homeChartExName" style="font-size:13px;font-weight:700;color:var(--text);margin-top:2px"></div>
-      </div>
-      <select class="home-chart-ex-sel" id="homeChartSel" onchange="renderHomeChart()"></select>
-    </div>
-    <div class="home-chart-wrap"><canvas id="homeChart" role="img" aria-label="Progrés recent"></canvas></div>
-    <div class="home-stat-row">
-      <div class="home-stat-pill"><div class="v" id="homeStatRM">—</div><div class="l">1RM est.</div></div>
-      <div class="home-stat-pill"><div class="v" id="homeStatMax">—</div><div class="l">Pes màx.</div></div>
-      <div class="home-stat-pill"><div class="v" id="homeStatTrend">—</div><div class="l">Tendència</div></div>
-      <div class="home-stat-pill"><div class="v" id="homeStatSess">—</div><div class="l">Sessions</div></div>
-    </div>
-  </div>
-
   <!-- ── WEEKLY SUMMARY (Monday only) ── -->
   <div id="weeklySummaryCard" style="display:none;margin-bottom:12px">
     <div style="background:linear-gradient(135deg,rgba(242,174,62,0.12),rgba(78,203,113,0.08));border:0.5px solid rgba(242,174,62,0.3);border-radius:var(--r);padding:14px;position:relative">
@@ -1785,6 +1792,20 @@ select option{background:var(--bg3);}
     <div class="card"><div class="ctitle">Últimes sessions</div><div id="detHist"></div></div>
 
     <!-- Goals section -->
+    <!-- Quick log -->
+    <div class="card" id="detQuickCard" style="margin-bottom:10px">
+      <div class="ctitle" style="margin:0 0 8px">Registre ràpid</div>
+      <div id="detQuickNote" style="font-size:11px;color:var(--text3);margin-bottom:8px;display:none"></div>
+      <div class="frow">
+        <div><label id="detQuickWLabel">Pes (kg)</label><input type="number" id="quickW" step="0.5" placeholder="ex: 100"></div>
+        <div><label>Reps</label><input type="number" id="quickR" value="1" min="1"></div>
+      </div>
+      <div class="frow" style="margin-top:6px;align-items:end">
+        <div><label>Data</label><input type="date" id="quickD"></div>
+        <button class="btn btn-p" onclick="quickLogEx()">Registrar</button>
+      </div>
+    </div>
+    <!-- Goal section -->
     <div class="card" id="detGoalCard">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div class="ctitle" style="margin:0">Objectiu de progressió</div>
@@ -1971,7 +1992,7 @@ select option{background:var(--bg3);}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:12px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v6.2<br>
+        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v6.3<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)">⚠️ App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2220,11 +2241,19 @@ select option{background:var(--bg3);}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-acc);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-acc);font-weight:700">sonal</span> · v6.2</div>
+  <div><span style="color:var(--h-acc);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-acc);font-weight:700">sonal</span> · v6.3</div>
   <div style="margin-top:2px;font-size:9px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
 <!-- Delete confirm sheet -->
+<div class="sheet" id="dayActSheet" style="z-index:360">
+  <div class="sheet-in" style="max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div class="stitle" id="dayActTitle">Activitat</div>
+    <div id="dayActBody" style="margin-top:10px"></div>
+    <button class="btn btn-s" style="width:100%;margin-top:16px" onclick="closeDayAct()">Tancar</button>
+  </div>
+</div>
+
 <div class="sheet" id="tplReviewSheet" style="z-index:360">
   <div class="sheet-in" style="max-height:82vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
     <div class="stitle" id="tplReviewTitle">Revisa la sessió</div>
@@ -2674,7 +2703,7 @@ const MOTIV_SUBS = [
   "Força, consistència, progrés.",
   "Avui és un bon dia per batre un rècord.",
   "Quants quilos més tens per descobrir?",
-  "La barra no es mou sola. Tu sí.",
+  "Dona-li un cop de mà.",
   "Entrena dur. Registra-ho tot. Millora.",
   "Progressar és lent, abandonar massa ràpid.",
   "Pateix avui, gaudeix-ho demà.",
@@ -2783,6 +2812,7 @@ function hapticBtn(el, type) {
 // ── Home screen progress chart ─────────────────────────────────
 let homeChartCI = null;
 function initHomeChart() {
+  if(!document.getElementById('homeChartCard')) return; // v6.3: removed from Registrar
   // Populate selector with exercises that have entries
   const sel = document.getElementById('homeChartSel');
   if (!sel) return;
@@ -2884,6 +2914,14 @@ function switchTab(tab) {
   if (tab === 'objectius') renderObjectiusTab();
   if (tab === 'metriques') renderMetriquesTab();
   if (tab === 'ajustaments') renderAjGreeting();
+  // First-time hints
+  setTimeout(() => {
+    if (tab === 'inici') maybeHint(document.querySelector('#tabInici .inici-body'), 'inici');
+    else if (tab === 'objectius') maybeHint(document.getElementById('tabObjectiusBody'), 'objectius');
+    else if (tab === 'metriques') maybeHint(document.getElementById('tabMetriquesBody'), 'metriques');
+    else if (tab === 'ajustaments') maybeHint(document.getElementById('ajTabContent'), 'ajustaments');
+    else if (tab === 'entrenar') maybeHint(document.getElementById(activeMode==='w'?('w-'+activeWSub):('h-'+activeHSub)), (activeMode==='w'?'w_'+activeWSub:'h_'+activeHSub));
+  }, 60);
   
   // Scroll to top
   window.scrollTo({top:0, behavior:'instant'});
@@ -2914,7 +2952,7 @@ function renderInici() {
   // Subtitle
   const subEl = document.getElementById('inicHSub');
   if (subEl) {
-    const SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d'avui.","Força, consistència, progrés.","Avui és un bon dia per batre un rècord.","Quants quilos més tens per descobrir?","La barra no es mou sola. Tu sí.","Entrena dur. Registra-ho tot. Millora.","Progressar és lent, abandonar massa ràpid.","Pateix avui, gaudeix-ho demà.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro. O fer veure que el mous.","El WoD no es farà sol... malauradament.","Si no et fa mal, és que no has comptat bé les reps.","La mobilitat és per als que volen poder seure demà.","Avui et toca sopar amb agulletes. Bon profit.","Si no sues, porta un ventilador al box.","La barra et mira. Tu la mires. Algú ha de cedir.","Escales? No, avui tot Rx. (Ja veurem a la primera sèrie.)","Si marxes ara, probablement t'estalvies burpees. Probablement."];
+    const SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d'avui.","Força, consistència, progrés.","Avui és un bon dia per batre un rècord.","Quants quilos més tens per descobrir?","Dona-li un cop de mà.","Entrena dur. Registra-ho tot. Millora.","Progressar és lent, abandonar massa ràpid.","Pateix avui, gaudeix-ho demà.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro. O fer veure que el mous.","El WoD no es farà sol... malauradament.","Si no et fa mal, és que no has comptat bé les reps.","La mobilitat és per als que volen poder seure demà.","Avui et toca sopar amb agulletes. Bon profit.","Si no sues, porta un ventilador al box.","La barra et mira. Tu la mires. Algú ha de cedir.","Escales? No, avui tot Rx. (Ja veurem a la primera sèrie.)","Si marxes ara, probablement t'estalvies burpees. Probablement."];
     const d = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
     subEl.textContent = SUBS[d % SUBS.length];
   }
@@ -2938,6 +2976,92 @@ function renderInici() {
 }
 
 // ── MINI CALENDAR STRIP ────────────────────────────────────────
+
+
+// ── First-time section hints ───────────────────────────────────
+const HINTS = {
+  inici: 'Aquí veus el teu progrés recent, l\'activitat dels últims dies (toca un dia per veure què vas fer) i un suggeriment d\'entrenament.',
+  objectius: 'Defineix objectius de pes amb data límit i segueix el progrés. Pots afegir-ne des d\'Exercicis.',
+  metriques: 'Wilks, força relativa i classificació, calculats automàticament a partir del teu perfil i marques.',
+  ajustaments: 'Edita els teus exercicis, el perfil personal i fes còpies de seguretat de les dades.',
+  h_log: 'Registra les teves sèries d\'halterofília: reps, pes i RPE per a cada sèrie.',
+  h_tpl: 'Crea plantilles de sessió i carrega-les amb un toc un altre dia.',
+  h_calc: 'Tria un exercici i veus tots els percentatges i els discos a posar a cada costat.',
+  h_pr: 'Els teus rècords (1RM, 2RM, 3RM) per exercici. Toca per alternar-los.',
+  h_prog: 'Gràfics d\'evolució i volum per exercici al llarg del temps.',
+  h_exs: 'Tots els exercicis per família. Toca\'n un per veure detalls, fer un registre ràpid o posar-hi un objectiu.',
+  h_hist: 'Tot el teu historial d\'halterofília, amb filtres per data i exercici.',
+  w_log: 'Registra els teus WoDs: tipus, moviments, resultat i escala.',
+  w_tpl: 'Plantilles de WoD per repetir-los fàcilment.',
+  w_bench: 'WoDs benchmark coneguts (Murph, Fran...) per provar i comparar-te.',
+  w_stats: 'Estadístiques i resum dels teus WoDs.',
+  w_hist: 'Historial complet de WoDs amb filtres.'
+};
+function maybeHint(container, key) {
+  if (!container || !HINTS[key]) return;
+  if (!D.seenHints) D.seenHints = [];
+  if (D.seenHints.includes(key)) return;
+  if (container.querySelector('.hint-banner[data-k="'+key+'"]')) return;
+  const isW = key.charAt(0) === 'w';
+  const div = document.createElement('div');
+  div.className = 'hint-banner' + (isW ? ' w' : '');
+  div.setAttribute('data-k', key);
+  div.innerHTML = '<span class="hint-icon">💡</span><div>' + HINTS[key] + '</div>' +
+    '<button class="hint-x" onclick="dismissHint(\''+key+'\',this)" aria-label="Tancar">×</button>';
+  container.insertBefore(div, container.firstChild);
+}
+function dismissHint(key, btn) {
+  if (!D.seenHints) D.seenHints = [];
+  if (!D.seenHints.includes(key)) D.seenHints.push(key);
+  save();
+  const b = btn.closest('.hint-banner');
+  if (b) b.remove();
+}
+
+// ── Day activity detail (from Inici calendar) ──────────────────
+function showDayActivity(ds) {
+  haptic('light');
+  const title = document.getElementById('dayActTitle');
+  const body = document.getElementById('dayActBody');
+  if (title) title.textContent = fmt(ds);
+  const hEnts = D.hEnt.filter(e => e.date === ds);
+  const wEnts = D.wEnt.filter(e => e.date === ds);
+  let html = '';
+  if (hEnts.length) {
+    html += '<div style="font-size:12px;font-weight:700;color:var(--h-acc);text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px">Halterofília</div>';
+    hEnts.forEach(e => {
+      const ex = D.hEx.find(x => x.id === e.exId);
+      const ss = (e.sets||[]).filter(s => s.r > 0).map(s => `${s.r}×${s.w}kg`).join(' · ');
+      const impl = sessImpl(e);
+      html += `<div style="background:var(--bg3);border-radius:10px;padding:9px 11px;margin-bottom:7px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;font-size:13px">${ex?ex.name:e.exId}</div>
+          ${impl && ex && ex.cat!=='gym' ? `<div style="font-size:11px;color:var(--blue)">~${impl.toFixed(1)} kg</div>` : ''}
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">${ss}</div>
+        ${e.note ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">${e.note}</div>` : ''}
+      </div>`;
+    });
+  }
+  if (wEnts.length) {
+    html += `<div style="font-size:12px;font-weight:700;color:var(--w-acc);text-transform:uppercase;letter-spacing:.5px;margin:${hEnts.length?'14px':'0'} 0 8px">WoDs</div>`;
+    wEnts.forEach(e => {
+      html += `<div style="background:var(--bg3);border-radius:10px;padding:9px 11px;margin-bottom:7px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;font-size:13px">${e.name || e.type || 'WoD'}</div>
+          <div style="font-size:11px;color:var(--text3)">${e.type||''}${e.scale?' · '+e.scale:''}</div>
+        </div>
+        ${e.result ? `<div style="font-size:12px;color:var(--text2);margin-top:3px">Resultat: ${e.result}</div>` : ''}
+        ${e.note ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">${e.note}</div>` : ''}
+      </div>`;
+    });
+  }
+  if (!html) html = '<div class="empty">Cap activitat aquest dia.</div>';
+  body.innerHTML = html;
+  document.getElementById('dayActSheet').classList.add('on');
+}
+function closeDayAct() { document.getElementById('dayActSheet').classList.remove('on'); }
+
 function renderCalStrip() {
   const strip = document.getElementById('calStrip');
   if (!strip) return;
@@ -2959,7 +3083,8 @@ function renderCalStrip() {
     if (hasPR) dots += '<div class="cal-dot pr"></div>';
     else if (hasH) dots += '<div class="cal-dot"></div>';
     if (hasW) dots += '<div class="cal-dot wod"></div>';
-    html.push(`<div class="cal-day${isToday?' today':''}">
+    const hasAct = hasH || hasW;
+    html.push(`<div class="cal-day${isToday?' today':''}${hasAct?' has-act':''}"${hasAct?` onclick="showDayActivity('${ds}')"`:''}>
       <div class="cal-day-label">${days[d.getDay()]}</div>
       <div class="cal-day-num">${d.getDate()}</div>
       ${dots}
@@ -2973,7 +3098,7 @@ function renderCalStrip() {
 // ── HOME CHART (INICI version) ─────────────────────────────────
 let homeChartCIInici = null;
 function homeExsWithData() {
-  const exs = D.hEx.filter(e => D.hEnt.some(en => en.exId === e.id));
+  const exs = D.hEx.filter(e => e.cat !== 'complex' && D.hEnt.some(en => en.exId === e.id));
   exs.sort((a, b) => {
     const la = [...D.hEnt.filter(e=>e.exId===a.id)].sort((x,y)=>y.date.localeCompare(x.date))[0]?.date || '';
     const lb = [...D.hEnt.filter(e=>e.exId===b.id)].sort((x,y)=>y.date.localeCompare(x.date))[0]?.date || '';
@@ -3050,19 +3175,40 @@ function renderHomeSuggestion() {
     pick = stale;
     msg = `Fa <strong>${stale.daysSince} dies</strong> que no treballes <strong>${stale.ex.name}</strong>. Potser toca?`;
   } else {
-    // balanced: push the least-trained
-    pick = [...cands].sort((a,b)=>a.sessions-b.sessions)[0];
-    msg = `Bon equilibri 💪 Si vols progressar, <strong>${pick.ex.name}</strong> és el que menys has treballat.`;
+    // novelty: try a new exercise (no data) or do a complex — rotates by day
+    const untrained = D.hEx.filter(e => e.cat !== 'complex' && !D.hEnt.some(en => en.exId === e.id));
+    const complexes = D.hEx.filter(e => e.cat === 'complex');
+    const day = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+    el._exId = null; el._detailExId = null; el._fam = '__all';
+    if (untrained.length && (day % 2 === 0 || !complexes.length)) {
+      const ex = untrained[day % untrained.length];
+      el._detailExId = ex.id;
+      el.innerHTML = `<span style="color:var(--h-acc);font-weight:700">Suggeriment · </span>Encara no has registrat <strong>${ex.name}</strong>. Toca per començar.`;
+      el.style.display = 'block';
+      return;
+    } else if (complexes.length) {
+      const c = complexes[day % complexes.length];
+      el._detailExId = c.id;
+      el.innerHTML = `<span style="color:var(--h-acc);font-weight:700">Suggeriment · </span>Varia la sessió: prova el complex <strong>${c.name}</strong>. Toca per registrar-lo.`;
+      el.style.display = 'block';
+      return;
+    } else {
+      pick = [...cands].sort((a,b)=>a.sessions-b.sessions)[0];
+      msg = `Bon equilibri 💪 <strong>${pick.ex.name}</strong> és el que menys has treballat.`;
+    }
   }
   el._exId = pick.ex.id;
+  el._detailExId = null;
   el._fam = pick.ex.family || '__all';
   el.innerHTML = `<span style="color:var(--h-acc);font-weight:700">Suggeriment · </span>${msg}`;
   el.style.display = 'block';
 }
 function applyHomeSuggestion() {
   const el = document.getElementById('homeSuggestion');
-  if (!el || !el._exId) return;
+  if (!el) return;
   haptic('light');
+  if (!el._exId && el._detailExId) { showDetail(el._detailExId); return; }
+  if (!el._exId) return;
   const famSel = document.getElementById('homeChartFamInici');
   if (famSel && el._fam && [...famSel.options].some(o=>o.value===el._fam)) famSel.value = el._fam;
   populateHomeExSel();
@@ -3190,6 +3336,7 @@ function showHSub(sec, btn) {
   document.querySelectorAll('#subnavH .entr-sub-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   showH(sec, null);
+  setTimeout(() => maybeHint(document.getElementById('h-'+sec), 'h_'+sec), 60);
 }
 
 function showWSub(sec, btn) {
@@ -3198,6 +3345,7 @@ function showWSub(sec, btn) {
   document.querySelectorAll('#subnavW .entr-sub-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   showW(sec, null);
+  setTimeout(() => maybeHint(document.getElementById('w-'+sec), 'w_'+sec), 60);
 }
 
 function openCalcFab(){ showHSub('calc'); }
@@ -3295,6 +3443,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.addEventListener('resize', updateStickyTops);
   // Safety: ensure all arrays exist regardless of migration state
   if(!D.templates) D.templates=[];
+  if(!D.seenHints) D.seenHints=[];
   if(!D.goals) D.goals=[];
   if(!D.calcPcts||!D.calcPcts.length) D.calcPcts=[...ALL_PCTS];
   // Normalise family names (for users with old data)
@@ -3823,6 +3972,39 @@ function saveNewEx(){
 
 // ══ EXERCISE DETAIL ══
 let detCI=null;
+
+
+// ── Jump to Exercicis to pick an exercise for a new goal ───────
+function gotoExercicisForGoal() {
+  switchTab('entrenar');
+  setModePill('h');
+  const btn = [...document.querySelectorAll('#subnavH .entr-sub-btn')]
+    .find(b => (b.getAttribute('onclick')||'').includes("'exs'"));
+  showHSub('exs', btn);
+  toast('Tria un exercici i afegeix-hi l\'objectiu');
+}
+
+// ── Quick log from exercise detail ─────────────────────────────
+function quickLogEx() {
+  const exId = detailGoalExId;
+  const ex = D.hEx.find(e => e.id === exId);
+  if (!ex) return;
+  const w = +document.getElementById('quickW').value || 0;
+  const r = +document.getElementById('quickR').value || 1;
+  const date = document.getElementById('quickD').value || new Date().toISOString().slice(0,10);
+  if (w <= 0 && ex.cat !== 'gym') { toast('Introdueix un pes', 'error'); return; }
+  D.hEnt.push({ id: Date.now()+Math.random(), date, exId, pct:'', note:'Registre ràpid', tags:[], sets:[{r, w, rpe:''}] });
+  if (w > 0 && ex.cat !== 'gym') {
+    const imp = epley(w, r);
+    if (!ex.rm1 || imp > ex.rm1 * 1.005) ex.rm1 = Math.round(imp*10)/10;
+  }
+  save();
+  haptic('success');
+  toast('Registrat ✓');
+  showDetail(exId);
+  if (typeof renderInici === 'function') renderInici();
+}
+
 function showDetail(exId){
   detailGoalExId=exId;
   const ex=D.hEx.find(e=>e.id===exId);if(!ex)return;
@@ -3848,6 +4030,13 @@ function showDetail(exId){
   else document.getElementById('detZonesCard').style.display='none';
   const recent=[...ents].reverse().slice(0,8);
   document.getElementById('detHist').innerHTML=recent.length?recent.map(e=>{const ss=(e.sets||[]).filter(s=>s.w>=0&&s.r>0).map(s=>`${s.r}×${s.w}kg`).join(' · ');const impl=sessImpl(e);return`<div class="loge anim-slidein" style="cursor:pointer" onclick="openEdit('${e.id}')"><div style="display:flex;justify-content:space-between"><div class="logd">${fmt(e.date)}${e.pct?' · '+e.pct+'%':''}</div>${impl&&ex.cat!=='gym'?`<div class="log1">~${impl.toFixed(1)} kg</div>`:''}</div><div class="logs">${ss}</div>${e.tags&&e.tags.length?`<div style="margin-top:2px">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''} ${e.note?`<div class="logn">${e.note}</div>`:''}<div style="font-size:9px;color:var(--text3);margin-top:2px">✏ toca per editar</div></div>`;}).join(''):'<div class="empty">Cap registre</div>';
+  // Quick-log labels (gym = pes llastrat)
+  const _ql=document.getElementById('detQuickWLabel');
+  if(_ql) _ql.textContent = ex.cat==='gym' ? 'Pes llastrat (kg)' : 'Pes (kg)';
+  const _qn=document.getElementById('detQuickNote');
+  if(_qn){ if(ex.cat==='gym'){ _qn.style.display='block'; _qn.textContent='En gymnastics, el pes és el llast afegit (deixa 0 si és a pes corporal).'; } else _qn.style.display='none'; }
+  const _qd=document.getElementById('quickD'); if(_qd) _qd.value=new Date().toISOString().slice(0,10);
+  const _qw=document.getElementById('quickW'); if(_qw) _qw.value='';
   // Goals
   renderGoalDisplay(exId);
   document.getElementById('detGoalForm').style.display='none';
