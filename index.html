@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v5.0</title>
+<title>PRsonal v6.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ─── LIGHT / DARK ─── */
@@ -38,7 +38,7 @@
 }
 /* ─── BASE ─── */
 *{box-sizing:border-box;margin:0;padding:0;}html{overflow-x:clip;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;font-size:15px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-y:contain;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;font-size:15px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-y:contain;padding-bottom:0;}
 .app{max-width:480px;margin:0 auto;padding:0 0 48px;padding-top:var(--total-header,186px);}
 
 /* ─── ANIMATIONS ─── */
@@ -722,12 +722,524 @@ select option{background:var(--bg3);}
 .ob-preview-sub { font-size: 11px; color: var(--text2); line-height: 1.4; }
 .ob-preview-val { font-size: 18px; font-weight: 800; color: var(--h-acc); flex-shrink: 0; }
 
+
+/* ─── V6 BOTTOM TAB BAR ──────────────────────────────────────── */
+:root {
+  --tab-h: 66px;
+}
+.tab-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--tab-h);
+  display: flex;
+  align-items: stretch;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 0.5px solid var(--glass-border);
+  z-index: 300;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  padding: 8px 2px 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  transition: color 0.18s;
+  position: relative;
+}
+.tab-btn svg { width: 25px; height: 25px; stroke-width: 1.8; }
+.tab-btn::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 50%;
+  transform: translateX(-50%);
+  width: 48px; height: 30px;
+  border-radius: 16px;
+  background: transparent;
+  transition: background 0.18s;
+  z-index: 0;
+}
+.tab-btn.active::before { background: rgba(242,174,62,0.16); }
+.tab-btn svg, .tab-btn span { position: relative; z-index: 1; }
+.tab-btn.active { color: var(--h-acc); font-weight: 700; }
+.tab-btn.active svg { stroke: var(--h-acc); }
+.tab-btn:not(.active) svg { stroke: var(--text3); }
+.tab-badge {
+  position: absolute;
+  top: 4px; right: calc(50% - 18px);
+  background: var(--h-acc);
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  border-radius: 8px;
+  min-width: 14px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  padding: 0 3px;
+  display: none;
+}
+
+/* ─── V6 TAB PAGES ───────────────────────────────────────────── */
+.tab-page {
+  display: none;
+  min-height: calc(100vh - var(--tab-h));
+  padding-bottom: calc(var(--tab-h) + 16px);
+}
+.tab-page.active { display: block; }
+
+/* ─── INICI TAB HERO ─────────────────────────────────────────── */
+.inici-hero {
+  padding: 52px 16px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.inici-hero-logo {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.inici-hero-text { flex: 1; }
+.inici-hero-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+.inici-hero-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.inici-hero-date {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+  text-align: right;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.inici-body { padding: 0 12px 16px; }
+
+/* empty state */
+.inici-empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--text3);
+}
+.inici-empty-icon svg { stroke: var(--text3); opacity: 0.4; }
+.inici-empty-title { font-size: 17px; font-weight: 700; color: var(--text2); margin: 12px 0 6px; }
+.inici-empty-sub { font-size: 13px; line-height: 1.5; }
+
+/* ─── MINI CALENDAR STRIP ────────────────────────────────────── */
+.cal-strip {
+  display: flex;
+  gap: 4px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 4px;
+}
+.cal-strip::-webkit-scrollbar { display: none; }
+.cal-day {
+  flex-shrink: 0;
+  width: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cal-day.today { background: var(--bg3); }
+.cal-day-label { font-size: 9px; color: var(--text3); text-transform: uppercase; font-weight: 500; }
+.cal-day-num { font-size: 15px; font-weight: 700; color: var(--text); }
+.cal-day.today .cal-day-num { color: var(--h-acc); }
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--h-acc); }
+.cal-dot.wod { background: var(--w-acc); }
+.cal-dot.pr { background: var(--green); }
+
+/* ─── ENTRENAR TAB ───────────────────────────────────────────── */
+.entrenar-page-title {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  padding: 52px 16px 12px;
+  color: var(--text);
+}
+.mode-pill-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 12px 12px;
+}
+.mode-pill-toggle {
+  display: flex;
+  width: 100%;
+  max-width: 360px;
+  background: var(--bg3);
+  border-radius: 24px;
+  padding: 4px;
+  gap: 3px;
+}
+.mode-pill-btn {
+  flex: 1;
+  padding: 11px 18px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+.mode-pill-btn svg { width: 18px; height: 18px; }
+.mode-pill-btn.active {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+.mode-pill-btn.active.h { color: var(--h-acc); }
+.mode-pill-btn.active.w { color: var(--w-acc); }
+
+/* ─── ENTRENAR SUB-NAV (3 tabs only) ────────────────────────── */
+.entr-subnav-2row {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 2px 12px 12px;
+  margin-bottom: 4px;
+  align-items: center;
+}
+.entr-subrow {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.entr-subnav {
+  display: flex;
+  gap: 6px;
+  padding: 2px 12px 12px;
+  margin-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.entr-subnav::-webkit-scrollbar { display: none; }
+.entr-sub-btn {
+  flex-shrink: 0;
+  padding: 9px 16px;
+  border-radius: 22px;
+  border: none;
+  background: var(--bg3);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+.entr-sub-btn.active { background: var(--h-acc); color: #000; box-shadow: 0 2px 8px rgba(242,174,62,0.3); }
+.entr-sub-btn.active.w { background: var(--w-acc); color: #000; box-shadow: 0 2px 8px rgba(157,192,196,0.3); }
+
+/* ─── AJUSTAMENTS TAB ────────────────────────────────────────── */
+.aj-greeting {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  padding: 52px 16px 18px;
+  color: var(--text);
+}
+.aj-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 16px;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  background: transparent;
+  width: 100%;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  transition: background 0.12s;
+}
+.aj-row:active { background: var(--bg2); }
+.aj-row-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.aj-row-icon svg { width: 20px; height: 20px; }
+.aj-row-body { flex: 1; min-width: 0; }
+.aj-row-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.aj-row-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.aj-row-chevron svg { stroke: var(--text3); width: 16px; height: 16px; }
+
+/* ─── OBJECTIUS / METRIQUES as TAB PAGES ─────────────────────── */
+.tab-page-title {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  padding: 52px 16px 16px;
+  color: var(--text);
+}
+.tab-page-body { padding: 0 12px; }
+
+/* % CALC floating button */
+.calc-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--tab-h) + 12px);
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--h-acc);
+  border: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #000;
+  box-shadow: 0 4px 16px rgba(242,174,62,0.4);
+  z-index: 100;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+.calc-fab.show { display: flex; }
+
+/* ─── MISC CLEANUP ───────────────────────────────────────────── */
+/* Hide old nav elements */
+.mode-bar, .snav { display: none !important; }
+/* Old header hidden — replaced by inici hero */
+.header { display: none !important; }
+/* Adjust app padding — no top header anymore */
+.app { padding-top: 0 !important; }
+/* overlays now inherit tab bar offset */
+.goals-ov, .ov { padding-bottom: calc(var(--tab-h) + 8px) !important; }
+
+
+/* V6: sections inside Entrenar tab managed by JS display */
+#entrH .sec, #entrW .sec { padding: 12px 14px; }
+#entrH > div, #entrW > div { /* ensure sections fill width */ }
+
+
+/* ─── PLANTILLES collapsible create card ─────────────────────── */
+.tpl-create { margin-bottom: 10px; }
+.tpl-create-toggle {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 14px 15px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  color: var(--text);
+  font-size: 15px; font-weight: 700;
+}
+.tpl-create-toggle:active { background: var(--bg3); }
+.tpl-create-label { display: flex; align-items: center; gap: 9px; }
+.tpl-create-label svg { width: 19px; height: 19px; }
+.tpl-chev { width: 18px; height: 18px; stroke: var(--text3); transition: transform 0.2s; }
+.tpl-create-body { margin-top: 4px; }
+.tpl-list-title {
+  font-size: 12px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.6px; margin: 4px 2px 9px;
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- HEADER -->
+<!-- ═══════════ V6 BOTTOM TAB BAR ═══════════ -->
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-btn active" id="tab-inici" onclick="switchTab('inici')">
+    <i data-lucide="home"></i>
+    <span>Inici</span>
+  </button>
+  <button class="tab-btn" id="tab-entrenar" onclick="switchTab('entrenar')">
+    <i data-lucide="dumbbell"></i>
+    <span>Entrenar</span>
+  </button>
+  <button class="tab-btn" id="tab-objectius" onclick="switchTab('objectius')">
+    <i data-lucide="target"></i>
+    <span>Objectius</span>
+    <span class="tab-badge" id="tabBadgeObj"></span>
+  </button>
+  <button class="tab-btn" id="tab-metriques" onclick="switchTab('metriques')">
+    <i data-lucide="bar-chart-2"></i>
+    <span>Mètriques</span>
+  </button>
+  <button class="tab-btn" id="tab-ajustaments" onclick="switchTab('ajustaments')">
+    <i data-lucide="settings"></i>
+    <span>Ajustaments</span>
+  </button>
+</nav>
+
+<!-- ═══════════ TAB: INICI ═══════════ -->
+<div class="tab-page active" id="tabInici">
+  <div class="inici-hero">
+    <img id="logoImgInici" src="" alt="PRsonal" class="inici-hero-logo">
+    <div class="inici-hero-text">
+      <div class="inici-hero-title"><span class="prsonal-pr-lg">PR</span><span class="prsonal-s-lg">sonal</span></div>
+      <div class="inici-hero-sub" id="inicHSub"></div>
+    </div>
+    <div class="inici-hero-date" id="inicDate"></div>
+  </div>
+  <div class="inici-body">
+    <!-- Progress chart -->
+    <div class="home-chart-card anim-fadeup" id="homeChartCardInici" style="display:none">
+      <div class="home-chart-header">
+        <div>
+          <div class="ctitle" style="margin:0">Progrés recent</div>
+          <div id="homeChartExNameInici" style="font-size:13px;font-weight:700;color:var(--text);margin-top:2px"></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <select class="home-chart-ex-sel" id="homeChartFamInici" onchange="onHomeFamChange()" title="Família"></select>
+          <select class="home-chart-ex-sel" id="homeChartSelInici" onchange="renderHomeChartInici()"></select>
+        </div>
+      </div>
+      <div class="home-chart-wrap"><canvas id="homeChartInici" role="img" aria-label="Progrés recent"></canvas></div>
+      <div class="home-stat-row">
+        <div class="home-stat-pill"><div class="v" id="homeStatRMInici">—</div><div class="l">1RM est.</div></div>
+        <div class="home-stat-pill"><div class="v" id="homeStatMaxInici">—</div><div class="l">Pes màx.</div></div>
+        <div class="home-stat-pill"><div class="v" id="homeStatTrendInici">—</div><div class="l">Tendència</div></div>
+        <div class="home-stat-pill"><div class="v" id="homeStatSessInici">—</div><div class="l">Sessions</div></div>
+      </div>
+      <button id="homeSuggestion" onclick="applyHomeSuggestion()" style="display:none;width:100%;margin-top:9px;text-align:left;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:9px 11px;cursor:pointer;font-family:inherit;color:var(--text2);font-size:12px;line-height:1.4"></button>
+    </div>
+    <!-- Mini calendar -->
+    <div class="home-chart-card" id="calStripCard" style="padding:8px 0 0">
+      <div class="ctitle" style="padding:0 13px 6px;margin:0">Activitat recent</div>
+      <div class="cal-strip" id="calStrip"></div>
+    </div>
+    <!-- Weekly summary -->
+    <div id="weeklySummaryCardInici"></div>
+    <!-- Empty state -->
+    <div class="inici-empty" id="inicEmptyState" style="display:none">
+      <div class="inici-empty-icon"><i data-lucide="flame" style="width:48px;height:48px"></i></div>
+      <div class="inici-empty-title">Comença a entrenar!</div>
+      <div class="inici-empty-sub">Els teus progressos i estadístiques apareixeran aquí un cop registris el teu primer entrenament.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TAB: ENTRENAR ═══════════ -->
+<div class="tab-page" id="tabEntrenar">
+  <div class="entrenar-page-title">Entrenar</div>
+  <!-- Mode toggle pill -->
+  <div class="mode-pill-wrap">
+    <div class="mode-pill-toggle">
+      <button class="mode-pill-btn h active" id="pillH" onclick="setModePill('h')">
+        <i data-lucide="dumbbell"></i> Haltero
+      </button>
+      <button class="mode-pill-btn w" id="pillW" onclick="setModePill('w')">
+        <i data-lucide="zap"></i> WoD
+      </button>
+    </div>
+  </div>
+  <!-- Haltero sub-nav (full, 2 rows: 4 + 3) -->
+  <div class="entr-subnav-2row" id="subnavH">
+    <div class="entr-subrow">
+      <button class="entr-sub-btn active" onclick="showHSub('log',this)">Registrar</button>
+      <button class="entr-sub-btn" onclick="showHSub('tpl',this)">Plantilles</button>
+      <button class="entr-sub-btn" onclick="showHSub('calc',this)">% Calc</button>
+      <button class="entr-sub-btn" onclick="showHSub('pr',this)">Rècords</button>
+    </div>
+    <div class="entr-subrow">
+      <button class="entr-sub-btn" onclick="showHSub('prog',this)">Progrés</button>
+      <button class="entr-sub-btn" onclick="showHSub('exs',this)">Exercicis</button>
+      <button class="entr-sub-btn" onclick="showHSub('hist',this)">Historial</button>
+    </div>
+  </div>
+    <!-- WoD sub-nav (full, 2 rows: 3 + 3) -->
+  <div class="entr-subnav-2row" id="subnavW" style="display:none">
+    <div class="entr-subrow">
+      <button class="entr-sub-btn active w" onclick="showWSub('log',this)">Registrar</button>
+      <button class="entr-sub-btn w" onclick="showWSub('tpl',this)">Plantilles</button>
+      <button class="entr-sub-btn w" onclick="showWSub('bench',this)">Benchmark</button>
+    </div>
+    <div class="entr-subrow">
+      <button class="entr-sub-btn w" onclick="showWSub('exs',this)">Exercicis</button>
+      <button class="entr-sub-btn w" onclick="showWSub('stats',this)">Stats</button>
+      <button class="entr-sub-btn w" onclick="showWSub('hist',this)">Historial</button>
+    </div>
+  </div>
+  <!-- Haltero content panels -->
+  <div id="entrH">
+    <!-- h-log, h-tpl, h-hist will be moved here by JS -->
+  </div>
+  <!-- WoD content panels -->
+  <div id="entrW" style="display:none">
+    <!-- w-log, w-tpl, w-hist will be moved here by JS -->
+  </div>
+</div>
+
+<!-- ═══════════ TAB: OBJECTIUS ═══════════ -->
+<div class="tab-page" id="tabObjectius">
+  <div class="tab-page-title" style="display:flex;align-items:center;gap:10px">
+    <i data-lucide="target" style="width:28px;height:28px;stroke:var(--h-acc)"></i>
+    <div>Objectius
+    <div id="goalsHeroSubTab" style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;display:block"></div>
+    </div>
+  </div>
+  <div class="tab-page-body" id="tabObjectiusBody">
+    <!-- goals content rendered here -->
+  </div>
+</div>
+
+<!-- ═══════════ TAB: MÈTRIQUES ═══════════ -->
+<div class="tab-page" id="tabMetriques">
+  <div class="tab-page-title" style="display:flex;align-items:center;gap:10px">
+    <i data-lucide="bar-chart-3" style="width:28px;height:28px;stroke:var(--h-acc)"></i>
+    <div>Mètriques
+    <div id="metricsHeroSubTab" style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;display:block"></div>
+    </div>
+  </div>
+  <div class="tab-page-body" id="tabMetriquesBody">
+    <!-- metrics content rendered here -->
+  </div>
+</div>
+
+<!-- ═══════════ TAB: AJUSTAMENTS ═══════════ -->
+<div class="tab-page" id="tabAjustaments">
+  <div class="aj-greeting" id="ajGreeting">Hola!</div>
+  <div id="ajTabContent" style="padding:0 12px 24px">
+    <!-- Real Ajustaments content moved here at init -->
+  </div>
+</div>
+
+<!-- HEADER (hidden in v6) -->
 <div class="header anim-fadeup">
   <div class="hlogo">
     <img id="logoImg" src="" alt="PRsonal">
@@ -884,12 +1396,15 @@ select option{background:var(--bg3);}
 
 <!-- H-TEMPLATES -->
 <div id="h-tpl" class="sec">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
-    <div style="font-size:16px;font-weight:800">Plantilles Haltero</div>
-    <button class="ghost btn-sm" id="hTplNewBtn" onclick="showHTplForm()">+ Nova</button>
+  <div class="tpl-create">
+    <button class="tpl-create-toggle" onclick="toggleTplCreate('h')">
+      <span class="tpl-create-label"><i data-lucide="plus" style="stroke:var(--h-acc)"></i> Nova plantilla</span>
+      <i data-lucide="chevron-down" class="tpl-chev" id="hTplChev"></i>
+    </button>
+    <div class="tpl-create-body" id="hTplCreateBody" style="display:none"></div>
   </div>
 
-  <!-- Template list -->
+  <div class="tpl-list-title">Les teves plantilles</div>
   <div id="hTplList"></div>
 
   <!-- New/Edit template form (was logModeNew) -->
@@ -1139,9 +1654,12 @@ select option{background:var(--bg3);}
 
 <!-- W-TEMPLATES -->
 <div id="w-tpl" class="sec">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
-    <div style="font-size:16px;font-weight:800">Plantilles WoD</div>
-    <button class="ghost btn-sm" style="border-color:var(--w-acc);color:var(--w-acc)" onclick="showWodTplForm()">+ Nova</button>
+  <div class="tpl-create">
+    <button class="tpl-create-toggle" onclick="toggleTplCreate('w')">
+      <span class="tpl-create-label"><i data-lucide="plus" style="stroke:var(--w-acc)"></i> Nova plantilla</span>
+      <i data-lucide="chevron-down" class="tpl-chev" id="wodTplChev"></i>
+    </button>
+    <div class="tpl-create-body" id="wodTplCreateBody" style="display:none"></div>
   </div>
 
   <!-- New WoD-only template form -->
@@ -1167,7 +1685,7 @@ select option{background:var(--bg3);}
     </div>
   </div>
 
-  <!-- List of WoD templates (both WoD-only and from Haltero combos) -->
+  <div class="tpl-list-title">Les teves plantilles</div>
   <div id="wodTplFullList"></div>
 </div>
 
@@ -1348,7 +1866,7 @@ select option{background:var(--bg3);}
   <div class="ov-in">
     <div class="app-navbar" style="margin:-14px -14px 14px;border-radius:0">
       <button class="app-back-btn" onclick="closeAj()">Tornar</button>
-      <div class="app-navbar-title">⚙️ Ajustaments<span class="app-navbar-sub">configuració i dades</span></div>
+      <div class="app-navbar-title">Ajustaments<span class="app-navbar-sub">configuració i dades</span></div>
       <div style="min-width:60px"></div>
     </div>
 
@@ -1453,7 +1971,7 @@ select option{background:var(--bg3);}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:12px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v5.0<br>
+        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v6.2<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)">⚠️ App privada en fase de proves. No distribuir.</strong><br><br>
@@ -1634,8 +2152,8 @@ select option{background:var(--bg3);}
   <div style="max-width:480px;margin:0 auto;padding:0 14px 80px">
     <div class="app-navbar">
       <button class="app-back-btn" onclick="closeGoals()">Tornar</button>
-      <div class="app-navbar-title">🎯 Els teus objectius<span class="app-navbar-sub" id="goalsHeroSub"></span></div>
-      <button class="app-navbar-action" onclick="closeGoals();showH('exs',document.querySelector('#navH .snav-btn:nth-child(5)'))">+ Afegir</button>
+      <div class="app-navbar-title">Els teus objectius<span class="app-navbar-sub" id="goalsHeroSub"></span></div>
+      <button class="app-navbar-action" onclick="switchTab('entrenar'); setTimeout(()=>showHSub('log',document.getElementById('hSubRegistrar')),100);">+ Afegir</button>
     </div>
     <div id="goalsContent" style="padding-top:16px"></div>
   </div>
@@ -1692,7 +2210,7 @@ select option{background:var(--bg3);}
   <div style="max-width:480px;margin:0 auto;padding:0 14px 80px">
     <div class="app-navbar">
       <button class="app-back-btn" onclick="closeMetrics()">Tornar</button>
-      <div class="app-navbar-title">📊 Mètriques<span class="app-navbar-sub" id="metricsHeroSub"></span></div>
+      <div class="app-navbar-title">Mètriques<span class="app-navbar-sub" id="metricsHeroSub"></span></div>
       <div style="min-width:60px;text-align:right;font-size:11px;color:var(--text3);line-height:1.3" id="metricsProfileLine"></div>
     </div>
     <div id="metricsContent" style="padding-top:16px"></div>
@@ -1700,12 +2218,25 @@ select option{background:var(--bg3);}
 </div>
 
 <!-- FOOTER -->
-<footer class="cc-footer">
-  <div>© 2026 Àlex Alemany Muñoz · PRsonal</div>
-  <div style="margin-top:2px;font-size:9px;opacity:0.7">Tots els drets reservats / All rights reserved</div>
+<footer class="cc-footer" id="appFooter">
+  <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
+  <div><span style="color:var(--h-acc);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-acc);font-weight:700">sonal</span> · v6.2</div>
+  <div style="margin-top:2px;font-size:9px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
 <!-- Delete confirm sheet -->
+<div class="sheet" id="tplReviewSheet" style="z-index:360">
+  <div class="sheet-in" style="max-height:82vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div class="stitle" id="tplReviewTitle">Revisa la sessió</div>
+    <div class="ssub" id="tplReviewSub" style="margin-bottom:14px"></div>
+    <div id="tplReviewBody"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-s" style="flex:1" onclick="closeTplReview()">Cancel·la</button>
+      <button class="btn btn-p" style="flex:1.5;font-weight:700" id="tplReviewConfirm" onclick="confirmTplReview()">Registra</button>
+    </div>
+  </div>
+</div>
+
 <div class="sheet" id="deleteSheet">
   <div class="sheet-in">
     <div class="stitle" id="deleteSheetTitle">Eliminar</div>
@@ -2069,17 +2600,20 @@ function setMode(m){
 }
 function showH(sec,btn){
   resetRMCycle();
-  // Reset search for sections we're leaving
   ['pr','prog','exs'].forEach(s=>{ if(s!==sec) resetSearch(s); });
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
-  document.getElementById('h-'+sec).classList.add('on');
+  // Hide all H sections
+  ['h-log','h-tpl','h-hist','h-pr','h-prog','h-calc','h-exs'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.remove('on');el.style.display='none';}
+  });
+  const target = document.getElementById('h-'+sec);
+  if(target){target.classList.add('on');target.style.display='block';}
+  // Update old snav if visible
   document.querySelectorAll('#navH .snav-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
   animateSection('h-'+sec);
   if(sec==='log'){renderTodaySummary();checkWeeklySummary();}
-  if(sec==='prog'){
-    updateProgExs();renderProg();renderVolChart();updateProgInfoBox(progMode);
-  }
+  if(sec==='prog'){updateProgExs();renderProg();renderVolChart();updateProgInfoBox(progMode);}
   if(sec==='hist'){populateHistFilters();renderHist();}
   if(sec==='tpl'){renderHTplList();}
   if(sec==='exs'){
@@ -2098,9 +2632,13 @@ function showH(sec,btn){
 function showW(sec,btn){
   resetRMCycle();
   if(sec!=='wexs') resetSearch('wexs');
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  // Hide all W sections
+  ['w-log','w-tpl','w-hist','w-bench','w-stats','w-exs'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.remove('on');el.style.display='none';}
+  });
   const el=document.getElementById('w-'+sec);
-  if(el)el.classList.add('on');
+  if(el){el.classList.add('on');el.style.display='block';}
   else{console.warn('Missing section: w-'+sec);return;}
   document.querySelectorAll('#navW .snav-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
@@ -2176,6 +2714,47 @@ function updateStickyTops() {
   document.documentElement.style.setProperty('--total-header', (hh + mh + sh) + 'px');
 }
 
+
+
+// ── Inline icon system (no CDN — works offline & in sandbox) ──────
+const ICONS = {
+  home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/>',
+  dumbbell: '<path d="M2 12h2"/><path d="M20 12h2"/><rect x="4" y="8" width="3.4" height="8" rx="1"/><rect x="16.6" y="8" width="3.4" height="8" rx="1"/><path d="M7.4 12h9.2"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
+  'bar-chart-2': '<path d="M3 21h18"/><rect x="5" y="10" width="3" height="9" rx="0.6"/><rect x="10.5" y="5" width="3" height="14" rx="0.6"/><rect x="16" y="13" width="3" height="6" rx="0.6"/>',
+  'bar-chart-3': '<path d="M3 21h18"/><rect x="5" y="10" width="3" height="9" rx="0.6"/><rect x="10.5" y="5" width="3" height="14" rx="0.6"/><rect x="16" y="13" width="3" height="6" rx="0.6"/>',
+  settings: '<circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.1 5.1l2.1 2.1M16.8 16.8l2.1 2.1M18.9 5.1 16.8 7.2M7.2 16.8 5.1 18.9"/>',
+  zap: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>',
+  flame: '<path d="M12 2.5c2.5 3 4.5 4.8 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.5.6-2.7 1.5-3.6 0 1.8 1 2.8 2 2.8 1.1 0 1.8-.9 1.8-2.2 0-2.3-1.3-3.6-.8-5.5z"/>',
+  'chevron-right': '<path d="M9 6l6 6-6 6"/>',
+  'chevron-down': '<path d="M6 9l6 6 6-6"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trophy: '<path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M9 13v3M15 13v3M8 20h8M10 20v-3h4v3"/>'
+};
+function renderIcons(root){
+  root = root || document;
+  root.querySelectorAll('[data-lucide]').forEach(el=>{
+    const name = el.getAttribute('data-lucide');
+    const inner = ICONS[name];
+    if(!inner) return;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 24 24');
+    svg.setAttribute('fill','none');
+    svg.setAttribute('stroke','currentColor');
+    svg.setAttribute('stroke-width','2');
+    svg.setAttribute('stroke-linecap','round');
+    svg.setAttribute('stroke-linejoin','round');
+    svg.innerHTML = inner;
+    const st = el.getAttribute('style'); if(st) svg.setAttribute('style', st);
+    const cl = el.getAttribute('class'); if(cl) svg.setAttribute('class', cl);
+    svg.setAttribute('data-icon', name);
+    el.replaceWith(svg);
+  });
+}
+// Shim so existing lucide.createIcons() calls route to our local renderer
+window.lucide = { createIcons: function(){ renderIcons(document); } };
 
 // ── Haptic feedback ────────────────────────────────────────────
 function haptic(type) {
@@ -2276,7 +2855,439 @@ function renderHomeChart() {
   });
 }
 
+
+// ══════════════════════════════════════════════════════════════════
+// V6 TAB NAVIGATION
+// ══════════════════════════════════════════════════════════════════
+let activeTab = 'inici';
+let activeMode = 'h'; // 'h' or 'w'
+let activeHSub = 'log';
+let activeWSub = 'log';
+
+function switchTab(tab) {
+  haptic('light');
+  // Hide all pages
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  const page = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  const btn  = document.getElementById('tab-' + tab);
+  if (page) page.classList.add('active');
+  if (btn)  btn.classList.add('active');
+  
+  activeTab = tab;
+  
+  // Show/hide % calc FAB
+
+  // Lazy render tab content
+  if (tab === 'inici') renderInici();
+  if (tab === 'objectius') renderObjectiusTab();
+  if (tab === 'metriques') renderMetriquesTab();
+  if (tab === 'ajustaments') renderAjGreeting();
+  
+  // Scroll to top
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+// ── INICI TAB ──────────────────────────────────────────────────
+function renderInici() {
+  // Logo
+  const logoEl = document.getElementById('logoImgInici');
+  const mainLogo = document.getElementById('logoImg');
+  if (logoEl && mainLogo && mainLogo.src) logoEl.src = mainLogo.src;
+  // Footer logo + relocate footer into Inici body (once)
+  const footer = document.getElementById('appFooter');
+  const inicBody = document.querySelector('#tabInici .inici-body');
+  if (footer && inicBody && !footer.dataset.moved) { inicBody.appendChild(footer); footer.dataset.moved='1'; }
+  const fLogo = document.getElementById('footerLogo');
+  if (fLogo && mainLogo && mainLogo.src) fLogo.src = mainLogo.src;
+  
+  // Date
+  const dateEl = document.getElementById('inicDate');
+  if (dateEl) {
+    const now = new Date();
+    const days = ['Diumenge','Dilluns','Dimarts','Dimecres','Dijous','Divendres','Dissabte'];
+    const months = ['gen','feb','mar','abr','mai','jun','jul','ago','set','oct','nov','des'];
+    dateEl.innerHTML = days[now.getDay()] + '<br>' + now.getDate() + ' ' + months[now.getMonth()];
+  }
+  
+  // Subtitle
+  const subEl = document.getElementById('inicHSub');
+  if (subEl) {
+    const SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d'avui.","Força, consistència, progrés.","Avui és un bon dia per batre un rècord.","Quants quilos més tens per descobrir?","La barra no es mou sola. Tu sí.","Entrena dur. Registra-ho tot. Millora.","Progressar és lent, abandonar massa ràpid.","Pateix avui, gaudeix-ho demà.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro. O fer veure que el mous.","El WoD no es farà sol... malauradament.","Si no et fa mal, és que no has comptat bé les reps.","La mobilitat és per als que volen poder seure demà.","Avui et toca sopar amb agulletes. Bon profit.","Si no sues, porta un ventilador al box.","La barra et mira. Tu la mires. Algú ha de cedir.","Escales? No, avui tot Rx. (Ja veurem a la primera sèrie.)","Si marxes ara, probablement t'estalvies burpees. Probablement."];
+    const d = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
+    subEl.textContent = SUBS[d % SUBS.length];
+  }
+
+  // Empty state check
+  const hasData = D.hEnt.length > 0 || D.wEnt.length > 0;
+  const emptyEl = document.getElementById('inicEmptyState');
+  if (emptyEl) emptyEl.style.display = hasData ? 'none' : 'block';
+  
+  // Calendar strip
+  renderCalStrip();
+  
+  // Home chart (reuse from v5 but point to new IDs)
+  initHomeChartInici();
+  
+  // Weekly summary
+  renderWeeklySummaryInici();
+  
+  // Re-init Lucide icons
+  if (window.lucide) lucide.createIcons();
+}
+
+// ── MINI CALENDAR STRIP ────────────────────────────────────────
+function renderCalStrip() {
+  const strip = document.getElementById('calStrip');
+  if (!strip) return;
+  const today = new Date();
+  const days = ['Dg','Dl','Dt','Dc','Dj','Dv','Ds'];
+  const html = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const ds = d.toISOString().slice(0,10);
+    const isToday = i === 0;
+    const hasH = D.hEnt.some(e => e.date === ds);
+    const hasW = D.wEnt.some(e => e.date === ds);
+    const hasPR = D.hEnt.some(e => e.date === ds && e.sets && e.sets.some(s => {
+      const ex = D.hEx.find(x => x.id === e.exId);
+      return ex && sessImpl(e) >= (ex.rm1 || 0) * 0.98;
+    }));
+    let dots = '';
+    if (hasPR) dots += '<div class="cal-dot pr"></div>';
+    else if (hasH) dots += '<div class="cal-dot"></div>';
+    if (hasW) dots += '<div class="cal-dot wod"></div>';
+    html.push(`<div class="cal-day${isToday?' today':''}">
+      <div class="cal-day-label">${days[d.getDay()]}</div>
+      <div class="cal-day-num">${d.getDate()}</div>
+      ${dots}
+    </div>`);
+  }
+  strip.innerHTML = html.join('');
+  // Scroll to end (today)
+  setTimeout(() => strip.scrollLeft = strip.scrollWidth, 50);
+}
+
+// ── HOME CHART (INICI version) ─────────────────────────────────
+let homeChartCIInici = null;
+function homeExsWithData() {
+  const exs = D.hEx.filter(e => D.hEnt.some(en => en.exId === e.id));
+  exs.sort((a, b) => {
+    const la = [...D.hEnt.filter(e=>e.exId===a.id)].sort((x,y)=>y.date.localeCompare(x.date))[0]?.date || '';
+    const lb = [...D.hEnt.filter(e=>e.exId===b.id)].sort((x,y)=>y.date.localeCompare(x.date))[0]?.date || '';
+    return lb.localeCompare(la);
+  });
+  return exs;
+}
+function initHomeChartInici() {
+  const sel = document.getElementById('homeChartSelInici');
+  const famSel = document.getElementById('homeChartFamInici');
+  const card = document.getElementById('homeChartCardInici');
+  if (!sel || !card) return;
+  const exsWithData = homeExsWithData();
+  if (!exsWithData.length) { card.style.display = 'none'; return; }
+  // Family filter options
+  if (famSel) {
+    const fams = [...new Set(exsWithData.map(e => e.family).filter(Boolean))];
+    const prevFam = famSel.value || '__all';
+    famSel.innerHTML = '<option value="__all">Totes</option>' + fams.map(f => `<option value="${f}">${f}</option>`).join('');
+    if ([...famSel.options].some(o=>o.value===prevFam)) famSel.value = prevFam;
+  }
+  card.style.display = 'block';
+  populateHomeExSel();
+  renderHomeChartInici();
+  renderHomeSuggestion();
+}
+function populateHomeExSel() {
+  const sel = document.getElementById('homeChartSelInici');
+  const famSel = document.getElementById('homeChartFamInici');
+  if (!sel) return;
+  const fam = famSel ? famSel.value : '__all';
+  let exs = homeExsWithData();
+  if (fam && fam !== '__all') exs = exs.filter(e => e.family === fam);
+  const prev = sel.value;
+  sel.innerHTML = exs.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  if (prev && exs.some(e=>e.id===prev)) sel.value = prev;
+}
+function onHomeFamChange() {
+  populateHomeExSel();
+  renderHomeChartInici();
+}
+// ── "Most notable" suggestion: declining trend wins, else most neglected ──
+function renderHomeSuggestion() {
+  const el = document.getElementById('homeSuggestion');
+  if (!el) return;
+  const today = new Date();
+  const cands = homeExsWithData().map(ex => {
+    const ents = D.hEnt.filter(e => e.exId === ex.id).sort((a,b)=>a.date.localeCompare(b.date));
+    const last = ents[ents.length-1];
+    const daysSince = last ? Math.floor((today - new Date(last.date)) / 86400000) : 999;
+    // trend
+    const rm = ents.map(e => sessImpl(e)).filter(Boolean);
+    let drop = 0;
+    if (rm.length >= 4) {
+      const recent = rm.slice(-3), older = rm.slice(-6,-3);
+      if (older.length) {
+        const rA = recent.reduce((s,v)=>s+v,0)/recent.length;
+        const oA = older.reduce((s,v)=>s+v,0)/older.length;
+        drop = (oA - rA) / oA; // positive = declining
+      }
+    }
+    return { ex, daysSince, drop, sessions: ents.length };
+  });
+  if (!cands.length) { el.style.display='none'; return; }
+  // 1) clearest decline (>1.5%)
+  const declining = cands.filter(c => c.drop > 0.015).sort((a,b)=>b.drop-a.drop);
+  // 2) most neglected (>=10 days)
+  const stale = [...cands].sort((a,b)=>b.daysSince-a.daysSince)[0];
+  let pick = null, msg = '';
+  if (declining.length) {
+    pick = declining[0];
+    msg = `<strong>${pick.ex.name}</strong> està baixant un ${Math.round(pick.drop*100)}%. Una sessió de força et pot ajudar a recuperar-ho.`;
+  } else if (stale && stale.daysSince >= 10) {
+    pick = stale;
+    msg = `Fa <strong>${stale.daysSince} dies</strong> que no treballes <strong>${stale.ex.name}</strong>. Potser toca?`;
+  } else {
+    // balanced: push the least-trained
+    pick = [...cands].sort((a,b)=>a.sessions-b.sessions)[0];
+    msg = `Bon equilibri 💪 Si vols progressar, <strong>${pick.ex.name}</strong> és el que menys has treballat.`;
+  }
+  el._exId = pick.ex.id;
+  el._fam = pick.ex.family || '__all';
+  el.innerHTML = `<span style="color:var(--h-acc);font-weight:700">Suggeriment · </span>${msg}`;
+  el.style.display = 'block';
+}
+function applyHomeSuggestion() {
+  const el = document.getElementById('homeSuggestion');
+  if (!el || !el._exId) return;
+  haptic('light');
+  const famSel = document.getElementById('homeChartFamInici');
+  if (famSel && el._fam && [...famSel.options].some(o=>o.value===el._fam)) famSel.value = el._fam;
+  populateHomeExSel();
+  const sel = document.getElementById('homeChartSelInici');
+  if (sel) sel.value = el._exId;
+  renderHomeChartInici();
+}
+function renderHomeChartInici() {
+  const exId = document.getElementById('homeChartSelInici')?.value;
+  if (!exId) return;
+  const ex = D.hEx.find(e => e.id === exId);
+  const ents = D.hEnt.filter(e => e.exId === exId).sort((a,b) => a.date.localeCompare(b.date)).slice(-10);
+  if (!ents.length) return;
+  const exNameEl = document.getElementById('homeChartExNameInici');
+  if (exNameEl) exNameEl.textContent = ex ? ex.name : '';
+  const labels = ents.map(e => e.date.slice(5));
+  const rm1Data = ents.map(e => { const v = sessImpl(e); return v || null; });
+  const maxW = ents.map(e => Math.max(...(e.sets||[{w:0}]).map(s=>s.w||0)));
+  const latestMax = maxW.slice(-1)[0];
+  const rm1 = best1RM(exId);
+  const rmEl = document.getElementById('homeStatRMInici');
+  const maxEl = document.getElementById('homeStatMaxInici');
+  const trendEl = document.getElementById('homeStatTrendInici');
+  const sessEl = document.getElementById('homeStatSessInici');
+  if (rmEl) rmEl.textContent = rm1 ? rm1.toFixed(1)+' kg' : '—';
+  if (maxEl) maxEl.textContent = latestMax ? latestMax+' kg' : '—';
+  if (sessEl) sessEl.textContent = D.hEnt.filter(e=>e.exId===exId).length;
+  let trend = '→';
+  if (rm1Data.length >= 4) {
+    const recent = rm1Data.filter(Boolean).slice(-3);
+    const older = rm1Data.filter(Boolean).slice(-6,-3);
+    if (older.length) {
+      const rA = recent.reduce((s,v)=>s+v,0)/recent.length;
+      const oA = older.reduce((s,v)=>s+v,0)/older.length;
+      trend = rA > oA * 1.01 ? '↑' : rA < oA * 0.99 ? '↓' : '→';
+    }
+  }
+  if (trendEl) trendEl.textContent = trend;
+  if (homeChartCIInici) { homeChartCIInici.destroy(); homeChartCIInici = null; }
+  const ctx = document.getElementById('homeChartInici');
+  if (!ctx) return;
+  homeChartCIInici = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '1RM est.',
+        data: rm1Data,
+        borderColor: '#F2AE3E',
+        backgroundColor: 'rgba(242,174,62,0.10)',
+        pointBackgroundColor: '#F2AE3E',
+        tension: 0.4, fill: true, pointRadius: 3, borderWidth: 2, spanGaps: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw?.toFixed(1)+' kg' } } },
+      scales: {
+        x: { ticks: { color: '#888', maxRotation: 0, autoSkip: true, maxTicksLimit: 5 }, grid: { display: false } },
+        y: { ticks: { color: '#888', callback: v => v+' kg' }, grid: { color: 'rgba(128,128,128,0.07)' } }
+      }
+    }
+  });
+}
+
+// ── WEEKLY SUMMARY (always visible on Inici) ───────────────────
+function renderWeeklySummaryInici() {
+  const el = document.getElementById('weeklySummaryCardInici');
+  if (!el) return;
+  const now = new Date();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay()+6)%7));
+  const weekDates = Array.from({length:7}, (_,i) => {
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    return d.toISOString().slice(0,10);
+  });
+  const hThisWeek = D.hEnt.filter(e => weekDates.includes(e.date));
+  const wThisWeek = D.wEnt.filter(e => weekDates.includes(e.date));
+  const trainedDays = new Set([...hThisWeek.map(e=>e.date),...wThisWeek.map(e=>e.date)]).size;
+  const prs = hThisWeek.filter(e => {
+    const ex = D.hEx.find(x => x.id === e.exId);
+    return ex && sessImpl(e) >= (ex.rm1 || 0) * 1.0;
+  }).length;
+  if (trainedDays === 0 && hThisWeek.length === 0 && wThisWeek.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = `<div class="home-chart-card" style="margin-top:10px">
+    <div class="ctitle" style="margin:0 0 10px">Resum de la setmana</div>
+    <div class="home-stat-row">
+      <div class="home-stat-pill"><div class="v" style="color:var(--h-acc)">${trainedDays}</div><div class="l">Dies entrenant</div></div>
+      <div class="home-stat-pill"><div class="v">${hThisWeek.length}</div><div class="l">Sessions haltero</div></div>
+      <div class="home-stat-pill"><div class="v" style="color:var(--w-acc)">${wThisWeek.length}</div><div class="l">WoDs</div></div>
+      <div class="home-stat-pill"><div class="v" style="color:var(--green)">${prs}</div><div class="l">PRs</div></div>
+    </div>
+  </div>`;
+}
+
+// ── ENTRENAR TAB ───────────────────────────────────────────────
+function setModePill(mode) {
+  activeMode = mode;
+  haptic('light');
+  const pillH = document.getElementById('pillH');
+  const pillW = document.getElementById('pillW');
+  const subH = document.getElementById('subnavH');
+  const subW = document.getElementById('subnavW');
+  const entrH = document.getElementById('entrH');
+  const entrW = document.getElementById('entrW');
+  
+  if (mode === 'h') {
+    pillH.classList.add('active'); pillW.classList.remove('active');
+    subH.style.display = 'flex'; subW.style.display = 'none';
+    entrH.style.display = 'block'; entrW.style.display = 'none';
+  } else {
+    pillW.classList.add('active'); pillH.classList.remove('active');
+    subW.style.display = 'flex'; subH.style.display = 'none';
+    entrW.style.display = 'block'; entrH.style.display = 'none';
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function showHSub(sec, btn) {
+  activeHSub = sec;
+  haptic('light');
+  document.querySelectorAll('#subnavH .entr-sub-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  showH(sec, null);
+}
+
+function showWSub(sec, btn) {
+  activeWSub = sec;
+  haptic('light');
+  document.querySelectorAll('#subnavW .entr-sub-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  showW(sec, null);
+}
+
+function openCalcFab(){ showHSub('calc'); }
+
+// ── OBJECTIUS TAB ──────────────────────────────────────────────
+function renderObjectiusTab() {
+  // Move #goalsContent into tab body if not already there
+  const body = document.getElementById('tabObjectiusBody');
+  const gc = document.getElementById('goalsContent');
+  if (body && gc && !body.contains(gc)) {
+    body.innerHTML = '';
+    body.appendChild(gc);
+  }
+  // Trigger goals render
+  if (typeof renderGoalsOverlay === 'function') renderGoalsOverlay();
+  else if (typeof openGoals === 'function') {
+    // call the original render logic directly
+    const sub = document.getElementById('goalsHeroSub');
+    if (sub) {
+      const total = (D.goals||[]).length;
+      const done = (D.goals||[]).filter(g=>g.done).length;
+      sub.textContent = total ? (done+'/'+total+' completats') : 'cap objectiu encara';
+    }
+    // render goals manually
+    renderGoalsInto('goalsContent');
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+// ── MÈTRIQUES TAB ──────────────────────────────────────────────
+function renderMetriquesTab() {
+  // Move #metricsContent into tab body if not already there
+  const body = document.getElementById('tabMetriquesBody');
+  const mc = document.getElementById('metricsContent');
+  if (body && mc && !body.contains(mc)) {
+    body.innerHTML = '';
+    body.appendChild(mc);
+  }
+  if (typeof renderMetricsOverlay === 'function') renderMetricsOverlay();
+  if (window.lucide) lucide.createIcons();
+}
+
+// ── AJUSTAMENTS TAB ────────────────────────────────────────────
+function renderAjGreeting() {
+  // Move real Ajustaments content into the tab (once)
+  const dest = document.getElementById('ajTabContent');
+  const ajOv = document.getElementById('ajOv');
+  if (dest && ajOv && !dest.dataset.loaded) {
+    const ovIn = ajOv.querySelector('.ov-in');
+    if (ovIn) {
+      // Move every child except the navbar
+      Array.from(ovIn.children).forEach(child => {
+        if (!child.classList.contains('app-navbar')) dest.appendChild(child);
+      });
+      dest.dataset.loaded = '1';
+    }
+  }
+  // Refresh editors each time the tab opens (catch newly added exercises)
+  if (typeof populateAjEx === 'function') populateAjEx();
+  if (typeof populateAjWEx === 'function') populateAjWEx();
+  if (typeof loadAjProfile === 'function') loadAjProfile();
+  // Greeting with name
+  const el = document.getElementById('ajGreeting');
+  if (el) {
+    const name = (D.profile && D.profile.name) || (D.athlete && D.athlete.name) || D.name || '';
+    el.textContent = name ? 'Hola, ' + name + '!' : 'Hola!';
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function openAjSub(){ /* deprecated in v6.1 */ }
+
+function closeAjSub(){ /* deprecated in v6.1 */ }
+
+function getAjSectionHTML(){ return ''; /* deprecated in v6.1 */ }
+
+// ── SWIPE: Keep Haltero/WoD swipe within Entrenar tab only ────
+// Override the existing animateSwipe to work within tab context
+const _origSwipeHandler = typeof handleSwipe === 'function' ? handleSwipe : null;
+
+
+function updateGoalsBadge(){
+  const badge=document.getElementById('tabBadgeObj');
+  if(!badge) return;
+  const active=(D.goals||[]).filter(g=>!g.done).length;
+  badge.textContent=active;
+  badge.style.display=active>0?'block':'none';
+}
 document.addEventListener('DOMContentLoaded',()=>{
+  renderIcons(document);
   checkAccessGate();
   setMotivSubtitle();
   setTimeout(updateStickyTops, 100);
@@ -2308,6 +3319,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateProgExs(); populateHistFilters();
   renderWodTypeForm(); renderBenchList();
   populateAjEx();
+  populateAjWEx();
   updateGoalsFab();
   refreshHeaderName();
   checkShowSetup();
@@ -2337,6 +3349,36 @@ document.addEventListener('DOMContentLoaded',()=>{
   }, {passive:true});
 })();
 
+
+  // ─── V6 Tab system init ────────────────────────────────────────
+  setTimeout(()=>{
+    const entrH = document.getElementById('entrH');
+    const entrW = document.getElementById('entrW');
+    if (entrH) {
+      ['h-log','h-tpl','h-hist','h-pr','h-prog','h-calc','h-exs'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.display='none';entrH.appendChild(el);}
+      });
+      const hl=document.getElementById('h-log'); if(hl)hl.style.display='block';
+    }
+    if (entrW) {
+      ['w-log','w-tpl','w-hist','w-bench','w-stats','w-exs'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.display='none';entrW.appendChild(el);}
+      });
+    }
+    // Move template forms into collapsible bodies
+    const _hForm=document.getElementById('hTplFormCard'), _hBody=document.getElementById('hTplCreateBody');
+    if(_hForm && _hBody && !_hBody.contains(_hForm)){ _hForm.style.display='block'; _hForm.style.marginTop='0'; _hBody.appendChild(_hForm); }
+    const _wForm=document.getElementById('wodTplFormCard'), _wBody=document.getElementById('wodTplCreateBody');
+    if(_wForm && _wBody && !_wBody.contains(_wForm)){ _wForm.style.display='block'; _wForm.style.marginBottom='0'; _wBody.appendChild(_wForm); }
+    if(window.lucide) lucide.createIcons();
+    renderInici();
+    // Update goals badge
+    const _goals=(D.goals||[]).filter(g=>!g.done).length;
+    const _badge=document.getElementById('tabBadgeObj');
+    if(_badge){_badge.textContent=_goals;_badge.style.display=_goals>0?'block':'none';}
+  }, 150);
 });
 
 // ══ LOG FORM ══
@@ -3067,6 +4109,10 @@ function loadWodTpl(id){
   const t=(D.templates||[]).find(t=>t.id===id);
   if(!t||!t.wodBlock)return;
   const wb=t.wodBlock;
+  // Navigate to Entrenar → WoD → Registrar so the form is visible
+  if(typeof switchTab==='function') switchTab('entrenar');
+  if(typeof setModePill==='function') setModePill('w');
+  if(typeof showWSub==='function') showWSub('log', document.querySelector('#subnavW .entr-sub-btn'));
   // Pre-fill the WoD form with template data
   document.getElementById('wName').value=t.name;
   // Set wod type
@@ -3100,7 +4146,9 @@ function loadWodTpl(id){
       if(document.getElementById('emomInterval'))document.getElementById('emomInterval').value=wb.interval||1;
       renderEmomBlocs();
     }
-  },50);
+    const wl=document.getElementById('w-log'); if(wl) wl.scrollIntoView({behavior:'smooth',block:'start'});
+  },120);
+  haptic('success');
   toast('Plantilla WoD carregada ✓');
 }
 
@@ -3113,8 +4161,10 @@ let wodTplType = 'AMRAP';
 // since they can't both be open at once
 
 function showWodTplForm(editId) {
-  const card = document.getElementById('wodTplFormCard');
-  card.style.display = 'block';
+  const body = document.getElementById('wodTplCreateBody');
+  const chev = document.getElementById('wodTplChev');
+  if (body) body.style.display = 'block';
+  if (chev) chev.style.transform = 'rotate(180deg)';
   if (!editId) {
     document.getElementById('wodTplEditId').value = '';
     document.getElementById('wodTplFormTitle').textContent = 'Nova plantilla WoD';
@@ -3125,10 +4175,14 @@ function showWodTplForm(editId) {
     document.querySelectorAll('#wodTplTypeGrid .wtbtn').forEach((b,i) => b.classList.toggle('active', i===0));
     renderWodTplTypeForm();
   }
-  card.scrollIntoView({behavior:'smooth', block:'start'});
+  const card = document.querySelector('#w-tpl .tpl-create');
+  if (card) card.scrollIntoView({behavior:'smooth', block:'start'});
 }
 function cancelWodTplForm() {
-  document.getElementById('wodTplFormCard').style.display = 'none';
+  const body = document.getElementById('wodTplCreateBody');
+  const chev = document.getElementById('wodTplChev');
+  if (body) body.style.display = 'none';
+  if (chev) chev.style.transform = '';
 }
 function selWodTplType(type, btn) {
   wodTplType = type;
@@ -3288,7 +4342,9 @@ function editWodTpl(id) {
   else if(wb.type==='EMOM')tplEmomMins=(wb.minutes||[]).map(b=>({...b}));
   document.querySelectorAll('#wodTplTypeGrid .wtbtn').forEach(b=>b.classList.toggle('active',b.textContent===wodTplType));
   renderWodTplTypeForm();
-  showWodTplForm(id);
+  switchTab('entrenar'); setModePill('w');
+  showWSub('tpl', document.querySelector('#subnavW .entr-sub-btn:nth-child(2)'));
+  setTimeout(()=>showWodTplForm(id),80);
 }
 function deleteWodTplEntry(id) {
   const t=(D.templates||[]).find(t=>t.id===id);
@@ -3509,12 +4565,8 @@ function populateAjEx(){
   if(famSel)famSel.innerHTML=Object.values(HFAM).flat().map(f=>`<option value="${f}">${f}</option>`).join('');
   loadAjEx();
 }
-function openAj(){
-  populateAjEx();
-  populateAjWEx();
-  loadAjProfile();
-  document.getElementById('ajOv').classList.add('on');
-}
+function openAj(){ switchTab('ajustaments'); }
+
 function loadAjProfile(){
   const p=D.profile||{};
   const nameEl=document.getElementById('ajProfileName');
@@ -3542,6 +4594,9 @@ function saveAjProfile(){
   D.profile.setupDone=true;
   save();
   refreshHeaderName();
+  renderAjGreeting();
+  if(typeof renderInici==='function') renderInici();
+  haptic('success');
   toast('Perfil actualitzat ✓');
 }
 function closeAj(){document.getElementById('ajOv').classList.remove('on');}
@@ -3808,7 +4863,7 @@ function saveTpl() {
     D.templates.push({ id: 'tpl_' + Date.now(), name, notes: document.getElementById('tplNotes').value.trim(), halBlocks: [...tplBlocks], wodBlock });
   }
   save();
-  setLogMode('load');
+  haptic('success');
   toast((editId ? 'Plantilla actualitzada' : 'Plantilla guardada') + ' ✓');
   cancelHTplForm();
   renderHTplList();
@@ -3834,6 +4889,7 @@ function cancelTplEdit() { cancelHTplForm(); }
 // ── Render template list ──
 function renderTemplateList() {
   const c = document.getElementById('templateList');
+  if (!c) return;
   if (!(D.templates||[]).length) {
     c.innerHTML = '<div class="empty">Cap plantilla guardada.<br>Crea&#39;n una amb &quot;Nova plantilla&quot;.</div>';
     return;
@@ -3900,8 +4956,9 @@ function editTpl(id) {
     document.querySelectorAll('#tplWodTypeGrid .wtbtn').forEach(b => b.classList.toggle('active', b.textContent===tplWodType));
     renderTplWodTypeForm();
   }
-  showH('tpl', document.querySelector('#navH .snav-btn:nth-child(2)'));
-  setTimeout(()=>showHTplForm(id),50);
+  switchTab('entrenar'); setModePill('h');
+  showHSub('tpl', document.querySelector('#subnavH .entr-sub-btn:nth-child(2)'));
+  setTimeout(()=>showHTplForm(id),80);
 }
 function deleteTpl(id) {
   const t=(D.templates||[]).find(t=>t.id===id);
@@ -3916,47 +4973,103 @@ function deleteTpl(id) {
 }
 
 // ── Load template → log session ──
-function loadTpl(id) {
+let _reviewTplId = null;
+function loadTpl(id) { openTplReview(id); }
+
+function openTplReview(id) {
+  const t = (D.templates||[]).find(t => t.id === id);
+  if (!t) return;
+  _reviewTplId = id;
+  const hasHal = t.halBlocks && t.halBlocks.length;
+  const hasWod = !!t.wodBlock;
+  const body = document.getElementById('tplReviewBody');
+  const sub = document.getElementById('tplReviewSub');
+  const confirm = document.getElementById('tplReviewConfirm');
+  const title = document.getElementById('tplReviewTitle');
+  if (title) title.textContent = t.name || 'Revisa la sessió';
+  let html = '';
+  if (hasHal) {
+    html += '<div style="font-size:12px;font-weight:700;color:var(--h-acc);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Haltero</div>';
+    t.halBlocks.forEach((b,i) => {
+      const ex = D.hEx.find(e => e.id === b.exId);
+      const rm = best1RM(b.exId);
+      const target = rm && b.pct ? Math.round(rm * +b.pct / 100 * 2) / 2 : '';
+      html += `<div style="background:var(--bg3);border-radius:10px;padding:10px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px">${ex?ex.name:b.exId}${b.pct?` <span style="color:var(--text3);font-weight:500">· ${b.pct}%</span>`:''}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <div><label style="font-size:9px;color:var(--text3)">Sèries</label><input class="sinp" id="rv_s_${i}" type="number" value="${b.sets}" min="1"></div>
+          <div><label style="font-size:9px;color:var(--text3)">Reps</label><input class="sinp" id="rv_r_${i}" type="number" value="${b.reps}" min="1"></div>
+          <div><label style="font-size:9px;color:var(--text3)">Pes (kg)</label><input class="sinp" id="rv_w_${i}" type="number" value="${target}" step="0.5" placeholder="—"></div>
+        </div>
+      </div>`;
+    });
+  }
+  if (hasWod) {
+    const wb = t.wodBlock;
+    const movs = (wb.movements||[]).map(m => {
+      const ex = (D.wEx||[]).find(e => e.id === m.exId);
+      return (m.reps?m.reps+' ':'') + ((ex&&ex.name)||m.exId||'') + (m.weight?` @${m.weight}`:'');
+    }).filter(Boolean);
+    html += `<div style="font-size:12px;font-weight:700;color:var(--w-acc);text-transform:uppercase;letter-spacing:.5px;margin:${hasHal?'14px':'0'} 0 8px">WoD · ${wb.type||''}</div>`;
+    html += `<div style="background:var(--bg3);border-radius:10px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6">${movs.length?movs.join('<br>'):'Sense moviments definits'}</div>`;
+    html += `<div style="font-size:11px;color:var(--text3);margin-top:8px">El resultat l'introduiràs al registre del WoD.</div>`;
+  }
+  body.innerHTML = html;
+  if (hasHal && hasWod) { sub.textContent = 'Revisa els pesos i després omple el WoD.'; confirm.textContent = 'Registra i omple WoD →'; }
+  else if (hasWod) { sub.textContent = 'Revisa el WoD abans de registrar-lo.'; confirm.textContent = 'Omplir i registrar →'; }
+  else { sub.textContent = 'Ajusta pes i reps si cal, i registra.'; confirm.textContent = 'Registra sessió'; }
+  document.getElementById('tplReviewSheet').classList.add('on');
+}
+function closeTplReview() {
+  document.getElementById('tplReviewSheet').classList.remove('on');
+  _reviewTplId = null;
+}
+function confirmTplReview() {
+  const id = _reviewTplId;
+  const t = (D.templates||[]).find(t => t.id === id);
+  if (!t) { closeTplReview(); return; }
+  const hasHal = t.halBlocks && t.halBlocks.length;
+  const hasWod = !!t.wodBlock;
+  if (hasHal) {
+    const edited = t.halBlocks.map((b,i) => ({
+      sets: +(document.getElementById('rv_s_'+i)||{}).value || b.sets,
+      reps: +(document.getElementById('rv_r_'+i)||{}).value || b.reps,
+      w: +(document.getElementById('rv_w_'+i)||{}).value || 0
+    }));
+    registerTplSession(id, edited);
+  }
+  closeTplReview();
+  if (hasWod) loadWodTpl(id);
+}
+function registerTplSession(id, edited) {
   const t = (D.templates||[]).find(t => t.id === id);
   if (!t) return;
   const today = new Date().toISOString().split('T')[0];
-  let saved = 0, skipped = 0;
-
-  // Save Haltero entries
-  t.halBlocks.forEach(b => {
-    if (!b.exId) { skipped++; return; }
+  let saved = 0;
+  t.halBlocks.forEach((b,i) => {
+    if (!b.exId) return;
+    const ed = edited ? edited[i] : null;
+    const setsN = ed ? ed.sets : b.sets;
+    const reps = ed ? ed.reps : b.reps;
     const rm = best1RM(b.exId);
-    const targetKg = rm && b.pct ? Math.round(rm * +b.pct / 100 * 2) / 2 : null;
-    // Build sets array: b.sets rows, each with b.reps reps and targetKg (or empty)
-    const sets = Array.from({length: b.sets}, () => ({ r: b.reps, w: targetKg || 0, rpe: '' }));
-    const ent = { id: Date.now() + Math.random(), date: today, exId: b.exId,
-      pct: b.pct || '', note: 'Plantilla: ' + t.name, tags: [], sets };
-    D.hEnt.push(ent);
-    // Auto-update 1RM if applicable
-    if (targetKg) {
+    let w = (ed && ed.w) ? ed.w : (rm && b.pct ? Math.round(rm * +b.pct / 100 * 2) / 2 : 0);
+    const sets = Array.from({length: setsN}, () => ({ r: reps, w: w||0, rpe: '' }));
+    D.hEnt.push({ id: Date.now()+Math.random(), date: today, exId: b.exId, pct: b.pct||'', note: 'Plantilla: '+t.name, tags: [], sets });
+    if (w) {
       const ex = D.hEx.find(e => e.id === b.exId);
       if (ex && ex.cat !== 'gym') {
-        const imp = b.pct ? targetKg / (+b.pct / 100) : epley(targetKg, b.reps);
-        if (!ex.rm1 || imp > ex.rm1 * 1.005) ex.rm1 = Math.round(imp * 10) / 10;
+        const imp = b.pct ? w / (+b.pct/100) : epley(w, reps);
+        if (!ex.rm1 || imp > ex.rm1 * 1.005) ex.rm1 = Math.round(imp*10)/10;
       }
     }
     saved++;
   });
-
-  // Save WoD entry
-  if (t.wodBlock) {
-    const wEnt = { id: Date.now() + Math.random(), date: today,
-      name: t.name, type: t.wodBlock.type, duration: t.wodBlock.duration,
-      result: '', scale: 'Rx', wodData: t.wodBlock,
-      exercises: t.wodBlock.movements, note: 'Plantilla: ' + t.name, tags: [] };
-    D.wEnt.push(wEnt);
-    saved++;
-  }
-
   save();
-  document.getElementById('logDate').value = today;
+  const ld = document.getElementById('logDate'); if (ld) ld.value = today;
   renderTodaySummary();
-  showH('log', document.querySelector('#navH .snav-btn:nth-child(1)'));
+  if (typeof initHomeChart === 'function') initHomeChart();
+  switchTab('entrenar'); setModePill('h'); showHSub('log', document.querySelector('#subnavH .entr-sub-btn'));
+  haptic('success');
   toast(`Sessió registrada: ${saved} entrada${saved !== 1 ? 's' : ''} ✓`);
 }
 
@@ -4009,7 +5122,7 @@ function saveGoalFromForm() {
   document.getElementById('detGoalForm').style.display = 'none';
   document.getElementById('detGoalToggleBtn').textContent = '+ Afegir objectiu';
   updateGoalsFab();
-  haptic('success'); toast('Objectiu guardat ✓');
+  haptic('success'); updateGoalsBadge(); toast('Objectiu guardat ✓');
   // Re-render progress chart if visible
   if (document.getElementById('h-prog').classList.contains('on')) renderProg();
 }
@@ -4049,17 +5162,27 @@ function renderGoalDisplay(exId) {
 
 // ── Haltero template section helpers ──────────────────
 function showHTplForm(editId) {
-  document.getElementById('hTplFormCard').style.display = 'block';
-  document.getElementById('hTplNewBtn').textContent = '× Tancar';
-  if (!editId) {
-    resetTplForm();
-    renderTplBlocks();
-  }
-  document.getElementById('hTplFormCard').scrollIntoView({behavior:'smooth',block:'start'});
+  const body = document.getElementById('hTplCreateBody');
+  const chev = document.getElementById('hTplChev');
+  if (body) body.style.display = 'block';
+  if (chev) chev.style.transform = 'rotate(180deg)';
+  if (!editId) { resetTplForm(); renderTplBlocks(); }
+  const card = document.querySelector('#h-tpl .tpl-create');
+  if (card) card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function toggleTplCreate(mode) {
+  haptic('light');
+  const bodyId = mode === 'h' ? 'hTplCreateBody' : 'wodTplCreateBody';
+  const body = document.getElementById(bodyId);
+  const isOpen = body && body.style.display !== 'none';
+  if (isOpen) { mode === 'h' ? cancelHTplForm() : cancelWodTplForm(); }
+  else { mode === 'h' ? showHTplForm() : showWodTplForm(); }
 }
 function cancelHTplForm() {
-  document.getElementById('hTplFormCard').style.display = 'none';
-  document.getElementById('hTplNewBtn').textContent = '+ Nova';
+  const body = document.getElementById('hTplCreateBody');
+  const chev = document.getElementById('hTplChev');
+  if (body) body.style.display = 'none';
+  if (chev) chev.style.transform = '';
   resetTplForm();
 }
 function renderHTplList() {
@@ -4099,12 +5222,8 @@ function renderHTplList() {
   }).join('');
 }
 
-function openGoals(){
-  renderGoalsOverlay();
-  document.getElementById('goalsOv').classList.add('on');
-  // Animate bars after a short delay (let DOM render first)
-  setTimeout(animateGoalBars, 80);
-}
+function openGoals(){ switchTab('objectius'); }
+
 function closeGoals(){ document.getElementById('goalsOv').classList.remove('on'); }
 
 function updateGoalsFab(){
@@ -4137,7 +5256,8 @@ function renderGoalsOverlay(){
   const c=document.getElementById('goalsContent');
 
   if(!goals.length){
-    document.getElementById('goalsHeroSub').textContent='cap objectiu definit';
+    const _ghs=document.getElementById('goalsHeroSub'); if(_ghs) _ghs.textContent='cap objectiu definit';
+  const _ghst=document.getElementById('goalsHeroSubTab'); if(_ghst) _ghst.textContent='cap objectiu definit';
     c.innerHTML=`<div class="goal-empty">
       <div class="goal-empty-icon">🏹</div>
       <div class="goal-empty-text">Encara no tens cap objectiu definit.<br>Obre un exercici des de <strong>Exercicis</strong> i afegeix-ne un.</div>
@@ -4165,9 +5285,9 @@ function renderGoalsOverlay(){
 
   const nAchieved=enriched.filter(e=>e.achieved).length;
   const nActive=enriched.length-nAchieved;
-  document.getElementById('goalsHeroSub').textContent=
+  {const _v=
     nAchieved>0?`${nActive} actiu${nActive!==1?'s':''} · ${nAchieved} assolit${nAchieved!==1?'s':''}`:
-    `${nActive} objectiu${nActive!==1?'s':''}`;
+    `${nActive} objectiu${nActive!==1?'s':''}`; const _el=document.getElementById('goalsHeroSub'); if(_el) _el.textContent=_v; const _el2=document.getElementById('goalsHeroSubTab'); if(_el2) _el2.textContent=_v;}
 
   c.innerHTML=enriched.map(({g,ex,rm,pct,daysLeft,achieved,overdue,near})=>{
     const exName=ex?ex.name:g.exId;
@@ -4999,6 +6119,9 @@ function isMonday() {
 function checkWeeklySummary() {
   const card = document.getElementById('weeklySummaryCard');
   if (!card) return;
+  // v6: Inici tab owns the weekly summary — keep the in-log copy hidden
+  card.style.display = 'none';
+  return;
 
   // Only show on Mondays
   if (!isMonday()) { card.style.display = 'none'; return; }
