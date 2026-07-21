@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v7.8</title>
+<title>PRsonal v7.9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ─── LIGHT / DARK ─── */
@@ -697,7 +697,9 @@ select option{background:var(--bg3);}
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
-  --tab-h: calc(66px + var(--safe-bottom));
+  --tab-content:56px;
+  --tab-pad-b:max(calc(var(--safe-bottom) - 10px), 0px);
+  --tab-h: calc(var(--tab-content) + var(--tab-pad-b));
   --safe-top: max(52px, calc(env(safe-area-inset-top, 0px) + 12px));
 }
 .tab-bar {
@@ -713,9 +715,9 @@ select option{background:var(--bg3);}
   z-index: 300;
   max-width: 480px;
   margin: 0 auto;
-  /* height already includes the inset (--tab-h); this padding reserves that
-     strip so the icons sit in the top 66px, clear of the home indicator. */
-  padding-bottom: var(--safe-bottom);
+  /* --tab-h already includes --tab-pad-b; this reserves that strip so the
+     icons clear the home indicator without leaving the full inset empty. */
+  padding-bottom: var(--tab-pad-b);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
   box-sizing: border-box;
@@ -726,27 +728,29 @@ select option{background:var(--bg3);}
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--text3);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.1px;
-  padding: 8px 2px 4px;
+  letter-spacing: 0;
+  padding: 5px 1px 5px;
+  min-width: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   transition: color var(--dur-fast) ease;
   position: relative;
 }
-.tab-btn svg { width: 25px; height: 25px; stroke-width: 1.8; }
+.tab-btn svg { width: 22px; height: 22px; stroke-width: 1.8; }
+.tab-btn > span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .tab-ico {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 30px;
-  border-radius: 16px;
+  width: 42px;
+  height: 26px;
+  border-radius: 13px;
   background: transparent;
   transition: background var(--dur-fast) ease;
 }
@@ -756,7 +760,7 @@ select option{background:var(--bg3);}
 .tab-btn:not(.active) svg { stroke: var(--text3); }
 .tab-badge {
   position: absolute;
-  top: 4px; right: calc(50% - 18px);
+  top: 2px; right: calc(50% - 16px);
   background: var(--h-acc);
   color: #000;
   font-size: 9px;
@@ -769,6 +773,8 @@ select option{background:var(--bg3);}
   padding: 0 3px;
   display: none;
 }
+.tab-badge.dot{min-width:8px;width:8px;height:8px;padding:0;border-radius:50%;font-size:0;}
+.tab-badge.warn{background:var(--red);}
 
 /* ─── V6 TAB PAGES ───────────────────────────────────────────── */
 .tab-page {
@@ -1255,10 +1261,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   <button class="tab-btn" id="tab-metriques" onclick="switchTab('metriques')">
     <span class="tab-ico"><i data-lucide="bar-chart-2"></i></span>
     <span>Mètriques</span>
+    <span class="tab-badge dot" id="tabBadgeMet"></span>
   </button>
   <button class="tab-btn" id="tab-ajustaments" onclick="switchTab('ajustaments')">
-    <span class="tab-ico"><i data-lucide="settings"></i></span>
-    <span>Ajustaments</span>
+    <span class="tab-ico"><i data-lucide="more-horizontal"></i></span>
+    <span>Més</span>
+    <span class="tab-badge dot" id="tabBadgeMes"></span>
   </button>
 </nav>
 
@@ -2153,7 +2161,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:12px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v7.8<br>
+        <strong style="color:var(--h-acc);font-style:italic">PR</strong><strong style="color:var(--w-acc)">sonal</strong> v7.9<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-acc);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2302,7 +2310,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <div style="text-align:center;padding:20px 0 18px">
           <div style="margin-bottom:8px"><i data-lucide="user" style="width:44px;height:44px;color:var(--text2)"></i></div>
           <div style="font-size:20px;font-weight:800;margin-bottom:6px">El teu perfil</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.5">Dades per a les mètriques de força.<br>Pots editar-les sempre a <strong style="color:var(--text)"><i data-lucide="settings" style="width:12px;height:12px;vertical-align:-1px"></i> Ajustaments → Perfil</strong></div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.5">Dades per a les mètriques de força.<br>Pots editar-les sempre a <strong style="color:var(--text)"><i data-lucide="more-horizontal" style="width:12px;height:12px;vertical-align:-1px"></i> Més → Perfil</strong></div>
         </div>
         <div class="card" style="margin-bottom:16px">
           <div class="fg"><label>Nom (opcional)</label><input type="text" id="setupName" placeholder="ex: Àlex, Coach..."></div>
@@ -2402,7 +2410,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-acc);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-acc);font-weight:700">sonal</span> · v7.8</div>
+  <div><span style="color:var(--h-acc);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-acc);font-weight:700">sonal</span> · v7.9</div>
   <div style="margin-top:2px;font-size:9px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -2702,7 +2710,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='7.8';
+const APP_VERSION='7.9';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -2973,6 +2981,7 @@ const ICONS = {
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
   'bar-chart-2': '<path d="M3 21h18"/><rect x="5" y="10" width="3" height="9" rx="0.6"/><rect x="10.5" y="5" width="3" height="14" rx="0.6"/><rect x="16" y="13" width="3" height="6" rx="0.6"/>',
   'bar-chart-3': '<path d="M3 21h18"/><rect x="5" y="10" width="3" height="9" rx="0.6"/><rect x="10.5" y="5" width="3" height="14" rx="0.6"/><rect x="16" y="13" width="3" height="6" rx="0.6"/>',
+  'more-horizontal': '<circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
   settings: '<circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.1 5.1l2.1 2.1M16.8 16.8l2.1 2.1M18.9 5.1 16.8 7.2M7.2 16.8 5.1 18.9"/>',
   zap: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>',
   flame: '<path d="M12 2.5c2.5 3 4.5 4.8 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.5.6-2.7 1.5-3.6 0 1.8 1 2.8 2 2.8 1.1 0 1.8-.9 1.8-2.2 0-2.3-1.3-3.6-.8-5.5z"/>',
@@ -3054,6 +3063,7 @@ function switchTab(tab) {
 
   // Lazy render tab content
   if (tab === 'inici') { renderInici(); renderBackupNudge(); }
+  updateTabBadges();
   if (tab === 'objectius') renderObjectiusTab();
   if (tab === 'metriques') renderMetriquesTab();
   if (tab === 'ajustaments') renderAjGreeting();
@@ -3678,6 +3688,7 @@ function animateModeSwipe(dir) {
     renderInici();
     requestPersistentStorage();
     renderBackupNudge();
+    updateTabBadges();
     const _lg=document.getElementById('h-log');
     if(_lg){
       ['change','input'].forEach(ev=>_lg.addEventListener(ev,updateLogSummaries));
@@ -6634,6 +6645,7 @@ function exportData(){
   a.click();
   try{localStorage.setItem(LAST_EXPORT,String(Date.now()));}catch(e){}
   const n=document.getElementById('backupNudge'); if(n) n.style.display='none';
+  updateTabBadges();
 }
 
 // ── Backup nudge: a real file on disk is the only thing a wiped browser
@@ -6645,6 +6657,20 @@ function daysSinceExport(){
     if(!t) return Infinity;
     return (Date.now()-t)/86400000;
   }catch(e){return Infinity;}
+}
+// Tab attention signals: a dot means "this tab needs you".
+//  · Objectius — open-goal count (existing numeric badge)
+//  · Mètriques — profile weight missing, so nothing can be computed
+//  · Més       — backup overdue (mirrors the Inici nudge)
+function updateTabBadges(){
+  const met=document.getElementById('tabBadgeMet');
+  if(met) met.style.display=(!D.profile||!D.profile.weightKg)?'block':'none';
+  const mes=document.getElementById('tabBadgeMes');
+  if(mes){
+    const stale=entryCount(D)>0 && daysSinceExport()>=BACKUP_AFTER_DAYS;
+    mes.style.display=stale?'block':'none';
+    mes.classList.toggle('warn',stale);
+  }
 }
 function renderBackupNudge(){
   const el=document.getElementById('backupNudge'); if(!el) return;
@@ -6660,6 +6686,7 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '7.9':['Barra inferior més ajustada i equilibrada a l\'iPhone.','"Ajustaments" ara és "Més", amb icona de tres punts.','Punts d\'avís als tabs quan alguna cosa necessita atenció.'],
   '7.8':['Registrar ara és guiat: un pas cada cop, sense la paret de camps.','Funciona igual a Haltero i a WoD.'],
   '7.7':['Les teves dades ara són més segures: còpia de seguretat interna i recuperació automàtica.','Avís per fer còpies periòdiques.','Aquesta pantalla: sabràs què canvia a cada actualització.'],
   '7.6':['La barra inferior ja no queda tapada per la pantalla corba de l\'iPhone.'],
