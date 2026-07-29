@@ -582,6 +582,9 @@ select option{background:var(--bg3);}
   gap: 8px;
   min-height: 56px;
 }
+/* Full-screen overlays start under the notch; clear the iOS status bar so the
+   sticky "Tornar" button isn't hidden behind the clock/notch (untappable). */
+.goals-ov .app-navbar { padding-top: var(--safe-top); }
 .app-navbar-title {
   flex: 1;
   text-align: center;
