@@ -11,7 +11,7 @@
  *
  * This file rarely needs to change. Bump CACHE only if you change the SW logic.
  */
-const CACHE = 'prsonal-shell-v12';
+const CACHE = 'prsonal-shell-v14';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -47,8 +47,13 @@ self.addEventListener('fetch', (e) => {
   e.respondWith((async () => {
     try {
       const fresh = await fetch(req);
-      const c = await caches.open(CACHE);
-      c.put('./', fresh.clone());
+      // Only cache a genuinely good same-origin response. Without this, a 404, a
+      // 500, or a captive-portal login page (all of which resolve fetch normally)
+      // would be written to the cache and become the app's offline copy.
+      if (fresh && fresh.ok && fresh.type === 'basic') {
+        const c = await caches.open(CACHE);
+        c.put('./', fresh.clone());
+      }
       return fresh;
     } catch (err) {
       const cached =

@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.11</title>
+<title>PRsonal v8.12</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -265,6 +265,10 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .hist-x-lbl{color:var(--text3);font-size:var(--fs-body-sm);}
 .hist-unit{font-size:var(--fs-body-sm);color:var(--text2);width:22px;}
 .hist-lbl{display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:4px;}
+.hist-meta-line{font-size:var(--fs-label);color:var(--text2);margin-bottom:8px;}
+.hist-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.hist-note{font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5;margin-top:10px;
+  padding-left:10px;border-left:2px solid var(--border2);}
 .hist-acts{display:flex;gap:10px;margin-top:12px;}
 .hist-acts .btn,.hist-acts .dangr{flex:1;}
 
@@ -938,6 +942,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   display: flex;
   align-items: center;
   gap: 4px;
+  min-height: var(--tap);   /* v8.12: was 34px — the main way out of an overlay */
+  padding-right: 8px;
   background: transparent;
   border: none;
   color: var(--h-acc);
@@ -2531,7 +2537,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.11<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.12<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3150,7 +3156,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.11</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.12</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3632,7 +3638,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.11';
+const APP_VERSION='8.12';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4977,6 +4983,7 @@ function renderHistDay(){
     html+='<div class="hist-box h">'
       +'<div class="hist-box-top"><div class="hist-box-t">'+(ex?ex.name:e.exId)+'</div>'
       +'<span class="hist-tag h">Força</span></div>'
+      +(e.pct?'<div class="hist-meta-line">Intentat al <b>'+e.pct+'%</b></div>':'')
       +'<div class="hist-sets">'+(e.sets||[]).map((st,i)=>
           '<div class="hist-set">'
           +'<span class="hist-set-n">'+(i+1)+'</span>'
@@ -4986,6 +4993,8 @@ function renderHistDay(){
           +'<input type="number" class="fb-field hist-inp" value="'+(st.w===''?'':st.w)+'" '
           +'onchange="histSetEdit('+e.id+','+i+',\'w\',this.value)" aria-label="'+(gym?'Lastre':'Pes')+'">'
           +'<span class="hist-unit">kg</span></div>').join('')+'</div>'
+      +((e.tags&&e.tags.length)?'<div class="hist-tags">'+e.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div>':'')
+      +(e.note?'<div class="hist-note">'+e.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'')
       +'<div class="hist-acts">'
       +'<button class="btn btn-s btn-sm" onclick="histSaveH('+e.id+')">Desar</button>'
       +'<button class="dangr btn-sm" onclick="histDelH('+e.id+')">Elimina</button></div>'
@@ -4997,6 +5006,7 @@ function renderHistDay(){
       +'<span class="hist-tag w">WoD</span></div>'
       +'<label class="hist-lbl">Resultat</label>'
       +'<input class="fb-field" id="histW'+e.id+'" value="'+(e.result||'').replace(/"/g,'&quot;')+'" placeholder="p. ex. 5:38">'
+      +(e.note?'<div class="hist-note">'+e.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'')
       +'<div class="hist-acts">'
       +'<button class="btn btn-s btn-sm" onclick="histSaveW('+e.id+')">Desar</button>'
       +'<button class="dangr btn-sm" onclick="histDelW('+e.id+')">Elimina</button></div>'
@@ -5978,7 +5988,12 @@ function renderRecords(){
   }).join('');
 }
 
+// DEAD since v8.8 — superseded by renderRecords(). Kept only as a tombstone;
+// its markup (#prSub/#prBoard) was removed, so it must never be called.
 function renderPR(){
+  console.warn('renderPR() is dead — use renderRecords()');
+  return renderRecords();
+  /* eslint-disable no-unreachable */
   const f=document.getElementById('prSub').value;
   let exs=D.hEx; if(f!=='all')exs=exs.filter(e=>e.cat===f);
   // Build data: max lifted weight + estimated 1RM
@@ -9062,6 +9077,7 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.12':['Arreglat un error que petava en tocar un valor de RM amb Rècords obert.','L\'historial torna a mostrar les notes, les etiquetes i el % de cada sessió.','El botó Tornar és més gran i més fàcil de tocar.'],
   '8.11':['\"Força\" és ara el nom de la secció; Haltero, Complex i Gymnastics són les categories de dins.','Última passada de textos després de la reconstrucció.'],
   '8.10':['Els objectius es creen aquí mateix, pas a pas, sense saltar a cap altra pantalla.','Cada objectiu té barra de progrés, i si el tens a tocar t\'anima a intentar-ho.','Quan l\'assoleixes, passa a la llista d\'assolits.','Nova barra setmanal a Inici amb les sessions que portes.','A Inici, Activitat recent ara va abans de Progrés recent, amb els selectors ben etiquetats.'],
   '8.9':['Mètriques va al gra: les explicacions llargues s\'obren només si les vols.','L\'app recorda si les tens obertes o tancades.','A l\'historial, cada dia et diu de quina setmana és i què hi has fet.'],
@@ -9142,8 +9158,10 @@ function resetRMCycle() { rmCycleState = 1; }
 function refreshRMDisplays() {
   const hPr  = document.getElementById('h-pr');
   const hExs = document.getElementById('h-exs');
-  // Re-render Records board if visible
-  if (hPr && hPr.classList.contains('on')) renderPR();
+  // v8.12: renderPR() was replaced by renderRecords() in v8.8 and its markup
+  // (#prSub / #prBoard) no longer exists — calling it threw a TypeError as soon
+  // as the user cycled an RM value with Rècords open.
+  if (hPr && hPr.classList.contains('on')) renderRecords();
   // Re-render Exercise list if visible
   if (hExs && hExs.classList.contains('on')) renderExList();
   // Update Progrés stat card RM value
