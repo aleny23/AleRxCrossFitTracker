@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.7</title>
+<title>PRsonal v8.11</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -206,6 +206,48 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .hist-dot{width:5px;height:5px;border-radius:50%;background:var(--h-acc);}
 .hist-dot.w{background:var(--w-acc);}
 .hist-day.sel .hist-dot{background:#000;}
+
+/* Weekly progress ring/bar on Inici (Àlex's idea; fed by frequency goals) */
+.wk{margin-bottom:18px;}
+.wk-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;}
+.wk-n{font-size:var(--fs-display);font-weight:800;line-height:1;letter-spacing:-1px;}
+.wk-of{font-size:var(--fs-body-sm);color:var(--text2);}
+.wk-track{height:10px;border-radius:var(--r-pill);background:var(--bg4);overflow:hidden;}
+.wk-fill{height:100%;border-radius:var(--r-pill);
+  background:linear-gradient(90deg,var(--h-acc),var(--w-acc));
+  width:0;transition:width 900ms var(--ease-out);}
+.wk-sub{font-size:var(--fs-label);color:var(--text3);margin-top:8px;}
+.wk-done .wk-fill{background:linear-gradient(90deg,var(--green),var(--h-acc));}
+@media(prefers-reduced-motion:reduce){.wk-fill{transition:none;}}
+
+/* A goal within reach gets a gentle pulse — an invitation, not decoration */
+.goal-close{border-color:var(--h-acc);}
+.goal-close .goal-bar-fill{animation:goalPulse 1.8s var(--ease-in-out) infinite;}
+@keyframes goalPulse{0%,100%{opacity:1}50%{opacity:.55}}
+@media(prefers-reduced-motion:reduce){.goal-close .goal-bar-fill{animation:none}}
+
+/* Family-grouped records (point 15) */
+.fam-row{display:flex;align-items:center;gap:12px;width:100%;background:var(--bg3);
+  border:1px solid var(--border);border-radius:var(--r-btn);padding:14px;margin-bottom:8px;
+  cursor:pointer;font-family:inherit;text-align:left;min-height:var(--tap);}
+.fam-row:active{transform:scale(0.99);}
+.fam-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:1px solid rgba(128,128,128,.45);}
+.fam-name{display:block;font-size:var(--fs-body);font-weight:800;}
+.fam-sub{display:block;font-size:var(--fs-label);color:var(--text2);margin-top:3px;}
+.fam-count{margin-left:auto;font-size:var(--fs-body-sm);color:var(--text2);white-space:nowrap;}
+.fam-chev{margin-left:8px;color:var(--text3);transition:transform var(--dur-fast) var(--ease-out);flex-shrink:0;}
+.fam-row.open .fam-chev{transform:rotate(90deg);}
+.fam-body{padding:2px 0 12px;}
+.ex-row{display:flex;align-items:center;gap:12px;width:100%;background:transparent;border:none;
+  border-bottom:1px solid var(--border);padding:12px 6px;cursor:pointer;font-family:inherit;
+  text-align:left;min-height:var(--tap);}
+.ex-row:last-child{border-bottom:none;}
+.ex-nm{display:block;font-size:var(--fs-body-sm);font-weight:700;}
+.ex-meta{display:block;font-size:var(--fs-label);color:var(--text3);margin-top:3px;}
+.ex-val{margin-left:auto;text-align:right;flex-shrink:0;}
+.ex-val b{font-size:var(--fs-body);font-weight:800;color:var(--h-ink);}
+.ex-row.none .ex-nm{color:var(--text3);font-weight:600;}
+.ex-row.none .ex-val{font-size:var(--fs-label);color:var(--text3);}
 
 /* Historial entry boxes: colour-coded by kind (gold = Força, teal = WoD) */
 .hist-box{background:var(--bg2);border:1px solid var(--border);border-left:4px solid var(--h-acc);
@@ -568,7 +610,17 @@ select option{background:var(--bg3);}
 .metric-card-title{font-size:var(--fs-headline);font-weight:800;color:var(--text);letter-spacing:-0.2px;line-height:1.25;margin-bottom:12px;}
 .metric-big{font-size:36px;font-weight:800;color:var(--h-ink);line-height:1;}
 .metric-label{font-size:13px;color:var(--text2);margin-top:3px;}
-.metric-explain{font-size:14px;color:var(--text2);line-height:1.6;border-top:0.5px solid var(--border2);padding:12px 0 0;margin-top:12px;}
+.metric-explain{font-size:var(--fs-body-sm);color:var(--text2);line-height:1.6;border-top:1px solid var(--border);padding:12px 0 0;margin-top:12px;}
+/* Point 13: long explanations are opt-in, not a wall of text on arrival. */
+.xpl{border-top:1px solid var(--border);margin-top:14px;}
+.xpl-btn{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;
+  cursor:pointer;font-family:inherit;padding:12px 0 0;min-height:var(--tap);
+  font-size:var(--fs-body-sm);font-weight:700;color:var(--text2);text-align:left;}
+.xpl-btn .xpl-chev{transition:transform var(--dur-fast) var(--ease-out);display:inline-flex;}
+.xpl.open .xpl-btn{color:var(--text);}
+.xpl.open .xpl-chev{transform:rotate(90deg);}
+.xpl-body{display:none;font-size:var(--fs-body-sm);color:var(--text2);line-height:1.6;padding:4px 0 2px;}
+.xpl.open .xpl-body{display:block;animation:fadeIn var(--dur) var(--ease-out);}
 .strength-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);}
 .strength-row:last-child{border-bottom:none;}
 .strength-ex{font-size:15px;font-weight:600;}
@@ -1111,7 +1163,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   flex-shrink: 0;
   line-height: 1.4;
 }
-.inici-body { padding: 0 var(--gutter) 16px; }
+.inici-body { padding: 18px var(--gutter) 16px; }
 
 /* empty state */
 .inici-empty {
@@ -1579,22 +1631,26 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="inici-hero-date" id="inicDate"></div>
   </div>
   <div class="inici-body">
+    <!-- Weekly bar + activity strip: ABOVE Progrés recent (point 7) -->
+    <div class="home-cal" id="calStripCard">
+      <div id="weekBar"></div>
+      <div class="ctitle" style="margin:0 0 6px">Activitat recent</div>
+      <div class="cal-strip" id="calStrip"></div>
+    </div>
     <!-- Progress chart -->
     <div class="home-focus anim-fadeup" id="homeChartCardInici" style="display:none">
       <div class="ctitle" style="margin:0 0 8px">Progrés recent</div>
+      <!-- point 6: the selectors were unlabelled and the first defaulted to a meaningless "Totes" -->
       <div class="home-focus-controls">
-        <select class="home-chart-ex-sel" id="homeChartFamInici" onchange="onHomeFamChange()" title="Família"></select>
-        <select class="home-chart-ex-sel" id="homeChartSelInici" onchange="renderHomeChartInici()"></select>
+        <label style="flex:1;min-width:0"><span style="display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:4px">Família</span>
+          <select class="home-chart-ex-sel" id="homeChartFamInici" onchange="onHomeFamChange()" style="width:100%"></select></label>
+        <label style="flex:1;min-width:0"><span style="display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:4px">Exercici</span>
+          <select class="home-chart-ex-sel" id="homeChartSelInici" onchange="renderHomeChartInici()" style="width:100%"></select></label>
       </div>
       <div class="home-focus-val" id="homeStatRMInici">—</div>
       <div class="home-focus-meta">1RM estimat · màx <b id="homeStatMaxInici">—</b> · <b id="homeStatSessInici">—</b> sessions · <b id="homeStatTrendInici">—</b></div>
       <div class="home-chart-wrap"><canvas id="homeChartInici" role="img" aria-label="Progrés recent"></canvas></div>
       <button id="homeSuggestion" onclick="applyHomeSuggestion()" class="home-suggestion" style="display:none"></button>
-    </div>
-    <!-- Mini calendar -->
-    <div class="home-cal" id="calStripCard">
-      <div class="ctitle" style="margin:0 0 6px">Activitat recent</div>
-      <div class="cal-strip" id="calStrip"></div>
     </div>
     <!-- Backup nudge -->
     <div id="backupNudge" class="backup-nudge" style="display:none"></div>
@@ -1661,9 +1717,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <button class="mode-tab" data-mode="w" onclick="setSplitMode('obj','w')">WoD</button>
     <span class="mode-underline" id="objModeUnderline"></span>
   </div>
-  <div style="padding:0 var(--gutter) 10px" id="objAddRow">
-    <button class="btn btn-s btn-sm" style="width:100%" onclick="gotoExercicisForGoal()">+ Afegir objectiu (des d'Exercicis)</button>
-  </div>
+
   <div class="tab-page-body" id="tabObjectiusBody">
     <!-- goals content rendered here -->
   </div>
@@ -1845,7 +1899,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="fg"><label>Nom de la plantilla</label><input type="text" id="tplName" placeholder="ex: Dia de Clean, Força Lower..."></div>
       <div class="fg"><label>Notes (opcional)</label><textarea id="tplNotes" placeholder="Context, objectiu del dia..." style="min-height:44px"></textarea></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="ctitle" style="margin:0">Blocs Haltero</div>
+        <div class="ctitle" style="margin:0">Blocs de força</div>
         <button class="ghost btn-sm" onclick="addTplBlock()">+ Exercici</button>
       </div>
       <div id="tplBlocks"></div>
@@ -1916,16 +1970,13 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 
 <!-- H-PR -->
 <div id="h-pr" class="sec">
-  <div class="card card--bare anim-fadeup">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="ctitle" style="margin:0">Rècords personals</div>
-<div id="searchBarPr"></div>
-    </div>
-    <div class="fg"><select id="prSub" onchange="renderPR()">
-      <option value="all">Tots</option><option value="haltero">Halterofília</option>
-      <option value="gym">Gymnastics</option><option value="complex">Complex</option>
-    </select></div>
-    <div id="prBoard"></div>
+  <!-- v8.8: families collapsed by default (point 15). Absorbs the old Exercicis
+       catalogue, so exercises with NO record appear here too. -->
+  <div class="card">
+    <div class="ctitle">Rècords i exercicis</div>
+    <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5;margin:-6px 0 12px">Toca una família per veure'n els exercicis i les teves marques.</div>
+    <input id="recSearch" class="fb-field" placeholder="Cerca un exercici…" oninput="renderRecords()" style="margin-bottom:12px">
+    <div id="recBoard"></div>
   </div>
 </div>
 
@@ -2364,7 +2415,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <div style="display:flex;align-items:center;gap:10px">
           <i data-lucide="dumbbell" style="width:19px;height:19px;color:var(--h-ink)"></i>
           <div>
-            <div style="font-size:15px;font-weight:700;color:var(--h-ink)">Exercicis Haltero</div>
+            <div style="font-size:15px;font-weight:700;color:var(--h-ink)">Exercicis de força</div>
             <div style="font-size:13px;color:var(--text2);margin-top:1px">Corregir nom, família o eliminar</div>
           </div>
         </div>
@@ -2480,7 +2531,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.7<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.11<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2570,7 +2621,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">
           <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:13px 14px;border:0.5px solid var(--border)">
             <i data-lucide="dumbbell" style="width:24px;height:24px;color:var(--h-ink)"></i>
-            <div><div style="font-size:15px;font-weight:700">Halterofília i força</div><div style="font-size:13px;color:var(--text2);margin-top:1px">Registra sèries, calcula el teu 1RM estimat i segueix la progressió</div></div>
+            <div><div style="font-size:15px;font-weight:700">Força i halterofília</div><div style="font-size:13px;color:var(--text2);margin-top:1px">Registra sèries, calcula el teu 1RM estimat i segueix la progressió</div></div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:13px 14px;border:0.5px solid var(--border)">
             <i data-lucide="zap" style="width:24px;height:24px;color:var(--w-ink)"></i>
@@ -2745,6 +2796,87 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div style="min-width:60px;text-align:right;font-size:13px;color:var(--text3);line-height:1.3" id="metricsProfileLine"></div>
     </div>
     <div id="metricsContent" style="padding-top:16px"></div>
+  </div>
+</div>
+
+<!-- OBJECTIUS (point 17) — self-contained: never navigates away to Exercicis -->
+<div class="wiz" id="goalOv" onclick="goalBackdrop(event)">
+  <div class="wiz-card" id="goalCard" role="dialog" aria-modal="true">
+    <button class="wiz-x" onclick="closeGoalWiz()" aria-label="Tancar">×</button>
+
+    <div class="wiz-step on" id="gwKind">
+      <div class="wiz-kicker">Nou objectiu</div>
+      <div class="wiz-q">De quin tipus?</div>
+      <button class="wiz-opt" onclick="gwPick('strength')">
+        <span class="wiz-opt-ico"><i data-lucide="dumbbell"></i></span>
+        <span><span class="wiz-opt-t">Marca de força</span><span class="wiz-opt-s">Arribar a un pes en un exercici</span></span>
+      </button>
+      <button class="wiz-opt w" onclick="gwPick('wodTime')">
+        <span class="wiz-opt-ico"><i data-lucide="flame"></i></span>
+        <span><span class="wiz-opt-t">Temps en un WoD</span><span class="wiz-opt-s">Per exemple, Fran per sota de 5:00</span></span>
+      </button>
+      <button class="wiz-opt w" onclick="gwPick('wodFreq')">
+        <span class="wiz-opt-ico"><i data-lucide="repeat"></i></span>
+        <span><span class="wiz-opt-t">Constància</span><span class="wiz-opt-s">Sessions per setmana o per mes</span></span>
+      </button>
+    </div>
+
+    <div class="wiz-step" id="gwFam">
+      <div class="wiz-kicker">Pas 1</div>
+      <div class="wiz-q">Quina família?</div>
+      <div id="gwFamList"></div>
+    </div>
+
+    <div class="wiz-step" id="gwEx">
+      <div class="wiz-kicker">Pas 2</div>
+      <div class="wiz-q">Quin exercici?</div>
+      <div id="gwExList"></div>
+    </div>
+
+    <div class="wiz-step" id="gwTarget">
+      <div class="wiz-kicker">Pas 3</div>
+      <div class="wiz-q">Quin objectiu?</div>
+      <div id="gwCurrent" class="wiz-sum"></div>
+      <div class="frow">
+        <div><label>Pes (kg)</label><input type="number" id="gwKg" class="fb-field" placeholder="140"></div>
+        <div><label>Repeticions</label><input type="number" id="gwReps" class="fb-field" value="1"></div>
+      </div>
+      <div style="font-size:var(--fs-label);color:var(--text3);line-height:1.5;margin-top:8px">Si poses més d'una repetició, ho convertim a l'1RM equivalent.</div>
+      <div class="fg" style="margin-top:14px"><label>Data límit (opcional)</label>
+        <input type="date" id="gwDate" class="fb-field"></div>
+    </div>
+
+    <div class="wiz-step" id="gwWodTime">
+      <div class="wiz-kicker">Objectiu de WoD</div>
+      <div class="wiz-q">Quin WoD i quin temps?</div>
+      <div class="fg"><label>WoD</label><select id="gwWodName" class="fb-field"></select></div>
+      <div class="frow" style="margin-top:12px">
+        <div><label>Minuts</label><input type="number" id="gwMin" class="fb-field" placeholder="5"></div>
+        <div><label>Segons</label><input type="number" id="gwSec" class="fb-field" placeholder="00"></div>
+      </div>
+      <div class="fg" style="margin-top:14px"><label>Data límit (opcional)</label>
+        <input type="date" id="gwWDate" class="fb-field"></div>
+    </div>
+
+    <div class="wiz-step" id="gwFreq">
+      <div class="wiz-kicker">Constància</div>
+      <div class="wiz-q">Quantes sessions?</div>
+      <div class="frow">
+        <div><label>Quantitat</label><input type="number" id="gwCount" class="fb-field" value="3"></div>
+        <div><label>Període</label><select id="gwPer" class="fb-field"><option value="week">Per setmana</option><option value="month">Per mes</option></select></div>
+      </div>
+      <div class="fg" style="margin-top:12px"><label>Compta</label>
+        <select id="gwScope" class="fb-field">
+          <option value="any">Qualsevol sessió</option>
+          <option value="forca">Només força</option>
+          <option value="wod">Només WoDs</option>
+        </select></div>
+    </div>
+
+    <div class="wiz-nav" id="gwNav" style="display:none">
+      <button class="btn btn-s" id="gwBack" onclick="gwPrev()">← Enrere</button>
+      <button class="btn btn-p next" id="gwNext" onclick="gwNext()">Continua →</button>
+    </div>
   </div>
 </div>
 
@@ -3018,7 +3150,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.7</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.11</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3500,7 +3632,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.7';
+const APP_VERSION='8.11';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -3757,12 +3889,7 @@ function showH(sec,btn){
     const sbHexs=document.getElementById('searchBarHexs');
     if(sbHexs&&!sbHexs.innerHTML) sbHexs.innerHTML=makeSearchBar('hexs','Cerca exercici...');
   }
-  if(sec==='pr'){
-    renderPR();
-    const sb=document.getElementById('searchBarPr');
-    if(sb&&!sb.innerHTML) sb.innerHTML=makeSearchBar('pr','Cerca record...');
-    if(searchStates['pr']) { searchStates['pr'].query=''; searchStates['pr'].open=false; }
-  }
+  if(sec==='pr'){ renderRecords(); }   // v8.8: family-grouped, absorbs the catalogue
   if(sec==='calc'){updateCalcExs();renderCalcToggles();}
 }
 function showW(sec,btn){
@@ -3940,7 +4067,7 @@ function switchTab(tab) {
   // Show/hide % calc FAB
 
   // Lazy render tab content
-  if (tab === 'inici') { renderInici(); renderBackupNudge(); }
+  if (tab === 'inici') { renderInici(); renderBackupNudge(); renderWeekBar(); }
   if (tab === 'entrenar') renderEntrenarSuggestion();
   updateTabBadges();
   updateDbgBubble();
@@ -4017,7 +4144,7 @@ const HINTS = {
   objectius: 'Defineix objectius de pes amb data límit i segueix el progrés. Pots afegir-ne des d\'Exercicis.',
   metriques: 'Wilks, força relativa i classificació, calculats automàticament a partir del teu perfil i marques.',
   ajustaments: 'Edita els teus exercicis, el perfil personal i fes còpies de seguretat de les dades.',
-  h_log: 'Registra les teves sèries d\'halterofília: reps, pes i RPE per a cada sèrie.',
+  h_log: 'Registra les teves sèries de força: reps, pes i RPE per a cada sèrie.',
   h_tpl: 'Crea plantilles de sessió i carrega-les amb un toc un altre dia.',
   h_calc: 'Tria un exercici i veus tots els percentatges i els discos a posar a cada costat.',
   h_pr: 'Els teus rècords (1RM, 2RM, 3RM) per exercici. Toca per alternar-los.',
@@ -4061,7 +4188,7 @@ function showDayActivity(ds) {
   const wEnts = D.wEnt.filter(e => e.date === ds);
   let html = '';
   if (hEnts.length) {
-    html += '<div style="font-size:14px;font-weight:700;color:var(--h-ink);text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px">Halterofília</div>';
+    html += '<div style="font-size:14px;font-weight:700;color:var(--h-ink);text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px">Força</div>';
     hEnts.forEach(e => {
       const ex = D.hEx.find(x => x.id === e.exId);
       const ss = (e.sets||[]).filter(s => s.r > 0).map(s => `${s.r}×${s.w}kg`).join(' · ');
@@ -4150,7 +4277,7 @@ function initHomeChartInici() {
   if (famSel) {
     const fams = [...new Set(exsWithData.map(e => e.family).filter(Boolean))];
     const prevFam = famSel.value || '__all';
-    famSel.innerHTML = '<option value="__all">Totes</option>' + fams.map(f => `<option value="${f}">${f}</option>`).join('');
+    famSel.innerHTML = '<option value="__all">Totes les famílies</option>' + fams.map(f => `<option value="${f}">${f}</option>`).join('');
     if ([...famSel.options].some(o=>o.value===prevFam)) famSel.value = prevFam;
   }
   card.style.display = 'block';
@@ -4818,6 +4945,21 @@ function renderHistCal(){
   document.getElementById('histGrid').innerHTML=html;
 }
 function histPick(ds){ histSel=ds; renderHistCal(); renderHistDay(); }
+// ISO-ish week label for the historial heading (weeks start Monday, like the grid)
+function weekLabelFor(ds){
+  const d=new Date(ds+'T12:00:00');
+  const day=(d.getDay()+6)%7;                       // 0 = Monday
+  const mon=new Date(d); mon.setDate(d.getDate()-day);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  const f=x=>x.getDate()+' '+x.toLocaleDateString('ca-ES',{month:'short'}).replace('.','');
+  const hs=D.hEnt.filter(e=>e.date>=ymdLocal(mon)&&e.date<=ymdLocal(sun)).length;
+  const ws=D.wEnt.filter(e=>e.date>=ymdLocal(mon)&&e.date<=ymdLocal(sun)).length;
+  const bits=[];
+  if(hs) bits.push(hs+(hs===1?' sessió de força':' sessions de força'));
+  if(ws) bits.push(ws+(ws===1?' WoD':' WoDs'));
+  return 'Setmana del '+f(mon)+' al '+f(sun)+(bits.length?' · '+bits.join(' · '):'');
+}
+
 function renderHistDay(){
   const host=document.getElementById('histDayList');
   const hs=D.hEnt.filter(e=>e.date===histSel), ws=D.wEnt.filter(e=>e.date===histSel);
@@ -4826,7 +4968,9 @@ function renderHistDay(){
     return;
   }
   // Each entry is its own colour-coded box: gold = Força, teal = WoD.
-  let html='<div class="ctitle" style="margin:18px 0 10px">'+fmt(histSel)+'</div>';
+  // The heading names the week as well as the day, so a day always reads in context.
+  let html='<div class="ctitle" style="margin:18px 0 2px">'+fmt(histSel)+'</div>'
+    +'<div style="font-size:var(--fs-label);color:var(--text3);margin-bottom:12px">'+weekLabelFor(histSel)+'</div>';
   hs.forEach(e=>{
     const ex=D.hEx.find(x=>x.id===e.exId);
     const gym=ex&&ex.cat==='gym';
@@ -4973,11 +5117,198 @@ function setSplitMode(section, mode){
   if(section==='obj') renderObjectiusTab();
   else renderMetriquesTab();
 }
+// ══════════════════════════════════════════
+// OBJECTIUS (point 17) — creation happens HERE, in its own card.
+// The old flow bounced the user to Entrenar > Exercicis and relied on the detail
+// overlay, which is exactly what Àlex called badly coded.
+// ══════════════════════════════════════════
+let gwS=null;
+const GW_FLOW={ strength:['fam','ex','target'], wodTime:['wodTime'], wodFreq:['freq'] };
+function openGoalWiz(){
+  gwS={ kind:null, i:-1, fam:null, exId:null };
+  ['gwKind','gwFam','gwEx','gwTarget','gwWodTime','gwFreq'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['gwKg','gwReps','gwDate','gwMin','gwSec','gwWDate'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=(id==='gwReps'?'1':''); });
+  document.getElementById('gwKind').classList.add('on');
+  document.getElementById('gwNav').style.display='none';
+  // If we're on the WoD side, skip straight past the "what kind" question
+  document.getElementById('goalOv').classList.add('on');
+  renderIcons(document.getElementById('goalCard'));
+  haptic('light');
+}
+function goalBackdrop(e){ if(e.target&&e.target.id==='goalOv') closeGoalWiz(); }
+function closeGoalWiz(){
+  const ov=document.getElementById('goalOv');
+  ov.classList.add('closing');
+  setTimeout(()=>{ ov.classList.remove('on','closing'); gwS=null; },200);
+}
+function gwPick(kind){
+  gwS.kind=kind; gwS.i=0;
+  document.getElementById('gwKind').classList.remove('on');
+  document.getElementById('gwNav').style.display='flex';
+  gwShow();
+}
+function gwStepId(n){ return {fam:'gwFam',ex:'gwEx',target:'gwTarget',wodTime:'gwWodTime',freq:'gwFreq'}[n]; }
+function gwShow(){
+  const flow=GW_FLOW[gwS.kind], name=flow[gwS.i];
+  ['gwFam','gwEx','gwTarget','gwWodTime','gwFreq'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  document.getElementById(gwStepId(name)).classList.add('on');
+  if(name==='fam') gwRenderFams();
+  if(name==='ex') gwRenderExs();
+  if(name==='target') gwRenderCurrent();
+  if(name==='wodTime') gwRenderWodNames();
+  document.getElementById('gwNext').textContent = (gwS.i===flow.length-1) ? 'Crear objectiu' : 'Continua →';
+  document.getElementById('gwBack').style.visibility = gwS.i===0 ? 'hidden' : 'visible';
+  document.getElementById('goalCard').scrollTop=0;
+}
+function gwPrev(){ if(gwS.i>0){ gwS.i--; gwShow(); } }
+function gwRenderFams(){
+  const fams={};
+  D.hEx.forEach(ex=>{ (fams[ex.family||'Altres']=fams[ex.family||'Altres']||[]).push(ex); });
+  const order=Object.keys(FAM_CFG);
+  document.getElementById('gwFamList').innerHTML=Object.keys(fams)
+    .sort((a,b)=>(order.indexOf(a)<0?99:order.indexOf(a))-(order.indexOf(b)<0?99:order.indexOf(b)))
+    .map(f=>{
+      const cfg=FAM_CFG[f]||{};
+      return '<button class="wiz-opt" onclick="gwSetFam(\''+f.replace(/'/g,"\\'")+'\')">'
+        +'<span class="fam-dot" style="background:'+(cfg.dot||'var(--text3)')+';width:14px;height:14px"></span>'
+        +'<span><span class="wiz-opt-t">'+f+'</span>'
+        +(cfg.sub?'<span class="wiz-opt-s">'+cfg.sub+'</span>':'')+'</span></button>';
+    }).join('');
+}
+function gwSetFam(f){ gwS.fam=f; gwS.i=1; gwShow(); haptic('light'); }
+function gwRenderExs(){
+  const list=D.hEx.filter(e=>(e.family||'Altres')===gwS.fam).sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('gwExList').innerHTML=list.map(ex=>{
+    const rm=isGymEx(ex)?gymRecords(ex.id).lastre:best1RM(ex.id);
+    return '<button class="wiz-opt" onclick="gwSetEx(\''+ex.id+'\')">'
+      +'<span><span class="wiz-opt-t">'+ex.name+'</span>'
+      +'<span class="wiz-opt-s">'+(rm?('ara: '+(+rm).toFixed(1)+' kg'):'encara sense marca')+'</span></span></button>';
+  }).join('');
+}
+function gwSetEx(id){ gwS.exId=id; gwS.i=2; gwShow(); haptic('light'); }
+function gwRenderCurrent(){
+  const ex=D.hEx.find(e=>e.id===gwS.exId);
+  const rm=best1RM(gwS.exId);
+  document.getElementById('gwCurrent').innerHTML='<b>'+(ex?ex.name:'')+'</b> — '
+    +(rm?('ara mateix el teu millor és <b>'+rm.toFixed(1)+' kg</b>'):'encara no hi tens cap marca');
+  if(rm && !document.getElementById('gwKg').value)
+    document.getElementById('gwKg').placeholder=Math.ceil(rm*1.05);
+}
+function gwRenderWodNames(){
+  const sel=document.getElementById('gwWodName');
+  const names=[...new Set([...(D.templates||[]).filter(t=>t.wodBlock).map(t=>t.name),
+                           ...(D.wEnt||[]).map(w=>w.name).filter(Boolean)])].sort();
+  sel.innerHTML=names.map(n=>'<option>'+n+'</option>').join('')||'<option>WoD</option>';
+}
+function gwNext(){
+  const flow=GW_FLOW[gwS.kind], name=flow[gwS.i];
+  if(name==='target'){
+    const kg=+document.getElementById('gwKg').value||0;
+    if(kg<=0){ toast('Posa un pes objectiu','error'); return; }
+    const reps=+document.getElementById('gwReps').value||1;
+    saveGoal(gwS.exId,kg,document.getElementById('gwDate').value,'',reps);
+    gwDone();
+    return;
+  }
+  if(name==='wodTime'){
+    const m=+document.getElementById('gwMin').value||0, sc=+document.getElementById('gwSec').value||0;
+    const total=m*60+sc;
+    if(total<=0){ toast('Posa un temps objectiu','error'); return; }
+    saveWodTimeGoal(document.getElementById('gwWodName').value,total,document.getElementById('gwWDate').value,'');
+    gwDone();
+    return;
+  }
+  if(name==='freq'){
+    const c=+document.getElementById('gwCount').value||0;
+    if(c<=0){ toast('Posa quantes sessions','error'); return; }
+    saveWodFreqGoal(document.getElementById('gwScope').value,document.getElementById('gwPer').value,c,'');
+    gwDone();
+    return;
+  }
+  gwS.i++; gwShow();
+}
+function gwDone(){
+  refreshGoalCompletion();
+  closeGoalWiz();
+  toast('Objectiu creat ✓'); haptic('success');
+  renderObjectiusTab();
+  updateGoalsBadge && updateGoalsBadge();
+}
+
+// ── Inici weekly bar (Àlex's idea) ────────────────────────────────────
+// If a frequency goal exists it drives the target; otherwise it just reports the
+// week honestly, so the bar is useful before any goal is set.
+function renderWeekBar(){
+  const host=document.getElementById('weekBar');
+  if(!host) return;
+  const freq=(D.goals||[]).find(g=>g.kind==='wodFreq'&&g.per==='week'&&!g.done);
+  const scope=freq?freq.scope:'any';
+  const done=sessionCount(scope,'week');
+  const target=freq?freq.targetCount:0;
+  const pct=target?Math.min(100,Math.round(done/target*100)):0;
+  const label=scope==='forca'?'sessions de força':scope==='wod'?'WoDs':'sessions';
+  host.innerHTML='<div class="wk'+(target&&done>=target?' wk-done':'')+'">'
+    +'<div class="wk-top"><div><span class="wk-n">'+done+'</span>'
+    +(target?'<span class="wk-of"> / '+target+'</span>':'')+'</div>'
+    +'<div class="wk-of">'+label+' aquesta setmana</div></div>'
+    +'<div class="wk-track"><div class="wk-fill" id="wkFill"></div></div>'
+    +'<div class="wk-sub">'+(target
+        ? (done>=target ? 'Objectiu de la setmana assolit.' : 'Et queden '+(target-done)+' per arribar-hi.')
+        : 'Marca\'t un objectiu de constància a Objectius per veure el progrés.')+'</div></div>';
+  // animate from 0 on the next frame so the width transition actually runs
+  requestAnimationFrame(()=>{
+    const f=document.getElementById('wkFill');
+    if(f) f.style.width=(target?pct:Math.min(100,done*20))+'%';
+  });
+}
+
+// ── Força goals list (point 17): bars, "you're close", completed below ──
+function renderForcaGoals(host){
+  const goals=(D.goals||[]).filter(g=>!g.kind||g.kind==='strength');
+  const open=goals.filter(g=>!g.done), done=goals.filter(g=>g.done);
+  let html='';
+  if(!goals.length){
+    html='<div class="card" style="text-align:center;padding:26px 18px">'
+      +'<div style="font-size:var(--fs-headline);font-weight:800;margin-bottom:6px">Encara no tens objectius</div>'
+      +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:18px">Marca\'t una fita i l\'app calcularà sola com hi vas avançant.</div>'
+      +'<button class="btn btn-p" onclick="openGoalWiz()">Crear el primer objectiu</button></div>';
+    host.innerHTML=html; return;
+  }
+  html+='<button class="btn btn-p" style="margin-bottom:16px" onclick="openGoalWiz()">+ Nou objectiu</button>';
+  html+=open.map(g=>goalCardHtml(g)).join('');
+  if(done.length){
+    html+='<div class="ctitle" style="margin:24px 0 12px">Assolits</div>'+done.map(g=>goalCardHtml(g,true)).join('');
+  }
+  host.innerHTML=html;
+}
+function goalCardHtml(g,isDone){
+  const ex=D.hEx.find(e=>e.id===g.exId);
+  const rm=best1RM(g.exId);
+  const pct=goalProgress(g);
+  const close = !isDone && pct>=90 && pct<100;
+  return '<div class="card'+(close?' goal-close':'')+'" style="margin-bottom:12px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    +'<div><div style="font-size:var(--fs-headline);font-weight:800">'+(ex?ex.name:'—')+'</div>'
+    +'<div style="font-size:var(--fs-body-sm);color:var(--text2);margin-top:2px">'
+    +(rm?rm.toFixed(1):'0')+' / <b style="color:var(--text)">'+(+g.targetKg).toFixed(1)+' kg</b>'
+    +(g.targetReps&&g.targetReps>1?(' · objectiu posat com a '+g.targetReps+' reps'):'')+'</div></div>'
+    +(isDone?'<span class="hist-tag h">Assolit</span>':'<span style="font-size:var(--fs-headline);font-weight:800;color:var(--h-ink)">'+pct+'%</span>')
+    +'</div>'
+    +'<div class="goal-bar-track" style="margin-top:12px"><div class="goal-bar-fill" style="background:var(--h-acc);width:'+pct+'%"></div></div>'
+    +(close?'<div style="font-size:var(--fs-body-sm);color:var(--h-ink);font-weight:700;margin-top:10px">Ja el tens a tocar — val la pena intentar-ho!</div>':'')
+    +(g.targetDate?'<div style="font-size:var(--fs-label);color:var(--text3);margin-top:8px">Data límit: '+fmt(g.targetDate)+'</div>':'')
+    +'<div style="margin-top:12px"><button class="dangr btn-sm" onclick="deleteGoalById(\''+g.id+'\');renderObjectiusTab()">Elimina</button></div>'
+    +'</div>';
+}
+
 // ── Mètriques section bubbles ─────────────────────────────────────────
 // Rècords / Progrés / Exercicis (and the WoD trio) moved here out of Entrenar.
 // Opening one OCCLUDES the default metric cards; tapping it again brings them back.
 const MET_BUBS = {
-  h:[{sec:'pr',label:'Rècords',ico:'trophy'},{sec:'prog',label:'Progrés',ico:'bar-chart-2'},{sec:'exs',label:'Exercicis',ico:'dumbbell'}],
+  // v8.8: 'exs' retired — the catalogue is absorbed into the family-grouped
+  // Rècords, which lists unlogged exercises too and still opens showDetail()
+  // (the quick-log and goal-creation route). Editing exercises lives in Més.
+  h:[{sec:'pr',label:'Rècords',ico:'trophy'},{sec:'prog',label:'Progrés',ico:'bar-chart-2'}],
   w:[{sec:'bench',label:'Benchmarks',ico:'flame'},{sec:'stats',label:'Stats',ico:'bar-chart-2'},{sec:'exs',label:'Exercicis',ico:'zap'}]
 };
 const metSec = { h:null, w:null };
@@ -5024,8 +5355,10 @@ function applySplitChrome(section){
 function renderWodGoals(host){
   const goals=(D.goals||[]).filter(g=>g.kind==='wodTime'||g.kind==='wodFreq');
   if(!goals.length){
-    host.innerHTML='<div class="card"><div class="ctitle">Objectius de WoD</div>'
-      +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5">Encara no en tens cap. Podràs marcar-te un temps objectiu per a un WoD (per exemple, Fran per sota de 5:00) o una freqüència setmanal.</div></div>';
+    host.innerHTML='<div class="card" style="text-align:center;padding:26px 18px">'
+      +'<div style="font-size:var(--fs-headline);font-weight:800;margin-bottom:6px">Cap objectiu de WoD</div>'
+      +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:18px">Marca\'t un temps per a un WoD (Fran per sota de 5:00) o una constància setmanal.</div>'
+      +'<button class="btn btn-p" onclick="openGoalWiz()">Crear el primer objectiu</button></div>';
     return;
   }
   const open=goals.filter(g=>!g.done), done=goals.filter(g=>g.done);
@@ -5042,8 +5375,9 @@ function renderWodGoals(host){
       +'<div class="goal-bar-track"><div class="goal-bar-fill" style="background:var(--w-acc);width:'+pct+'%"></div></div>'
       +'<div style="text-align:right;font-size:var(--fs-body-sm);font-weight:700;color:var(--w-ink);margin-top:6px">'+pct+'%</div></div>';
   };
-  host.innerHTML=open.map(card).join('')
-    + (done.length? '<div class="ctitle" style="margin-top:18px">Assolits</div>'+done.map(card).join('') : '');
+  host.innerHTML='<button class="btn btn-p" style="margin-bottom:16px" onclick="openGoalWiz()">+ Nou objectiu</button>'
+    + open.map(card).join('')
+    + (done.length? '<div class="ctitle" style="margin:24px 0 12px">Assolits</div>'+done.map(card).join('') : '');
 }
 function fmtSecs(sec){
   sec=+sec||0;
@@ -5092,11 +5426,11 @@ function renderObjectiusTab() {
   }
   if (body && gc && !body.contains(gc)) body.insertBefore(gc, wodHost);
   const showWod = splitMode.obj === 'w';
-  const addRow = document.getElementById('objAddRow');
-  if (addRow) addRow.style.display = showWod ? 'none' : '';   // it makes a strength goal
-  if (gc) gc.style.display = showWod ? 'none' : '';
-  if (wodHost) wodHost.style.display = showWod ? '' : 'none';
+  if (gc) gc.style.display = 'none';        // v8.10: superseded by renderForcaGoals
+  if (wodHost) wodHost.style.display = '';
   if (showWod) { renderWodGoals(wodHost); return; }
+  renderForcaGoals(wodHost);                // same host, mode decides the content
+  return;
   // Trigger goals render
   if (typeof renderGoalsOverlay === 'function') renderGoalsOverlay();
   else if (typeof openGoals === 'function') {
@@ -5133,6 +5467,7 @@ function renderMetriquesTab() {
   applyMetOcclusion();
   if (showWodM) return;
   if (typeof renderMetricsOverlay === 'function') renderMetricsOverlay();
+  restoreXpl();
   if (window.lucide) lucide.createIcons();
   // The tab path never animated its strength/Wilks bars — only the overlay did.
   setTimeout(animateStrengthBars, 80);
@@ -5559,6 +5894,90 @@ function openSheet(exId,pct,w){
 
 
 // ══ PR BOARD ══
+// ══════════════════════════════════════════
+// RÈCORDS + CATALOGUE, grouped by family (point 15)
+// Collapsed by default so the screen is never one enormous list. Absorbs the old
+// Exercicis section: exercises with NO record are listed too, dimmed, and still
+// open showDetail() — which is also the quick-log and goal-creation route.
+// ══════════════════════════════════════════
+const recOpenFam = {};
+function toggleFam(fam){
+  recOpenFam[fam]=!recOpenFam[fam];
+  haptic('light');
+  renderRecords();
+}
+function recExValue(ex){
+  if(isGymEx(ex)){
+    const g=gymRecords(ex.id);
+    const bits=[];
+    if(g.lastre) bits.push('+'+g.lastre+' kg');
+    if(g.reps)   bits.push(g.reps+' reps');
+    if(g.dist)   bits.push(g.dist+' m');
+    return bits.length?{val:bits[0],extra:bits.slice(1).join(' · '),has:true}:{val:'—',extra:'',has:false};
+  }
+  const rm=best1RM(ex.id);
+  if(!rm) return {val:'—',extra:'',has:false};
+  let maxW=0;
+  D.hEnt.filter(e=>e.exId===ex.id).forEach(e=>(e.sets||[]).forEach(st=>{ if((+st.w||0)>maxW) maxW=+st.w; }));
+  return {val:rm.toFixed(1)+' kg', extra: maxW?('màx '+maxW+' kg'):'', has:true};
+}
+// Point 13: explanations open on demand. Remembered per section so a user who
+// wants the detail doesn't have to reopen it every visit.
+function toggleXpl(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const open=el.classList.toggle('open');
+  try{
+    const seen=JSON.parse(localStorage.getItem('alerx_xpl')||'{}');
+    seen[id]=open; localStorage.setItem('alerx_xpl',JSON.stringify(seen));
+  }catch(e){}
+  haptic('light');
+}
+function restoreXpl(){
+  try{
+    const seen=JSON.parse(localStorage.getItem('alerx_xpl')||'{}');
+    Object.keys(seen).forEach(id=>{ if(seen[id]){ const el=document.getElementById(id); if(el) el.classList.add('open'); } });
+  }catch(e){}
+}
+
+function renderRecords(){
+  const host=document.getElementById('recBoard');
+  if(!host) return;
+  const q=(document.getElementById('recSearch')?.value||'').trim().toLowerCase();
+  // group ALL exercises by family, not just the ones with entries
+  const fams={};
+  D.hEx.forEach(ex=>{
+    if(q && ex.name.toLowerCase().indexOf(q)<0) return;
+    (fams[ex.family||'Altres'] = fams[ex.family||'Altres'] || []).push(ex);
+  });
+  const names=Object.keys(fams).sort((a,b)=>{
+    const order=Object.keys(FAM_CFG);
+    const ia=order.indexOf(a), ib=order.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+  if(!names.length){ host.innerHTML='<div class="empty">Cap exercici trobat</div>'; return; }
+  host.innerHTML=names.map(fam=>{
+    const list=fams[fam].slice().sort((a,b)=>a.name.localeCompare(b.name));
+    const withRec=list.filter(ex=>recExValue(ex).has).length;
+    const cfg=FAM_CFG[fam]||{};
+    const open = q ? true : !!recOpenFam[fam];   // searching auto-expands
+    const rows = open ? '<div class="fam-body">'+list.map(ex=>{
+      const v=recExValue(ex);
+      return '<button class="ex-row'+(v.has?'':' none')+'" onclick="showDetail(\''+ex.id+'\')">'
+        +'<span style="flex:1;min-width:0"><span class="ex-nm">'+ex.name+'</span>'
+        +(v.extra?'<span class="ex-meta">'+v.extra+'</span>':'')+'</span>'
+        +'<span class="ex-val">'+(v.has?('<b>'+v.val+'</b>'):'sense marca')+'</span></button>';
+    }).join('')+'</div>' : '';
+    return '<button class="fam-row'+(open?' open':'')+'" onclick="toggleFam(\''+fam.replace(/'/g,"\\'")+'\')">'
+      +'<span class="fam-dot" style="background:'+(cfg.dot||'var(--text3)')+'"></span>'
+      +'<span style="flex:1;min-width:0"><span class="fam-name">'+fam+'</span>'
+      +(cfg.sub?'<span class="fam-sub">'+cfg.sub+'</span>':'')+'</span>'
+      +'<span class="fam-count">'+withRec+' de '+list.length+'</span>'
+      +'<span class="fam-chev">'+icSVG('chevron-right',18)+'</span></button>'
+      + rows;
+  }).join('');
+}
+
 function renderPR(){
   const f=document.getElementById('prSub').value;
   let exs=D.hEx; if(f!=='all')exs=exs.filter(e=>e.cat===f);
@@ -6975,7 +7394,7 @@ function openTplReview(id) {
   if (title) title.textContent = t.name || 'Revisa la sessió';
   let html = '';
   if (hasHal) {
-    html += '<div style="font-size:14px;font-weight:700;color:var(--h-ink);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Haltero</div>';
+    html += '<div style="font-size:14px;font-weight:700;color:var(--h-ink);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Força</div>';
     t.halBlocks.forEach((b,i) => {
       const ex = D.hEx.find(e => e.id === b.exId);
       const rm = best1RM(b.exId);
@@ -7791,10 +8210,12 @@ function renderMetricsOverlay() {
       <div style="position:relative;height:12px;font-size:12px;color:var(--text3);margin-bottom:2px">
         <span style="position:absolute;left:0">0</span><span style="position:absolute;left:40%;transform:translateX(-50%)">200</span><span style="position:absolute;left:60%;transform:translateX(-50%)">300</span><span style="position:absolute;left:76%;transform:translateX(-50%)">380</span><span style="position:absolute;left:90%;transform:translateX(-50%)">450</span><span style="position:absolute;right:0">500+</span>
       </div>
-      <div class="metric-explain">
-        <strong style="color:var(--text)">Què és el Wilks?</strong><br>
+      <div class="xpl" id="xplWilks">
+        <button class="xpl-btn" onclick="toggleXpl('xplWilks')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Què és el Wilks?</button>
+        <div class="xpl-body">
         El coeficient Wilks normalitza el pes aixecat respecte al teu pes corporal i sexe, permetent comparar la força entre persones de diferent constitució. Va ser creat per Robert Wilks per a competicions de powerlifting. Un puntuació de <strong>300</strong> és sòlida per a un atleta recreatiu, <strong>380+</strong> és avançat, i <strong>450+</strong> és de nivell competitiu seriós.<br><br>
         <em>Nota: Utilitza els teus millors estimats de 1RM en Back Squat + Deadlift + Bench Press.</em>
+        </div>
       </div>
     </div>` : `
     <div class="metric-card">
@@ -7805,7 +8226,10 @@ function renderMetricsOverlay() {
     ${relStrengthRows.length ? `
     <div class="metric-card anim-popin anim-delay-1">
       <div class="metric-card-title">Classificació de força</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Basada en els estàndards de Symmetric Strength, ajustada al teu pes corporal (${bw} kg) i sexe.</div>
+      <div class="xpl" id="xplCls" style="border-top:none;margin-top:0;margin-bottom:10px">
+        <button class="xpl-btn" style="padding-top:0" onclick="toggleXpl('xplCls')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Com es calcula?</button>
+        <div class="xpl-body">Basada en els estàndards de Symmetric Strength, ajustada al teu pes corporal (${bw} kg) i sexe.</div>
+      </div>
       ${relStrengthRows.map(({ex,rm,ratio,lvlData}) => {
         const lvlClass = lvlData ? LEVEL_CLASSES[Math.min(lvlData.level, 4)] : 'level-0';
         const lvlName = lvlData ? lvlData.levelName : '—';
@@ -8638,6 +9062,10 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.11':['\"Força\" és ara el nom de la secció; Haltero, Complex i Gymnastics són les categories de dins.','Última passada de textos després de la reconstrucció.'],
+  '8.10':['Els objectius es creen aquí mateix, pas a pas, sense saltar a cap altra pantalla.','Cada objectiu té barra de progrés, i si el tens a tocar t\'anima a intentar-ho.','Quan l\'assoleixes, passa a la llista d\'assolits.','Nova barra setmanal a Inici amb les sessions que portes.','A Inici, Activitat recent ara va abans de Progrés recent, amb els selectors ben etiquetats.'],
+  '8.9':['Mètriques va al gra: les explicacions llargues s\'obren només si les vols.','L\'app recorda si les tens obertes o tancades.','A l\'historial, cada dia et diu de quina setmana és i què hi has fet.'],
+  '8.8':['Rècords ara s\'agrupa per famílies: toca Snatch, Squat o Deadlift per obrir-les.','Cada família et diu quants exercicis hi tens registrats.','Hi surten TOTS els exercicis, també els que encara no has provat mai.','La gimnàstica mostra lastre i repeticions, no un 1RM inventat.'],
   '8.7':['Arreglat: el missatge per descartar un registre quedava amagat darrere la finestra i no es podia tancar.','Entrenar ara respira: només els tres botons, un consell que pots tancar, i l\'historial al final.','Rècords, Progrés i Exercicis s\'han mogut a Mètriques, com a botons rodons.','Plantilles et pregunta pas a pas: fer-ne servir una o crear-ne, i els WoDs clàssics tenen secció pròpia.','A l\'historial pots editar i esborrar tant la força com els WoDs, amb colors per distingir-los.'],
   '8.6':['La calculadora de % és molt més clara: tria categoria, exercici i veus els pesos grans amb els discos.','Des de la calculadora pots registrar la sèrie directament, ja emplenada.','Plantilles: ja hi trobaràs Murph, Fran, Cindy i 7 WoDs clàssics més, a punt per aplicar.','Nou historial amb calendari: toca un dia per veure i editar el que vas fer, WoDs inclosos.'],
   '8.5':['Entrenar té tres botons grans a dalt: Registrar, Plantilles i % Calc.','Registrar ara et pregunta una cosa cada cop, amb la resta de la pantalla enfosquida perquè no et distreguis.','Pots registrar Força, Força + WoD o només WoD, i el WoD te\'l demana just després de la força.','Un suggeriment diari et diu quin exercici tens abandonat i per què val la pena tornar-hi.'],
