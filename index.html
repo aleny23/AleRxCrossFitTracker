@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.16</title>
+<title>PRsonal v8.17</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -86,7 +86,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   .app-back-btn{color:#96660e;}
   .bh{color:#8f6008;}
   .bw{color:#34666b;}
-  .sv,.rmval,.exrmv,.metric-big,.home-stat-pill .v,.ob-preview-val{color:var(--acc2);}
+  .sv,.rmval,.exrmv,.metric-big,.home-stat-pill .v{color:var(--acc2);}
   .log1,.zpct,.emom-min-lbl,.goal-days.close{color:#8f6008;}
 }
 
@@ -155,6 +155,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .wiz-opt:active{transform:scale(0.985);}
 .wiz-opt-ico{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;
   justify-content:center;flex-shrink:0;background:var(--h-dim);color:var(--h-ink);}
+.wiz-opt-ico svg{width:22px;height:22px;flex-shrink:0;}
 .wiz-opt.w .wiz-opt-ico{background:var(--w-dim);color:var(--w-ink);}
 .wiz-opt-t{display:block;font-size:var(--fs-body);font-weight:700;}
 .wiz-opt-s{display:block;font-size:var(--fs-body-sm);color:var(--text2);margin-top:3px;line-height:1.4;}
@@ -179,27 +180,116 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .cat-btn.on.hal{background:var(--h-dim);border-color:var(--h-acc);color:var(--h-ink);}
 .cat-btn.on.cpx{background:rgba(167,139,250,0.16);border-color:var(--purple);color:var(--purple);}
 .cat-btn.on.gym{background:var(--w-dim);border-color:var(--w-acc);color:var(--w-ink);}
+/* Família + Exercici, side by side like Inici's chart pickers. */
+.calc-picks{display:flex;gap:8px;}
+.calc-picks label{flex:1 1 0;min-width:0;}
+.calc-picks label span{display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:5px;}
+.calc-picks .fb-field{width:100%;}
+
+.calc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;}
+.calc-head-ctl{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.calc-ex-nm{font-size:var(--fs-headline);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ── Bar picker: the other half of every number on this screen ── */
+.barpick-wrap{position:relative;flex-shrink:0;}
+.barpick-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-family:inherit;
+  min-height:var(--tap);padding:7px 11px;border-radius:var(--r-pill);
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+  transition:transform var(--dur-fast) var(--ease-out),border-color var(--dur-fast) ease,background var(--dur-fast) ease;}
+.barpick-btn:active{transform:scale(0.94);}
+.barpick-wrap.open .barpick-btn{background:var(--h-dim);border-color:var(--h-acc);color:var(--h-ink);}
+.barpick-kg{font-size:var(--fs-body-sm);font-weight:800;font-variant-numeric:tabular-nums;}
+.barpop{
+  position:absolute;top:calc(100% + 8px);right:0;z-index:40;min-width:152px;
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-card);
+  box-shadow:0 12px 34px var(--shadow);padding:7px;
+  opacity:0;visibility:hidden;transform:translateY(-6px) scale(0.94);transform-origin:top right;
+  transition:opacity var(--dur-fast) ease,transform var(--dur) var(--ease-spring),visibility 0s linear var(--dur);
+}
+.barpick-wrap.open .barpop{opacity:1;visibility:visible;transform:translateY(0) scale(1);transition-delay:0s;}
+.barpop-t{font-size:var(--fs-label);color:var(--text3);font-weight:700;padding:4px 9px 7px;}
+.barpop-opt{display:flex;align-items:center;gap:9px;width:100%;cursor:pointer;font-family:inherit;
+  min-height:var(--tap);padding:9px 10px;border-radius:var(--r-btn);border:none;background:transparent;
+  color:var(--text2);font-size:var(--fs-body-sm);font-weight:700;text-align:left;
+  transition:background var(--dur-fast) ease,color var(--dur-fast) ease;}
+.barpop-opt:active{transform:scale(0.97);}
+.barpop-opt.on{background:var(--h-dim);color:var(--h-ink);}
+@media(prefers-reduced-motion:reduce){
+  .barpop{transition:opacity 1ms linear,visibility 0s linear 1ms;transform:none;}
+  .barpick-wrap.open .barpop{transform:none;}
+}
+/* The base weight is the one number everything else is derived from, so it is
+   a control you can reach, not a caption you squint at. */
+.calc-base{display:inline-flex;align-items:baseline;gap:5px;flex-shrink:0;cursor:pointer;
+  font-family:inherit;padding:7px 11px;min-height:var(--tap);border-radius:var(--r-pill);
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+  transition:transform var(--dur-fast) var(--ease-out),border-color var(--dur-fast) ease;}
+.calc-base:active{transform:scale(0.96);}
+.calc-base.custom{background:var(--h-dim);border-color:var(--h-acc);}
+.calc-base-lbl{font-size:var(--fs-label);color:var(--text3);}
+.calc-base.custom .calc-base-lbl{color:var(--h-ink);}
+.calc-base-v{font-size:var(--fs-body);font-weight:800;color:var(--h-ink);}
+.calc-base-u{font-size:var(--fs-label);color:var(--text3);}
+.calc-base svg{align-self:center;}
+
+/* The plates get their own line. Cramming them into a 110px right-hand column
+   clipped them the moment a lift needed more than three. */
 .pct-row{
-  display:grid;grid-template-columns:76px 1fr auto;gap:14px;align-items:center;
-  padding:14px 12px;border-radius:var(--r-btn);background:var(--bg3);
+  padding:13px 12px;border-radius:var(--r-btn);background:var(--bg3);
   border:1px solid var(--border);margin-bottom:8px;cursor:pointer;
 }
 .pct-row:active{transform:scale(0.99);}
+.pct-main{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;}
 .pct-row .p{font-size:var(--fs-headline);font-weight:800;color:var(--h-ink);}
 .pct-row .kg{font-size:var(--fs-title);font-weight:800;letter-spacing:-0.5px;}
 .pct-row .zn{font-size:var(--fs-label);color:var(--text2);margin-top:2px;}
-.pct-row .pl{font-size:var(--fs-label);color:var(--text3);text-align:right;max-width:110px;}
+.pct-row .zn-real{color:var(--text3);}
+.pct-plates{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0 0 90px;}
 .pct-row.hi{border-color:var(--h-acc);background:var(--h-dim);}
 .pct-row.off{opacity:.42;background:transparent;border-style:dashed;}
 .pct-row.off .p{color:var(--text3);}
 .pct-row.off .kg{color:var(--text3);font-weight:700;}
+.pl-bare{font-size:var(--fs-label);color:var(--text3);}
+.calc-hint{font-size:var(--fs-label);color:var(--text3);text-align:center;margin:14px 0 26px;}
+
+/* What to actually carry to the platform. */
+.calc-needs{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-card);
+  padding:14px 15px;margin-bottom:30px;}
+.calc-needs-t{font-size:var(--fs-label);color:var(--text2);font-weight:700;margin-bottom:9px;}
+.calc-needs-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.calc-needs-s{font-size:var(--fs-label);color:var(--text3);margin-top:9px;line-height:1.5;}
+.calc-needs-s b{color:var(--text2);}
+.pchip.pbar{background:var(--bg5);color:var(--text2);border:1px solid var(--border2);}
+
+/* ─── EL TEU GIMNÀS (Més → plate inventory) ─── */
+.bar-pick{display:flex;gap:8px;}
+.bar-pick button{flex:1;min-height:var(--tap);border-radius:var(--r-btn);cursor:pointer;
+  font-family:inherit;font-size:var(--fs-body-sm);font-weight:700;
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+  transition:background var(--dur-fast) ease,border-color var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out);}
+.bar-pick button:active{transform:scale(0.96);}
+.bar-pick button.on{background:var(--h-dim);border-color:var(--h-acc);color:var(--h-ink);}
+.plate-pick{display:flex;flex-wrap:wrap;gap:8px;}
+/* Off = the disc is not in your box: drained of colour, dashed, obviously absent. */
+.plate-pick button{min-width:52px;min-height:var(--tap);padding:0 12px;border-radius:var(--r-pill);
+  cursor:pointer;font-family:inherit;font-size:var(--fs-body-sm);font-weight:800;
+  border:1.5px solid transparent;
+  transition:opacity var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out),filter var(--dur-fast) ease;}
+.plate-pick button:active{transform:scale(0.94);}
+.plate-pick button.off{opacity:.4;filter:grayscale(1);border-style:dashed;border-color:var(--border3);}
+.gym-preview{margin-top:14px;font-size:var(--fs-label);color:var(--text3);line-height:1.55;}
+.gym-preview b{color:var(--text2);}
 
 /* ─── HISTORIAL (point 16): near-fullscreen, calendar + editable list ── */
 .hist-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px;}
 .hist-dow{font-size:var(--fs-label);color:var(--text3);text-align:center;font-weight:700;padding-bottom:4px;}
 .hist-cal{gap:4px;}
 .hist-day{
-  aspect-ratio:1;border-radius:10px;border:1.5px solid transparent;background:var(--bg3);
+  /* min-width/min-height:0 is load-bearing: a grid item with aspect-ratio keeps
+     its automatic minimum size, which made every cell wider than its 1fr track
+     and pushed the Sunday column outside the card. */
+  aspect-ratio:1;min-width:0;min-height:0;
+  border-radius:10px;border:1.5px solid transparent;background:var(--bg3);
   display:flex;align-items:center;justify-content:center;
   font-size:var(--fs-body-sm);font-weight:700;color:var(--text3);cursor:pointer;font-family:inherit;
   position:relative;transition:transform var(--dur-fast) var(--ease-out);
@@ -1059,7 +1149,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   appearance: none;
   -webkit-appearance: none;
 }
-.home-chart-wrap { position: relative; width: 100%; height: 120px; }
+.home-chart-wrap { position: relative; width: 100%; height: 175px; margin: 6px 0 0; }
 .home-stat-row {
   display: flex;
   gap: 6px;
@@ -1076,22 +1166,42 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
 .home-stat-pill .l { font-size:12px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-top: 1px; }
 
 /* ─── ONBOARDING VALUE PREVIEW ─────────────────────────────────── */
-.ob-preview-card {
-  background: var(--bg2);
-  border: 0.5px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: var(--sp-md);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  animation: fadeUp 0.3s var(--ease-out) both;
+/* ── Welcome slide: three rows, three fragments, staggered in ────────
+   Everything on this screen shares one entrance rhythm (--i sets the beat),
+   so it assembles itself instead of appearing all at once. */
+.ob-feats { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.ob-feat,
+.ob-steps,
+.ob-foot { animation: fadeUp .42s var(--ease-out) both; animation-delay: calc(var(--i) * 70ms + 120ms); }
+.ob-feat {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: var(--r-card); padding: 14px 15px;
 }
-.ob-preview-icon { flex-shrink: 0; }
-.ob-preview-body { flex: 1; min-width: 0; }
-.ob-preview-title { font-size:15px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-.ob-preview-sub { font-size:13px; color: var(--text2); line-height: 1.4; }
-.ob-preview-val { font-size:19px; font-weight: 800; color: var(--h-acc); flex-shrink: 0; }
+.ob-feat-ico {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.ob-feat-ico svg { width: 22px; height: 22px; }
+.ob-feat-ico.h { background: var(--h-dim); color: var(--h-ink); }
+.ob-feat-ico.w { background: var(--w-dim); color: var(--w-ink); }
+.ob-feat b { display: block; font-size: 16px; font-weight: 800; letter-spacing: -0.2px; }
+.ob-feat em { display: block; font-size: 13.5px; color: var(--text2); font-style: normal; margin-top: 2px; }
+/* A quiet promise about how long this takes, with the three dots that follow. */
+.ob-steps {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  font-size: 13px; color: var(--text3); margin-bottom: 18px;
+}
+.ob-steps-dots { display: inline-flex; gap: 4px; }
+.ob-steps-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--border3); display: block; }
+.ob-steps-dots i:first-child { background: var(--h-acc); }
+.ob-foot {
+  text-align: center; font-size: 13px; color: var(--text3);
+  line-height: 1.5; margin-top: 14px; padding: 0 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ob-feat, .ob-steps, .ob-foot { animation-duration: 1ms; animation-delay: 0s; }
+}
 
 
 /* ─── V6 BOTTOM TAB BAR ──────────────────────────────────────── */
@@ -1209,7 +1319,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
 .inici-hero-sub {
   font-size:14px;
   color: var(--text3);
-  margin-top: 2px;
+  margin-top: 6px;
 }
 .inici-hero-date {
   font-size:13px;
@@ -1219,7 +1329,15 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   flex-shrink: 0;
   line-height: 1.4;
 }
-.inici-body { padding: 18px var(--gutter) 16px; }
+.inici-body { padding: 22px var(--gutter) 16px; }
+/* One rhythm for the whole board: every block gets the same air below it, and
+   every section title the same air above its content. Inici was reading as a
+   stack of headings glued to their contents. */
+.inici-body > * { margin-bottom: 30px; }
+.inici-body > *:last-child { margin-bottom: 0; }
+.inici-body .ctitle { margin: 0 0 14px; }
+/* the weekly bar and the day strip are two separate thoughts */
+.home-cal #weekBar:not(:empty) { margin-bottom: 26px; }
 
 /* empty state */
 .inici-empty {
@@ -1364,6 +1482,30 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   letter-spacing: -0.5px;
   padding: var(--safe-top) 16px 18px;
   color: var(--text);
+}
+/* ── Birthday: once a year the greeting throws a few sparks. Restrained on
+      purpose — a burst that settles, not a loop that nags. ── */
+.aj-greeting.bday .bday-line{display:inline-flex;align-items:center;gap:2px;position:relative;}
+.aj-greeting.bday .bday-sub{display:block;font-size:15px;font-weight:600;color:var(--text3);margin-top:6px;letter-spacing:0;}
+.bday-pop{position:relative;display:inline-block;width:26px;height:26px;flex-shrink:0;}
+.bday-pop i{
+  position:absolute;left:50%;top:60%;width:6px;height:6px;border-radius:2px;
+  transform-origin:center;opacity:0;
+  animation:bdayPop 1.5s var(--ease-out) var(--d) 2 both;
+}
+.bday-pop i:nth-child(1){background:var(--h-acc);--dx:-16px;--dy:-20px;--rot:-140deg;}
+.bday-pop i:nth-child(2){background:var(--w-acc);--dx:-6px;--dy:-27px;--rot:100deg;}
+.bday-pop i:nth-child(3){background:var(--green);--dx:7px;--dy:-25px;--rot:-70deg;}
+.bday-pop i:nth-child(4){background:var(--h-acc2);--dx:17px;--dy:-16px;--rot:160deg;}
+.bday-pop i:nth-child(5){background:var(--w-ink);--dx:0px;--dy:-12px;--rot:40deg;border-radius:50%;}
+@keyframes bdayPop{
+  0%   {opacity:0;transform:translate(0,0) scale(.4) rotate(0deg);}
+  18%  {opacity:1;}
+  60%  {opacity:1;transform:translate(var(--dx),var(--dy)) scale(1) rotate(var(--rot));}
+  100% {opacity:0;transform:translate(calc(var(--dx)*1.15),calc(var(--dy) + 10px)) scale(.85) rotate(var(--rot));}
+}
+@media(prefers-reduced-motion:reduce){
+  .bday-pop i{animation:none;opacity:1;transform:translate(var(--dx),var(--dy));}
 }
 .aj-row {
   display: flex;
@@ -1575,10 +1717,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 /* ─── v7.7 DURABILITY UI: backup nudge + what's-new ─────────────── */
 .backup-nudge{display:none;align-items:center;gap:10px;flex-wrap:wrap;
   background:var(--dim);border:0.5px solid var(--border2);border-radius:var(--r);
-  padding:11px 12px;margin-bottom:var(--sp-md);font-size:14px;color:var(--text2);line-height:1.45;}
+  padding:13px 14px;margin:10px 0 30px;font-size:14px;color:var(--text2);line-height:1.45;}
 .backup-nudge .nudge-txt{flex:1;min-width:150px;}
 .backup-nudge b{color:var(--text);font-weight:700;}
 .backup-nudge .btn{width:auto;flex-shrink:0;}
+.backup-nudge .nudge-x{align-self:flex-start;background:none;border:none;color:var(--text3);
+  font-size:20px;line-height:1;cursor:pointer;padding:0 2px;flex-shrink:0;font-family:inherit;}
 .wn-ver{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.5px;margin-bottom:6px;}
 .wn-list{margin:0;padding-left:18px;font-size:15px;color:var(--text2);line-height:1.6;}
 .wn-list li{margin-bottom:4px;}
@@ -1602,15 +1746,15 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
    Was: 4 identical stat pills + a box-inside-a-box suggestion, all at
    one weight. Now: one hero number on the bare board, everything else
    demoted to a quiet meta line; sections divided by hairlines. */
-.home-focus{padding:2px 2px 14px;margin-bottom: var(--sp-lg);border-bottom:0.5px solid var(--border);}
-.home-focus-controls{display:flex;gap:7px;margin-bottom:12px;}
+.home-focus{padding:2px 2px 20px;margin-bottom: var(--sp-lg);border-bottom:0.5px solid var(--border);}
+.home-focus-controls{display:flex;gap:7px;margin-bottom:20px;}
 /* Quiet controls: gold is reserved for the hero number (The Chalk Rule). */
 .home-focus-controls .home-chart-ex-sel{flex:1 1 0;min-width:0;text-align:center;background:var(--bg3);border-color:var(--border2);color:var(--text2);}
-.home-focus-val{font-size:44px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-0.03em;line-height:1.05;margin:1px 0 3px;}
+.home-focus-val{font-size:44px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-0.03em;line-height:1.05;margin:1px 0 6px;}
 @media(prefers-color-scheme:light){.home-focus-val{color:var(--acc2);}}
-.home-focus-meta{font-size:13px;color:var(--text3);margin-bottom:14px;}
+.home-focus-meta{font-size:13px;color:var(--text3);margin-bottom:24px;}
 .home-focus-meta b{color:var(--text2);font-weight:700;font-variant-numeric:tabular-nums;}
-.home-suggestion{width:100%;margin-top:12px;padding:10px 2px 0;text-align:left;background:transparent;border:none;border-top:0.5px solid var(--border);cursor:pointer;font-family:inherit;color:var(--text2);font-size:14px;line-height:1.45;transition:color var(--dur-fast) ease;}
+.home-suggestion{width:100%;margin-top:24px;padding:16px 2px 0;text-align:left;background:transparent;border:none;border-top:0.5px solid var(--border);cursor:pointer;font-family:inherit;color:var(--text2);font-size:14px;line-height:1.45;transition:color var(--dur-fast) ease;}
 .home-suggestion:active{color:var(--text);}
 .home-cal{padding:2px 2px 4px;}
 .home-cal .cal-strip{padding:6px 0;}
@@ -1690,12 +1834,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <!-- Weekly bar + activity strip: ABOVE Progrés recent (point 7) -->
     <div class="home-cal" id="calStripCard">
       <div id="weekBar"></div>
-      <div class="ctitle" style="margin:0 0 6px">Activitat recent</div>
+      <div class="ctitle">Activitat recent</div>
       <div class="cal-strip" id="calStrip"></div>
     </div>
     <!-- Progress chart -->
     <div class="home-focus anim-fadeup" id="homeChartCardInici" style="display:none">
-      <div class="ctitle" style="margin:0 0 8px">Progrés recent</div>
+      <div class="ctitle">Progrés recent</div>
       <!-- point 6: the selectors were unlabelled and the first defaulted to a meaningless "Totes" -->
       <div class="home-focus-controls">
         <label style="flex:1;min-width:0"><span style="display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:4px">Família</span>
@@ -1748,9 +1892,15 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <button class="cat-btn cpx" id="catCpx" onclick="calcPickCat('complex')"><i data-lucide="repeat"></i>Complex</button>
       <button class="cat-btn gym" id="catGym" onclick="calcPickCat('gym')"><i data-lucide="gymnast"></i>Gymnastics</button>
     </div>
+    <!-- Família + Exercici, the same two-step pick as Inici: a flat list of
+         every lift in the box is a scroll, not a choice. -->
     <div id="calcExWrap" style="display:none;margin-bottom:18px">
-      <label style="font-size:var(--fs-label);color:var(--text2)">Exercici</label>
-      <select id="calcPickEx" class="fb-field" style="margin-top:6px" onchange="calcPickEx()"></select>
+      <div class="calc-picks">
+        <label id="calcFamLbl"><span>Família</span>
+          <select id="calcPickFam" class="fb-field" onchange="calcPickFam()"></select></label>
+        <label><span>Exercici</span>
+          <select id="calcPickEx" class="fb-field" onchange="calcPickEx()"></select></label>
+      </div>
       <div id="calcNone" style="display:none;font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5;margin-top:10px"></div>
     </div>
     <div id="calcOut"></div>
@@ -1759,8 +1909,9 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   <!-- Daily suggestion (point 16): short, direct, no dropdown. -->
   <div id="entrSuggest" style="padding:0 var(--gutter) 18px"></div>
 
-  <!-- Historial: last thing on the page, per Àlex -->
-  <div style="padding:24px var(--gutter) 28px">
+  <!-- Historial: last thing on the page, per Àlex. Hidden while the calculator
+       is open — it is noise you are not looking for mid-warm-up. -->
+  <div style="padding:24px var(--gutter) 28px" id="entrHistBlock">
     <button class="btn btn-s" onclick="openHistorial()"><i data-lucide="calendar" style="width:18px;height:18px;margin-right:8px"></i>Veure l'historial</button>
   </div>
 </div>
@@ -2399,7 +2550,6 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
     </div>
 
-    <div style="padding:10px 0"><button class="btn btn-s" onclick="closeDetail()">Tancar</button></div>
   </div>
 </div>
 
@@ -2522,7 +2672,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     </div>
 
     <!-- ── PROFILE (green) ── -->
-    <div class="card aj-nav aj-nav-last anim-fadeup">
+    <div class="card aj-nav aj-nav-mid anim-fadeup">
       <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAjSection('ajPBody','ajPArrow')">
         <div style="display:flex;align-items:center;gap:10px">
           <i data-lucide="user" style="width:19px;height:19px;color:var(--green)"></i>
@@ -2546,7 +2696,34 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <div><label>Pes (kg)</label><input type="number" id="ajProfileWeight" step="0.5" min="30" max="200" placeholder="75"></div>
           <div><label>Alçada (cm)</label><input type="number" id="ajProfileHeight" min="100" max="230" placeholder="175"></div>
         </div>
+        <div class="fg"><label>Data de naixement</label>
+          <input type="date" id="ajProfileDob" onchange="ajDobEcho()">
+          <div style="font-size:13px;color:var(--text3);margin-top:5px" id="ajDobEcho"></div></div>
         <button class="btn btn-p" style="background:var(--green);color:#000;margin-top:4px" onclick="saveAjProfile()">Guardar perfil</button>
+      </div>
+    </div>
+
+    <!-- ── EL TEU GIMNÀS: which plates exist, so %Calc stops proposing weights
+         you cannot build (gold, it belongs to the força side) ── -->
+    <div class="card aj-nav aj-nav-last anim-fadeup">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAjSection('ajGymBody','ajGymArrow')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <i data-lucide="scale" style="width:19px;height:19px;color:var(--h-ink)"></i>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--h-ink)">El teu gimnàs</div>
+            <div style="font-size:13px;color:var(--text2);margin-top:1px">Barra i discos disponibles</div>
+          </div>
+        </div>
+        <div id="ajGymArrow" style="font-size:17px;color:var(--text3);transition:transform var(--dur) var(--ease-out)">▸</div>
+      </div>
+      <div id="ajGymBody" style="display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(242,174,62,0.2)">
+        <div class="tip" style="border-color:var(--h-ink);margin-bottom:12px">La calculadora de % només et proposarà pesos que puguis muntar de veritat. Marca els discos que teniu al box (i el pes de la barra) i els càlculs s&#39;hi adaptaran.</div>
+        <div class="fg"><label>Barra</label>
+          <div class="bar-pick" id="ajBarPick"></div></div>
+        <div class="fg" style="margin-top:14px"><label>Discos disponibles (per parelles)</label>
+          <div class="plate-pick" id="ajPlatePick"></div></div>
+        <div id="ajGymPreview" class="gym-preview"></div>
+        <button class="btn btn-p" style="margin-top:12px" onclick="saveAjGym()">Guardar</button>
       </div>
     </div>
 
@@ -2557,9 +2734,15 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <button class="btn btn-s btn-sm" onclick="document.getElementById('impFile').click()">Restaurar una còpia</button>
         <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(event)">
       </div>
+      <!-- The warning used to shout at everyone who opened Dades. It now stays
+           folded away until you actually reach for the delete. -->
       <div style="border-top:0.5px solid var(--border);padding-top:12px">
-        <div style="font-size:13px;color:var(--text3);margin-bottom:8px;line-height:1.5"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--red);vertical-align:-1px"></i> <strong style="color:var(--text)">Zona de perill</strong> — Esborra totes les dades i reinicia l'app com si fos la primera vegada. Útil per a testing o per cedir el dispositiu a algú altre. <strong>Irreversible.</strong></div>
-        <button class="btn btn-sm" onclick="resetApp()" style="background:transparent;color:var(--red);border:0.5px solid var(--red);font-weight:700;width:100%"><i data-lucide="trash" style="width:13px;height:13px;vertical-align:-2px"></i> Eliminar totes les dades i reiniciar</button>
+        <button class="btn btn-sm" id="dangerOpenBtn" onclick="revealDangerZone()" style="width:100%;background:transparent;color:var(--red);border:0.5px solid var(--red);font-weight:700"><i data-lucide="trash" style="width:13px;height:13px;vertical-align:-2px;margin-right:6px"></i>Eliminar totes les dades i reiniciar</button>
+        <div id="dangerZone" style="display:none">
+          <div style="font-size:13px;color:var(--text3);margin-bottom:10px;line-height:1.5"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--red);vertical-align:-1px"></i> <strong style="color:var(--text)">Zona de perill</strong> — Esborra totes les dades i reinicia l'app com si fos la primera vegada. Útil per a testing o per cedir el dispositiu a algú altre. <strong>Irreversible.</strong></div>
+          <button class="btn btn-sm" onclick="resetApp()" style="background:transparent;color:var(--red);border:0.5px solid var(--red);font-weight:700;width:100%"><i data-lucide="trash" style="width:13px;height:13px;vertical-align:-2px"></i> Confirmar: esborrar-ho tot</button>
+          <button class="btn btn-s btn-sm" onclick="hideDangerZone()" style="width:100%;margin-top:7px">Cancel·lar</button>
+        </div>
       </div>
     </div>
 
@@ -2573,6 +2756,15 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <input type="checkbox" id="hcToggle" onchange="setContrast(this.checked?'high':'normal')"
                style="width:24px;height:24px;accent-color:var(--acc);flex-shrink:0">
       </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-size:var(--fs-body-sm);font-weight:700">Vibració</div>
+          <div style="font-size:var(--fs-label);color:var(--text2);margin-top:2px;line-height:1.45" id="hapticNote"></div>
+        </div>
+        <input type="checkbox" id="hapticToggle" onchange="setHaptics(this.checked)"
+               style="width:24px;height:24px;accent-color:var(--acc);flex-shrink:0">
+      </div>
+      <button class="btn btn-s btn-sm" style="width:100%;margin-top:10px" onclick="testHaptic()">Provar la vibració</button>
     </div>
 
     <div class="card anim-fadeup anim-delay-2">
@@ -2587,7 +2779,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.16<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.17<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2673,84 +2865,34 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <div style="font-size:32px;font-weight:800;margin-bottom:4px"><span class="prsonal-pr-lg">PR</span><span class="prsonal-s-lg">sonal</span></div>
           <div style="font-size:15px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase">Força · WoD · Progressió</div>
         </div>
-        <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:20px;line-height:1.4">El teu registre personal<br>d'entrenament CrossFit</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:13px 14px;border:0.5px solid var(--border)">
-            <i data-lucide="dumbbell" style="width:24px;height:24px;color:var(--h-ink)"></i>
-            <div><div style="font-size:15px;font-weight:700">Força i halterofília</div><div style="font-size:13px;color:var(--text2);margin-top:1px">Registra sèries, calcula el teu 1RM estimat i segueix la progressió</div></div>
+        <!-- Three rows, three fragments. This screen used to say the same four
+             things the next one said, at length; nobody reads a feature list
+             twice. Privacy moved under the button, where it reads as
+             reassurance instead of a fourth sales bullet. -->
+        <div class="ob-feats">
+          <div class="ob-feat" style="--i:0">
+            <span class="ob-feat-ico h"><i data-lucide="dumbbell"></i></span>
+            <span><b>Força</b><em>Sèries, 1RM i progressió</em></span>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:13px 14px;border:0.5px solid var(--border)">
-            <i data-lucide="zap" style="width:24px;height:24px;color:var(--w-ink)"></i>
-            <div><div style="font-size:15px;font-weight:700">WoDs i metcons</div><div style="font-size:13px;color:var(--text2);margin-top:1px">Log complet de WoDs amb AMRAP, EMOM, For Time i Benchmarks</div></div>
+          <div class="ob-feat" style="--i:1">
+            <span class="ob-feat-ico w"><i data-lucide="zap"></i></span>
+            <span><b>WoD</b><em>AMRAP, EMOM, For Time, Tabata</em></span>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:13px 14px;border:0.5px solid var(--border)">
-            <i data-lucide="bar-chart-2" style="width:24px;height:24px;color:var(--h-ink)"></i>
-            <div><div style="font-size:15px;font-weight:700">Mètriques i progressió</div><div style="font-size:13px;color:var(--text2);margin-top:1px">Wilks, RPE, força relativa, gràfics i objectius personals</div></div>
+          <div class="ob-feat" style="--i:2">
+            <span class="ob-feat-ico h"><i data-lucide="bar-chart-2"></i></span>
+            <span><b>Mètriques</b><em>Rècords, gràfics i objectius</em></span>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:13px 14px;border:0.5px solid var(--border)">
-            <i data-lucide="lock" style="width:24px;height:24px;color:var(--text2)"></i>
-            <div><div style="font-size:15px;font-weight:700">Privat per disseny</div><div style="font-size:13px;color:var(--text2);margin-top:1px">Les teves dades d'entrenament queden al teu dispositiu. Sense compte ni subscripció</div></div>
-          </div>
+        </div>
+        <div class="ob-steps" style="--i:3">
+          <span>Dos minuts per configurar-ho</span>
+          <span class="ob-steps-dots"><i></i><i></i><i></i></span>
         </div>
         <button class="btn btn-p" onclick="obNext()" style="font-size:17px">Comencem →</button>
+        <div class="ob-foot" style="--i:4"><i data-lucide="lock" style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>Les teves dades es queden al teu dispositiu. Sense compte ni subscripció.</div>
       </div>
 
-      <!-- SLIDE 1: Value preview (what you'll track) -->
+      <!-- SLIDE 1: Your profile -->
       <div class="ob-slide" id="ob1" style="display:none">
-        <div style="text-align:center;padding:16px 0 14px">
-          <div style="font-size:21px;font-weight:800;margin-bottom:4px">El teu registre personal</div>
-          <div style="font-size:15px;color:var(--text2)">Tot centralitzat. Sempre disponible.</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-          <div class="ob-preview-card" style="animation-delay:0ms">
-            <div class="ob-preview-icon"><i data-lucide="dumbbell" style="width:26px;height:26px;color:var(--h-ink)"></i></div>
-            <div class="ob-preview-body">
-              <div class="ob-preview-title">Força &amp; Halterofília</div>
-              <div class="ob-preview-sub">Registra sèries, calcula el 1RM automàticament i segueix la progressió amb gràfics</div>
-            </div>
-            <div class="ob-preview-val">1RM</div>
-          </div>
-          <div class="ob-preview-card" style="animation-delay:60ms">
-            <div class="ob-preview-icon"><i data-lucide="zap" style="width:26px;height:26px;color:var(--w-ink)"></i></div>
-            <div class="ob-preview-body">
-              <div class="ob-preview-title">WoDs &amp; Metcons</div>
-              <div class="ob-preview-sub">AMRAP, EMOM, For Time, Tabata, Chipper. Resultat, escala i notes.</div>
-            </div>
-            <div class="ob-preview-val" style="color:var(--w-ink)">WoD</div>
-          </div>
-          <div class="ob-preview-card" style="animation-delay:120ms">
-            <div class="ob-preview-icon"><i data-lucide="bar-chart-2" style="width:26px;height:26px;color:var(--h-ink)"></i></div>
-            <div class="ob-preview-body">
-              <div class="ob-preview-title">% Calc instantani</div>
-              <div class="ob-preview-sub">Selecciona exercici → veus tots els % i els discos a posar. Sense càlculs.</div>
-            </div>
-            <div class="ob-preview-val" style="font-size:15px;color:var(--h-ink)">80%<br><span style="font-size:12px;color:var(--text3);font-weight:400">= 96 kg</span></div>
-          </div>
-          <div class="ob-preview-card" style="animation-delay:180ms">
-            <div class="ob-preview-icon"><i data-lucide="trophy" style="width:26px;height:26px;color:var(--h-ink)"></i></div>
-            <div class="ob-preview-body">
-              <div class="ob-preview-title">PRs &amp; Objectius</div>
-              <div class="ob-preview-sub">Celebra nous rècords amb confeti. Defineix objectius amb data límit i segueix-los.</div>
-            </div>
-            <div class="ob-preview-val" style="color:var(--green);font-size:15px">+2.5 kg</div>
-          </div>
-          <div class="ob-preview-card" style="animation-delay:240ms">
-            <div class="ob-preview-icon"><i data-lucide="lock" style="width:26px;height:26px;color:var(--text2)"></i></div>
-            <div class="ob-preview-body">
-              <div class="ob-preview-title">Privat per disseny</div>
-              <div class="ob-preview-sub">Les teves dades d'entrenament es guarden al teu dispositiu. Sense compte ni subscripció.</div>
-            </div>
-            <div class="ob-preview-val" style="font-size:15px;color:var(--text3)">local</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-s" onclick="obBack()" style="flex:1">← Enrere</button>
-          <button class="btn btn-p" onclick="obNext()" style="flex:2">Continua →</button>
-        </div>
-      </div>
-
-      <!-- SLIDE 2: Profile setup -->
-      <div class="ob-slide" id="ob2" style="display:none">
         <div style="text-align:center;padding:20px 0 18px">
           <div style="margin-bottom:8px"><i data-lucide="user" style="width:44px;height:44px;color:var(--text2)"></i></div>
           <div style="font-size:21px;font-weight:800;margin-bottom:6px">El teu perfil</div>
@@ -2764,11 +2906,37 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
               <button class="wtbtn" id="setupFemale" onclick="selSetupSex('female',this)" style="flex:1">Femení</button>
             </div>
           </div>
+          <div class="fg"><label>Data de naixement</label>
+            <input type="date" id="setupDob" onchange="setupDobEcho()">
+            <div style="font-size:13px;color:var(--text3);margin-top:5px" id="setupDobEcho"></div></div>
           <div class="frow">
             <div><label>Pes corporal (kg)</label><input type="number" id="setupWeight" placeholder="75" step="0.5" min="30" max="200"></div>
             <div><label>Alçada (cm)</label><input type="number" id="setupHeight" placeholder="175" min="100" max="230"></div>
           </div>
           <div style="font-size:13px;color:var(--text3);margin-top:4px">Pes i alçada s'usen per calcular Wilks, força relativa i classificació. No es comparteixen.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-s" onclick="obBack()" style="flex:1">← Enrere</button>
+          <button class="btn btn-p" onclick="obNext()" style="flex:2">Continua →</button>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: The gym. Asked here so %Calc is honest from the first session
+           instead of assuming a full IWF set that most boxes do not own. -->
+      <div class="ob-slide" id="ob2" style="display:none">
+        <div style="text-align:center;padding:20px 0 18px">
+          <div style="margin-bottom:8px"><i data-lucide="scale" style="width:44px;height:44px;color:var(--h-ink)"></i></div>
+          <div style="font-size:21px;font-weight:800;margin-bottom:6px">El teu gimnàs</div>
+          <div style="font-size:15px;color:var(--text2);line-height:1.5">Amb què entrenes? Així la calculadora de % només et proposarà pesos que puguis muntar de veritat.</div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="fg"><label>Barra habitual</label>
+            <div class="bar-pick" id="obBarPick"></div>
+            <div style="font-size:13px;color:var(--text3);margin-top:7px;line-height:1.45">No t'hi capfiquis ara: a la calculadora pots canviar-la en un toc, sessió a sessió.</div></div>
+          <div class="fg" style="margin-top:14px"><label>Discos que teniu al box (per parelles)</label>
+            <div class="plate-pick" id="obPlatePick"></div></div>
+          <div id="obGymPreview" class="gym-preview"></div>
+          <div style="font-size:13px;color:var(--text3);margin-top:10px">Ho pots canviar sempre a <strong style="color:var(--text)">Més → El teu gimnàs</strong>.</div>
         </div>
         <label id="acceptRow" style="display:flex;align-items:flex-start;gap:10px;margin:2px 2px 14px;cursor:pointer">
           <input type="checkbox" id="setupAccept" style="margin-top:1px;width:18px;height:18px;accent-color:var(--w-ink);flex-shrink:0">
@@ -3224,10 +3392,30 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   </div>
 </div>
 
+<!-- Set your own 100% for one exercise (%Calc) -->
+<div class="sheet" id="baseSheet" style="z-index:560">
+  <div class="sheet-in">
+    <div class="stitle">El teu 100%</div>
+    <div style="font-size:var(--fs-body);font-weight:800;margin-top:10px" id="baseSheetTitle"></div>
+    <div class="ssub" style="margin:6px 0 14px;line-height:1.55" id="baseSheetSub"></div>
+    <div class="fg"><label>100% (kg)</label>
+      <input type="number" id="baseSheetVal" class="fb-field" step="0.5" min="0" placeholder="p. ex. 120"></div>
+    <button class="btn btn-p" style="width:100%;margin-top:14px" onclick="saveBaseSheet()">Desar</button>
+    <button class="btn btn-s" id="baseSheetReset" style="width:100%;margin-top:8px" onclick="resetBaseSheet()">Tornar al càlcul automàtic</button>
+    <button class="btn btn-s" style="width:100%;margin-top:8px" onclick="closeBaseSheet()">Cancel·lar</button>
+  </div>
+</div>
+
+<!-- The iOS haptic engine. Must be rendered (not display:none) for Safari to
+     fire the system tap, so it is parked off-screen rather than hidden. -->
+<label id="hapticSwitchLabel" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden">
+  <input type="checkbox" switch id="hapticSwitch" tabindex="-1">
+</label>
+
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.16</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.17</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3271,6 +3459,16 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="stitle">Novetats</div>
     <div id="whatsNewBody" style="margin:10px 0 18px"></div>
     <button class="btn btn-p" onclick="closeWhatsNew()">Entesos</button>
+  </div>
+</div>
+
+<!-- One-time top-up for profiles made before v8.17 -->
+<div class="sheet" id="topUpSheet">
+  <div class="sheet-in">
+    <div class="stitle">Completa el teu perfil</div>
+    <div id="topUpBody" style="margin:10px 0 18px;font-size:var(--fs-body-sm);color:var(--text2)"></div>
+    <button class="btn btn-p" style="width:100%" onclick="goTopUp()">Completar ara</button>
+    <button class="btn btn-s" style="width:100%;margin-top:8px" onclick="dismissTopUp()">Més tard</button>
   </div>
 </div>
 
@@ -3336,6 +3534,33 @@ function setContrast(mode){
   // charts read hardcoded hexes (canvas can't resolve CSS vars) — re-render
   if(typeof activeTab!=='undefined'&&activeTab) switchTab(activeTab);
   haptic('light');
+}
+// The toggle, and a way to actually find out whether this device can do it —
+// there is no API that reports "the user felt that", so the honest answer is a
+// button that fires one and asks.
+function setHaptics(on){
+  if(!D.profile) D.profile={};
+  D.profile.haptics = !!on;
+  save();
+  syncHapticUI();
+  if(on) haptic('success');
+}
+function syncHapticUI(){
+  const t=document.getElementById('hapticToggle'), n=document.getElementById('hapticNote');
+  if(!t||!n) return;
+  const cap=hapticCapability();
+  t.checked = hapticsEnabled();
+  t.disabled = !cap.ok;
+  n.textContent = cap.ok ? cap.detail
+    : 'No disponible: ' + cap.detail;
+  n.style.color = cap.ok ? 'var(--text2)' : 'var(--text3)';
+}
+function testHaptic(){
+  const cap=hapticCapability();
+  if(!cap.ok){ toast('Aquest navegador no pot vibrar','error'); return; }
+  if(!hapticsEnabled()){ toast('Activa la vibració primer','error'); return; }
+  haptic('warning');                       // the most noticeable pattern we have
+  setTimeout(()=>toast('Has notat res? ('+cap.how+')'),260);
 }
 function syncContrastToggle(){
   const t=document.getElementById('hcToggle');
@@ -3597,7 +3822,9 @@ function defaultData(){
     benchmarks:[...DEF_BENCH.map(e=>({...e}))],benchEnt:[],
     calcPcts:[...ALL_PCTS],
     templates:[...DEF_TPL.map(t=>({...t}))],goals:[],tplRemoved:[],seenHints:[],
-    profile:{name:'',sex:'male',weightKg:0,heightCm:0,setupDone:false}};
+    // dob, not age: an age typed once is wrong within a year. Everything that
+    // needs a number derives it from the date (ageFromDob).
+    profile:{name:'',sex:'male',dob:'',weightKg:0,heightCm:0,setupDone:false}};
 }
 function migrate(parsed){
   // Always ensure all arrays exist regardless of schema version
@@ -3709,7 +3936,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.16';
+const APP_VERSION='8.17';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -3832,7 +4059,24 @@ function gymRecords(exId){
 function hasCalcBaseline(exId){
   const ex=D.hEx.find(e=>e.id===exId);
   if(!ex) return false;
+  if(calcCustomBase(exId)) return true;   // you told us your 100%; that counts
   return isGymEx(ex) ? !!gymRecords(exId).lastre : !!best1RM(exId);
+}
+// A hand-set 100% for one exercise. Lives inside profile, so migrate() carries
+// it with the profile spread instead of needing a new top-level key.
+function calcCustomBase(exId){
+  const m=D.profile&&D.profile.calcBase;
+  const v=m&&+m[exId];
+  return v>0?v:null;
+}
+// {v, custom} — what the percentages are taken from, and whether it is yours.
+function calcBaseFor(exId){
+  const ex=D.hEx.find(e=>e.id===exId);
+  if(!ex) return null;
+  const mine=calcCustomBase(exId);
+  if(mine) return {v:mine,custom:true};
+  const auto=isGymEx(ex)?gymRecords(exId).lastre:best1RM(exId);
+  return auto?{v:auto,custom:false}:null;
 }
 
 // rm1 is a ratchet cache that only ever went UP and was never recomputed, so a
@@ -3893,27 +4137,108 @@ function sessImpl(ent){
 }
 
 // ══ PLATES ══
-function calcPlates(tgt,bar=20){
-  let rem=(tgt-bar)/2; const res=[];
-  if(rem<0)return[];
-  for(const p of PLATES){const c=Math.floor(rem/p);if(c>0){res.push({p,c});rem=+(rem-c*p).toFixed(2);}}
-  return res;
+// Which denominations your gym actually owns lives in profile.plateSet. This
+// matters: a box with no 2.5s cannot build 48.5 kg, and the old greedy maths
+// happily printed plates that came up 0.25 kg short of the number above them.
+// Everything here works from what you can really load.
+const ALL_PLATE_DENOMS=[25,20,15,10,5,2.5,2,1.5,1,0.5];
+const ALL_BARS=[20,15,10];
+const DEF_PLATE_SET={bar:20,denoms:[25,20,15,10,5,2.5,2,1.5,1,0.5]};
+function plateSet(){
+  const ps=(D.profile&&D.profile.plateSet)||{};
+  let dn=(Array.isArray(ps.denoms)?ps.denoms:DEF_PLATE_SET.denoms)
+    .map(Number).filter(p=>ALL_PLATE_DENOMS.indexOf(p)>=0);
+  dn=[...new Set(dn)].sort((a,b)=>b-a);
+  if(!dn.length) dn=[...DEF_PLATE_SET.denoms];
+  const bar=ALL_BARS.indexOf(+ps.bar)>=0?+ps.bar:DEF_PLATE_SET.bar;
+  return {bar,denoms:dn};
 }
-function plateHtml(tgt){
-  if(tgt<=20)return'<span style="font-size:var(--fs-label);color:var(--text3)">barra sola</span>';
-  const ps=calcPlates(tgt);
-  if(!ps.length)return'<span style="color:var(--red);font-size:var(--fs-label)">—</span>';
-  // one line, heaviest first — the order you actually load the bar
-  return '<span class="plates">'+ps.map(({p,c})=>{
-    const cl='p'+String(p).replace('.','_');
-    return '<span class="pchip '+cl+'">'+p+(c>1?'×'+c:'')+'</span>';
-  }).join('')+'</span>';
+
+// Every weight the bar can reach, cheapest first. Greedy is wrong once the set
+// has holes in it (no 2.5 → greedy leaves a remainder it can never spend), so
+// this is a plain shortest-path over 0.5 kg steps, cached per plate set.
+let _pdp=null,_pdpKey='';
+function plateDP(){
+  const {bar,denoms}=plateSet();
+  const key=bar+'|'+denoms.join(',');
+  if(_pdp&&_pdpKey===key) return _pdp;
+  const MAX=500;                                   // up to 250 kg a side
+  const cnt=new Int16Array(MAX+1).fill(-1);        // plates per side
+  const via=new Float32Array(MAX+1);               // last plate added
+  cnt[0]=0;
+  for(let s=1;s<=MAX;s++){
+    for(let i=0;i<denoms.length;i++){
+      const u=Math.round(denoms[i]*2);             // one plate = u half-kilos
+      if(u<=s && cnt[s-u]>=0 && (cnt[s]<0 || cnt[s-u]+1<cnt[s])){
+        cnt[s]=cnt[s-u]+1; via[s]=denoms[i];
+      }
+    }
+  }
+  _pdp={bar,denoms,cnt,via,MAX}; _pdpKey=key;
+  return _pdp;
 }
+function invalidatePlateDP(){ _pdp=null; _pdpKey=''; }
+
+// The closest weight you can actually build to `tgt`, with the plates for ONE
+// side. `s` counts half-kilos per side, so the pair adds exactly `s` kg total.
+function loadable(tgt){
+  const dp=plateDP(), bar=dp.bar;
+  if(!(tgt>bar+0.01)) return {total:bar,plates:[],bar,delta:bar-tgt};
+  const want=tgt-bar;
+  let best=0,bestD=Infinity;
+  for(let s=0;s<=dp.MAX;s++){
+    if(dp.cnt[s]<0) continue;
+    const d=Math.abs(s-want);
+    if(d<bestD-1e-9 || (d<bestD+1e-9 && dp.cnt[s]<dp.cnt[best])){ bestD=d; best=s; }
+  }
+  const plates=[]; let s=best;
+  while(s>0){
+    const p=dp.via[s]; if(!p) break;
+    const last=plates[plates.length-1];
+    if(last&&last.p===p) last.c++; else plates.push({p,c:1});
+    s-=Math.round(p*2);
+  }
+  plates.sort((a,b)=>b.p-a.p);
+  return {total:bar+best,plates,bar,delta:(bar+best)-tgt};
+}
+function plateChips(plates){
+  if(!plates||!plates.length) return '<span class="pl-bare">barra sola</span>';
+  return plates.map(({p,c})=>'<span class="pchip p'+String(p).replace('.','_')+'">'
+    +p+(c>1?'×'+c:'')+'</span>').join('');
+}
+function plateHtml(tgt){ return '<span class="plates">'+plateChips(loadable(tgt).plates)+'</span>'; }
+// Kept for the legacy calculator screen, now routed through the solver.
+function calcPlates(tgt){ return loadable(tgt).plates; }
 
 
 // ══ HELPERS ══
 const fmt=d=>{if(!d)return'';return new Date(d+'T12:00:00').toLocaleDateString('ca-ES',{weekday:'short',day:'numeric',month:'short',year:'numeric'});};
 const fmtS=d=>d?d.slice(5):'';
+// HTML-attribute-safe text. Exercise names are user-typed and end up inside
+// double-quoted attributes and inline onclick strings.
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+// 47.5 stays 47.5; 48.0 shows as 48. Nobody writes "48.0 kg" on a whiteboard.
+const fmtKg=n=>{const v=Math.round(+n*10)/10;return (v%1===0?String(v):v.toFixed(1));};
+// Age from a stored YYYY-MM-DD. Derived on every read so it never goes stale,
+// which is the whole reason we ask for the date instead of the number.
+function ageFromDob(dob){
+  if(!dob||!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return null;
+  const b=new Date(dob+'T12:00:00'); if(isNaN(b)) return null;
+  const t=new Date();
+  let a=t.getFullYear()-b.getFullYear();
+  const m=t.getMonth()-b.getMonth();
+  if(m<0||(m===0&&t.getDate()<b.getDate())) a--;
+  return (a>=0&&a<130)?a:null;
+}
+function profileAge(){ return ageFromDob(D.profile&&D.profile.dob); }
+// Same day and month as the stored date of birth.
+function isBirthdayToday(){
+  const dob=D.profile&&D.profile.dob;
+  if(!dob||!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return false;
+  const t=new Date();
+  return +dob.slice(5,7)===t.getMonth()+1 && +dob.slice(8,10)===t.getDate();
+}
 // Local-time YYYY-MM-DD (toISOString is UTC: between 00:00 and 01:00/02:00 h
 // a Espanya donava el dia anterior — entrades i "avui" quedaven mal datats)
 const ymdLocal=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -4077,6 +4402,10 @@ const ICONS = {
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   play: '<path d="M7 4.5v15l12-7.5-12-7.5z"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  // A loaded barbell seen side-on: sleeve, collars, plates. Distinct from the
+  // `dumbbell` glyph, which is the section mark for Força.
+  barbell: '<path d="M2 12h2M20 12h2M4 8.5v7M20 8.5v7M7 6.5v11M17 6.5v11M7 12h10"/>',
   layers: '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/>',
   share: '<path d="M12 14V4"/><path d="m8.5 7.5 3.5-3.5 3.5 3.5"/><path d="M6 11H5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-1"/>'
 };
@@ -4098,6 +4427,13 @@ function renderIcons(root){
     svg.setAttribute('stroke-linecap','round');
     svg.setAttribute('stroke-linejoin','round');
     svg.innerHTML = inner;
+    // Explicit intrinsic size. An <svg> with only a viewBox has no intrinsic
+    // dimensions, and iOS Safari collapses those to nothing inside a flex box —
+    // that is why the wizard and Plantilles options rendered blank circles on
+    // the phone while Chrome guessed a size. A CSS rule or an inline style on
+    // the source <i> still wins over these attributes, so nothing else moves.
+    svg.setAttribute('width', 24);
+    svg.setAttribute('height', 24);
     const st = el.getAttribute('style'); if(st) svg.setAttribute('style', st);
     const cl = el.getAttribute('class'); if(cl) svg.setAttribute('class', cl);
     svg.setAttribute('data-icon', name);
@@ -4108,17 +4444,50 @@ function renderIcons(root){
 window.lucide = { createIcons: function(){ renderIcons(document); } };
 
 // ── Haptic feedback ────────────────────────────────────────────
+// iOS Safari does not implement the Vibration API — `navigator.vibrate` is
+// simply undefined there, which is why every haptic in this app has been a
+// silent no-op on the iPhone since it was written. The one haptic the iPhone
+// does expose to the web is the system tap Safari plays when an
+// `<input type="checkbox" switch>` flips (Safari 17.4+). So: vibrate on
+// Android, the switch on iOS, nothing anywhere else.
+//
+// Two constraints inherited from the trick, both unavoidable:
+//   · it only fires inside a real user gesture, so haptics queued from a
+//     setTimeout (the PR celebration) may not play;
+//   · there is exactly one intensity. "Stronger" can only mean "more taps".
+const HAPTIC_SWITCH_OK = (() => {
+  try { const i = document.createElement('input'); i.type = 'checkbox'; return 'switch' in i; }
+  catch(e) { return false; }
+})();
+function hapticsEnabled(){ return !(D && D.profile && D.profile.haptics === false); }
+function _hapticTick(){
+  const el = document.getElementById('hapticSwitch');
+  if (!el) return false;
+  try { el.click(); return true; } catch(e) { return false; }
+}
 function haptic(type) {
-  // Visual pulse on the triggering element (fallback always works)
-  // Web Vibration API for Android; iOS requires native — not supported in web
+  if (!hapticsEnabled()) return;
   try {
-    if (navigator.vibrate) {
-      if (type === 'success') navigator.vibrate([10, 30, 10]);
+    if (navigator.vibrate) {                       // Android
+      if (type === 'success')      navigator.vibrate([10, 30, 10]);
       else if (type === 'light')   navigator.vibrate(8);
       else if (type === 'warning') navigator.vibrate([20, 10, 20]);
-      else navigator.vibrate(12);
+      else                         navigator.vibrate(12);
+      return;
+    }
+    if (HAPTIC_SWITCH_OK) {                        // iOS 17.4+
+      const beats = type === 'success' ? [0, 110]
+                  : type === 'warning' ? [0, 90, 180]
+                  : [0];
+      beats.forEach(ms => ms === 0 ? _hapticTick() : setTimeout(_hapticTick, ms));
     }
   } catch(e) {}
+}
+// Reports back what this device can actually do, for the test button in Més.
+function hapticCapability(){
+  if (navigator.vibrate) return {ok:true, how:'vibració', detail:'Aquest dispositiu suporta la vibració del navegador.'};
+  if (HAPTIC_SWITCH_OK)  return {ok:true, how:'sistema', detail:'Fem servir el toc del sistema d\'iOS. Necessita que el timbre no estigui en silenci amb la vibració desactivada.'};
+  return {ok:false, how:'cap', detail:'Aquest navegador no deixa que les pàgines web facin vibrar el dispositiu.'};
 }
 
 
@@ -4134,8 +4503,21 @@ let activeMode = 'h'; // 'h' or 'w'
 let activeHSub = 'pr';      // v8.6: 'log' has no button any more (wizard replaced it)
 let activeWSub = 'bench';   // v8.6: idem
 
+// Section overlays (exercise detail, Rècords, Objectius, historial…) sit BELOW
+// the tab bar, so tapping another tab used to switch the page underneath while
+// the overlay stayed on top — the user was trapped with no way out but Tornar.
+// Leaving a tab now dismisses whatever was open over it. Guarded on an actual
+// tab change, because switchTab(activeTab) is also used as a plain re-render
+// when the theme or contrast setting flips.
+function closeTabOverlays(){
+  document.querySelectorAll('.ov.on, .goals-ov.on, .sheet.on').forEach(el=>{
+    el.classList.remove('on');
+    el.classList.remove('closing');
+  });
+}
 function switchTab(tab) {
   haptic('light');
+  if (typeof activeTab !== 'undefined' && activeTab && activeTab !== tab) closeTabOverlays();
   // Hide all pages
   document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -4176,10 +4558,9 @@ function renderInici() {
   const logoEl = document.getElementById('logoImgInici');
   const mainLogo = document.getElementById('logoImg');
   if (logoEl && mainLogo && mainLogo.src) logoEl.src = mainLogo.src;
-  // Footer logo + relocate footer into Inici body (once)
-  const footer = document.getElementById('appFooter');
-  const inicBody = document.querySelector('#tabInici .inici-body');
-  if (footer && inicBody && !footer.dataset.moved) { inicBody.appendChild(footer); footer.dataset.moved='1'; }
+  // The footer (logo, version, copyright) lives at the bottom of Més, not here.
+  // Inici is the daily screen and it should feel open, not sealed off by a
+  // colophon — especially for someone who has barely any data yet.
   const fLogo = document.getElementById('footerLogo');
   if (fLogo && mainLogo && mainLogo.src) fLogo.src = mainLogo.src;
   
@@ -5064,6 +5445,14 @@ function wizSave(){
       const e=D.hEnt.find(x=>x.id===wizS.editId);
       if(e){
         const valid=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
+        // Refuse BEFORE touching the entry. Assigning an empty array here would
+        // leave a session that exists but records nothing — the same
+        // damage-then-bail shape that bit histSaveH in v8.12.
+        if(!valid.length){
+          wizS.saving=false;
+          toast('Cap sèrie vàlida: posa repeticions i pes','error');
+          haptic('warning'); return;
+        }
         e.date=wizS.date; e.exId=wizS.exId; e.pct=wizS.pct; e.note=wizS.note;
         e.tags=[...wizS.tags]; e.sets=valid.map(st=>({...st}));
         recomputeRM1(e.exId);        // an edited-down PR must lower the ratchet
@@ -5077,6 +5466,13 @@ function wizSave(){
   }
   if(k==='forca'||k==='both'){
     const valid=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
+    // A session with nothing in it still showed on the calendar, in the
+    // historial and in the weekly count. Refuse it outright.
+    if(!valid.length){
+      wizS.saving=false;
+      toast('Cap sèrie vàlida: posa repeticions i pes','error');
+      haptic('warning'); return;
+    }
     const ent={id:Date.now(),date:wizS.date,exId:wizS.exId,pct:wizS.pct,note:wizS.note,
                tags:[...wizS.tags],sets:valid.map(st=>({...st}))};
     D.hEnt.push(ent);
@@ -5148,52 +5544,135 @@ function gotoCalc(){
   const opening=!p.classList.contains('on');
   p.classList.toggle('on',opening);
   document.getElementById('bubCalc').classList.toggle('on',opening);
+  syncEntrHist();
   if(opening){ closeTplPanel(true); haptic('light'); }
+}
+// The historial button hides behind the calculator and comes back with it.
+function syncEntrHist(){
+  const p=document.getElementById('calcPanel'), hist=document.getElementById('entrHistBlock');
+  if(p&&hist) hist.style.display=p.classList.contains('on')?'none':'';
+}
+// Exercises in this category that the calculator can actually work with.
+function calcExList(cat){
+  return D.hEx.filter(e=>e.cat===cat&&hasCalcBaseline(e.id))
+              .sort((a,b)=>a.name.localeCompare(b.name));
 }
 function calcPickCat(cat){
   calcCat=cat;
   ['catHal','catCpx','catGym'].forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById({haltero:'catHal',complex:'catCpx',gym:'catGym'}[cat]).classList.add('on');
-  const wrap=document.getElementById('calcExWrap'), sel=document.getElementById('calcPickEx'), none=document.getElementById('calcNone');
+  const wrap=document.getElementById('calcExWrap'), none=document.getElementById('calcNone');
+  const famLbl=document.getElementById('calcFamLbl'), famSel=document.getElementById('calcPickFam');
   wrap.style.display='block';
-  // Only exercises with a usable baseline (gym needs a lastre value, not reps)
-  const list=D.hEx.filter(e=>e.cat===cat&&hasCalcBaseline(e.id)).sort((a,b)=>a.name.localeCompare(b.name));
-  sel.innerHTML='';
+  const list=calcExList(cat);
   if(!list.length){
-    sel.style.display='none'; none.style.display='block';
+    wrap.querySelector('.calc-picks').style.display='none';
+    none.style.display='block';
     none.textContent = cat==='gym'
       ? 'Cap exercici de gimnàstica amb lastre registrat. Registra una sèrie amb pes afegit i el podràs calcular.'
       : 'Encara no tens cap marca registrada en aquesta categoria.';
     document.getElementById('calcOut').innerHTML='';
     return;
   }
-  sel.style.display='block'; none.style.display='none';
-  list.forEach(e=>{ const o=document.createElement('option'); o.value=e.id; o.textContent=e.name; sel.appendChild(o); });
-  calcPickEx();
+  wrap.querySelector('.calc-picks').style.display='';
+  none.style.display='none';
+  // Complexes have no families worth splitting; hide the first selector there.
+  const fams=[...new Set(list.map(e=>e.family).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const useFams = cat!=='complex' && fams.length>1;
+  famLbl.style.display = useFams?'':'none';
+  famSel.innerHTML = '<option value="__all">Totes les famílies</option>'
+    + fams.map(f=>'<option value="'+esc(f)+'">'+esc(f)+'</option>').join('');
+  famSel.value='__all';
+  calcPickFam();
   haptic('light');
+}
+function calcPickFam(){
+  const sel=document.getElementById('calcPickEx');
+  const fam=document.getElementById('calcPickFam').value;
+  let list=calcExList(calcCat);
+  if(fam&&fam!=='__all') list=list.filter(e=>e.family===fam);
+  const prev=sel.value;
+  sel.innerHTML=list.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+'</option>').join('');
+  if(prev&&list.some(e=>e.id===prev)) sel.value=prev;
+  calcPickEx();
 }
 function calcPickEx(){
   const exId=document.getElementById('calcPickEx').value;
   const out=document.getElementById('calcOut');
   if(!exId){ out.innerHTML=''; return; }
   const ex=D.hEx.find(e=>e.id===exId);
-  const base = isGymEx(ex) ? gymRecords(exId).lastre : best1RM(exId);
-  if(!base){ out.innerHTML=''; return; }
+  const b=calcBaseFor(exId);
+  if(!ex||!b){ out.innerHTML=''; return; }
+  const base=b.v;
   const unit = isGymEx(ex) ? 'kg de lastre' : 'kg';
+  const set=plateSet();
+
+  // Every active rung, snapped to a weight the bar can really hold.
+  const rows=ALL_PCTS.map(pc=>{
+    const on=D.calcPcts.includes(pc);
+    const ideal=base*pc/100;
+    const ld=loadable(ideal);
+    return {pc,on,ideal,ld};
+  });
+
   out.innerHTML =
-    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">'
-    +'<div style="font-size:var(--fs-headline);font-weight:800">'+ex.name+'</div>'
-    +'<div style="font-size:var(--fs-body-sm);color:var(--text2)">base <b style="color:var(--h-ink)">'+base.toFixed(1)+'</b> '+unit+'</div></div>'
-    + ALL_PCTS.map(pc=>{
-        const on=D.calcPcts.includes(pc);
-        const w=Math.round(base*pc/100*2)/2;
-        return '<div class="pct-row'+(on&&pc>=80?' hi':'')+(on?'':' off')+'" onclick="calcTogglePct('+pc+')">'
-          +'<div class="p">'+pc+'%</div>'
-          +'<div><div class="kg">'+w+' kg</div><div class="zn">'+(typeof zlbl==='function'?zlbl(pc):'')+'</div></div>'
-          +'<div class="pl">'+(on?(typeof plateHtml==='function'?plateHtml(w):''):'')+'</div></div>';
+    '<div class="calc-head">'
+    +'<div class="calc-ex-nm">'+esc(ex.name)+'</div>'
+    +'<div class="calc-head-ctl">'
+    +'<button class="calc-base'+(b.custom?' custom':'')+'" onclick="openBaseSheet(\''+esc(exId)+'\')">'
+      +'<span class="calc-base-lbl">'+(b.custom?'El teu 100%':'Base')+'</span>'
+      +'<span class="calc-base-v">'+fmtKg(base)+'</span>'
+      +'<span class="calc-base-u">'+unit+'</span>'
+      +icSVG('pencil',13,'margin-left:6px;opacity:.75')
+    +'</button>'
+    // The bar is the other half of every number on this screen, so it gets its
+    // own control right here instead of a trip to Més.
+    +'<div class="barpick-wrap">'
+      +'<button class="barpick-btn" id="barPickBtn" onclick="toggleBarPop(event)" aria-haspopup="true" aria-expanded="false" aria-label="Barra: '+set.bar+' kg">'
+        +icSVG('barbell',20)+'<span class="barpick-kg">'+set.bar+'</span>'
+      +'</button>'
+      +'<div class="barpop" id="barPop" role="menu">'
+        +'<div class="barpop-t">Barra</div>'
+        + ALL_BARS.map(bb=>'<button class="barpop-opt'+(bb===set.bar?' on':'')+'" role="menuitemradio" aria-checked="'+(bb===set.bar)+'" onclick="pickCalcBar('+bb+')">'
+            +icSVG('barbell',18)+'<span>'+bb+' kg</span>'
+            +(bb===set.bar?icSVG('circle-check',16,'margin-left:auto;color:var(--h-ink)'):'')+'</button>').join('')
+      +'</div>'
+    +'</div>'
+    +'</div></div>'
+    + rows.map(r=>{
+        const off=r.ld.total<r.ideal-0.01||r.ld.total>r.ideal+0.01;
+        return '<div class="pct-row'+(r.on&&r.pc>=80?' hi':'')+(r.on?'':' off')+'" onclick="calcTogglePct('+r.pc+')">'
+          +'<div class="pct-main">'
+            +'<div class="p">'+r.pc+'%</div>'
+            +'<div><div class="kg">'+fmtKg(r.ld.total)+' kg</div>'
+            +'<div class="zn">'+(typeof zlbl==='function'?zlbl(r.pc):'')
+              +(r.on&&off?' · <span class="zn-real">'+fmtKg(r.ideal)+' exacte</span>':'')+'</div></div>'
+          +'</div>'
+          +(r.on?'<div class="pct-plates">'+plateChips(r.ld.plates)+'</div>':'')
+        +'</div>';
       }).join('')
-    +'<div style="font-size:var(--fs-label);color:var(--text3);text-align:center;margin:12px 0 14px">Toca un percentatge per activar-lo o desactivar-lo</div>'
-    +'<button class="btn btn-p" onclick="calcRegisterSession(\''+exId+'\')">Registrar aquest entrenament</button>';
+    +'<div class="calc-hint">Toca un percentatge per activar-lo o desactivar-lo</div>'
+    + calcNeedsHtml(rows.filter(r=>r.on),set)
+    +'<button class="btn btn-p" onclick="calcRegisterSession(\''+esc(exId)+'\')">Registrar aquest entrenament</button>';
+}
+// "Take these to the platform": the most of each denomination any single rung
+// asks for — carry that and you can build every weight in the session.
+function calcNeedsHtml(active,set){
+  if(!active.length) return '';
+  const need={};
+  active.forEach(r=>r.ld.plates.forEach(({p,c})=>{ if(!need[p]||need[p]<c) need[p]=c; }));
+  const list=Object.keys(need).map(Number).sort((a,b)=>b-a);
+  const top=active[active.length-1];
+  return '<div class="calc-needs">'
+    +'<div class="calc-needs-t">Per a aquest entrenament necessites</div>'
+    +'<div class="calc-needs-row">'
+      +'<span class="pchip pbar">barra '+set.bar+'</span>'
+      +(list.length?list.map(p=>'<span class="pchip p'+String(p).replace('.','_')+'">'
+          +p+(need[p]>1?'×'+need[p]:'')+'</span>').join(''):'<span class="pl-bare">res més</span>')
+    +'</div>'
+    +'<div class="calc-needs-s">'+(list.length?'A cada banda. ':'')
+      +'Puja fins a <b>'+fmtKg(top.ld.total)+' kg</b> en '+active.length+(active.length===1?' graó':' graons')+'.</div>'
+  +'</div>';
 }
 // Tapping a percentage activates/deactivates it; the plate maths re-runs for
 // whatever is left active, and only active rungs go into a logged session.
@@ -5204,21 +5683,131 @@ function calcTogglePct(pc){
   save(); haptic('light'); calcPickEx();
 }
 // Register the whole session: this exercise, today, one set per ACTIVE percentage,
-// prefilled and still editable (you may have changed something mid-training).
+// prefilled with the weight you can actually load, and still editable.
 function calcRegisterSession(exId){
   const ex=D.hEx.find(e=>e.id===exId); if(!ex) return;
-  const base = isGymEx(ex) ? gymRecords(exId).lastre : best1RM(exId);
-  if(!base){ toast('Aquest exercici no té marca','error'); return; }
+  const b=calcBaseFor(exId);
+  if(!b){ toast('Aquest exercici no té marca','error'); return; }
   const pcts=[...D.calcPcts].sort((a,b)=>a-b);
   if(!pcts.length){ toast('Activa almenys un percentatge','error'); return; }
   openWizard();
   wizPickKind('forca');
   wizS.cat=ex.cat; wizS.exId=exId;
-  wizS.sets=pcts.map(pc=>({r:3, w:Math.round(base*pc/100*2)/2, rpe:''}));
+  wizS.sets=pcts.map(pc=>({r:3, w:loadable(b.v*pc/100).total, rpe:''}));
   wizS.pct='';
   wizS.i=WIZ_FLOW.forca.indexOf('sets');   // date and exercise are already answered
   wizShow();
   toast(ex.name+' · '+pcts.length+' sèries a punt');
+}
+
+// ── Bar picker, right on the calculator ──────────────────────────────
+function toggleBarPop(ev){
+  if(ev) ev.stopPropagation();
+  const w=document.querySelector('.barpick-wrap'); if(!w) return;
+  const open=!w.classList.contains('open');
+  w.classList.toggle('open',open);
+  const btn=document.getElementById('barPickBtn');
+  if(btn) btn.setAttribute('aria-expanded',String(open));
+  haptic('light');
+  if(open){
+    // One-shot outside-tap close; capture so it fires before the row handlers.
+    setTimeout(()=>document.addEventListener('click',closeBarPop,{once:true,capture:true}),0);
+  }
+}
+function closeBarPop(){
+  const w=document.querySelector('.barpick-wrap'); if(!w) return;
+  w.classList.remove('open');
+  const btn=document.getElementById('barPickBtn');
+  if(btn) btn.setAttribute('aria-expanded','false');
+}
+function pickCalcBar(b){
+  if(!D.profile) D.profile={};
+  const cur=plateSet();
+  D.profile.plateSet={bar:b,denoms:[...cur.denoms]};
+  save();
+  invalidatePlateDP();
+  closeBarPop();
+  calcPickEx();                      // every weight on screen depends on the bar
+  haptic('success');
+  toast('Barra de '+b+' kg');
+}
+
+// ── El teu gimnàs: bar + which plates the box owns ───────────────────
+// Held in a draft until you press Guardar, so half-toggled state never leaks
+// into the calculator.
+let gymDraft=null;
+function renderAjGym(){
+  const pk=document.getElementById('ajPlatePick'); if(!pk) return;
+  if(!gymDraft){ const s=plateSet(); gymDraft={bar:s.bar,denoms:[...s.denoms]}; }
+  document.getElementById('ajBarPick').innerHTML = ALL_BARS.map(b=>
+    '<button type="button" class="'+(gymDraft.bar===b?'on':'')+'" onclick="pickBar('+b+')">'+b+' kg</button>').join('');
+  pk.innerHTML = ALL_PLATE_DENOMS.map(p=>{
+    const on=gymDraft.denoms.indexOf(p)>=0;
+    return '<button type="button" class="pchip p'+String(p).replace('.','_')+(on?'':' off')
+      +'" onclick="toggleAjPlate('+p+')" aria-pressed="'+on+'">'+p+'</button>';
+  }).join('');
+  renderGymPreview();
+}
+function pickBar(b){ gymDraft.bar=b; renderAjGym(); haptic('light'); }
+function toggleAjPlate(p){
+  const i=gymDraft.denoms.indexOf(p);
+  if(i>=0) gymDraft.denoms.splice(i,1); else gymDraft.denoms.push(p);
+  gymDraft.denoms.sort((a,b)=>b-a);
+  renderAjGym(); haptic('light');
+}
+// Show the consequence, not the setting: the finest jump this kit can make.
+function renderGymPreview(){
+  const el=document.getElementById('ajGymPreview'); if(!el) return;
+  if(!gymDraft.denoms.length){
+    el.innerHTML='<span style="color:var(--red)">Tria com a mínim un disc.</span>'; return;
+  }
+  const min=Math.min(...gymDraft.denoms);
+  el.innerHTML='Amb aquest material pots pujar de <b>'+fmtKg(min*2)+' kg en '+fmtKg(min*2)+' kg</b>, '
+    +'des de <b>'+gymDraft.bar+' kg</b> (barra sola).';
+}
+function saveAjGym(){
+  if(!gymDraft||!gymDraft.denoms.length){ toast('Tria com a mínim un disc','error'); return; }
+  if(!D.profile) D.profile={};
+  D.profile.plateSet={bar:gymDraft.bar,denoms:[...gymDraft.denoms].sort((a,b)=>b-a)};
+  save();
+  invalidatePlateDP();                       // the solver caches per plate set
+  if(document.getElementById('calcPickEx')&&document.getElementById('calcPickEx').value) calcPickEx();
+  haptic('success'); toast('Gimnàs actualitzat');
+}
+
+// ── Your own 100% ────────────────────────────────────────────────────
+// The derived 1RM is an estimate off your best set. If you know better — a
+// tested single, a competition max, a number your coach gave you — say so.
+let baseSheetEx=null;
+function openBaseSheet(exId){
+  const ex=D.hEx.find(e=>e.id===exId); if(!ex) return;
+  baseSheetEx=exId;
+  const b=calcBaseFor(exId);
+  const auto=isGymEx(ex)?gymRecords(exId).lastre:best1RM(exId);
+  document.getElementById('baseSheetTitle').textContent=ex.name;
+  document.getElementById('baseSheetSub').innerHTML = auto
+    ? 'De les teves sèries en surt <b>'+fmtKg(auto)+' kg</b>. Pots posar-hi el teu número.'
+    : 'Encara no tens cap marca registrada. Posa-hi el teu 100%.';
+  const inp=document.getElementById('baseSheetVal');
+  inp.value = b ? fmtKg(b.v) : '';
+  document.getElementById('baseSheetReset').style.display = (b&&b.custom&&auto)?'':'none';
+  document.getElementById('baseSheet').classList.add('on');
+  setTimeout(()=>inp.focus(),120);
+}
+function closeBaseSheet(){ animClose(document.getElementById('baseSheet')); }
+function saveBaseSheet(){
+  const v=+document.getElementById('baseSheetVal').value;
+  if(!(v>0)){ toast('Posa-hi un pes','error'); return; }
+  if(!D.profile) D.profile={};
+  if(!D.profile.calcBase) D.profile.calcBase={};
+  D.profile.calcBase[baseSheetEx]=Math.round(v*10)/10;
+  save(); closeBaseSheet(); calcPickEx(); haptic('success');
+  toast('100% actualitzat');
+}
+function resetBaseSheet(){
+  if(D.profile&&D.profile.calcBase) delete D.profile.calcBase[baseSheetEx];
+  save(); closeBaseSheet(); calcPickEx(); haptic('light');
+  toast('Tornem al càlcul automàtic');
 }
 
 // ══════════════════════════════════════════
@@ -5230,6 +5819,7 @@ let tplBackTarget='useKind';
 function gotoPlantilles(){
   document.getElementById('calcPanel').classList.remove('on');
   document.getElementById('bubCalc').classList.remove('on');
+  syncEntrHist();
   tplGo('root');
   document.getElementById('tplOv').classList.add('on');
   haptic('light');
@@ -5964,15 +6554,40 @@ function renderAjGreeting() {
       dest.dataset.loaded = '1';
     }
   }
+  // Park the app footer at the very bottom of Més (moved off Inici).
+  const footer = document.getElementById('appFooter');
+  if (dest && footer && footer.parentElement !== dest) {
+    dest.appendChild(footer);
+    const mainLogo = document.getElementById('logoImg');
+    const fLogo = document.getElementById('footerLogo');
+    if (fLogo && mainLogo && mainLogo.src) fLogo.src = mainLogo.src;
+  }
   // Refresh editors each time the tab opens (catch newly added exercises)
   if (typeof populateAjEx === 'function') populateAjEx();
   if (typeof populateAjWEx === 'function') populateAjWEx();
   if (typeof loadAjProfile === 'function') loadAjProfile();
-  // Greeting with name
+  gymDraft = null;                      // re-read the saved set on every visit
+  if (typeof renderAjGym === 'function') renderAjGym();
+  if (typeof syncHapticUI === 'function') syncHapticUI();
+  hideDangerZone();                     // never re-enter Més with the wipe armed
+  // Greeting with name — and once a year, a small party.
   const el = document.getElementById('ajGreeting');
   if (el) {
     const name = (D.profile && D.profile.name) || (D.athlete && D.athlete.name) || D.name || '';
-    el.textContent = name ? 'Hola, ' + name + '!' : 'Hola!';
+    const bday = isBirthdayToday();
+    el.classList.toggle('bday', bday);
+    if (bday) {
+      const age = profileAge();
+      el.innerHTML = '<span class="bday-line">'
+        + (name ? 'Felicitats, ' + esc(name) + '!' : 'Felicitats!')
+        + '<span class="bday-pop" aria-hidden="true">'
+          + '<i style="--d:0ms"></i><i style="--d:90ms"></i><i style="--d:180ms"></i>'
+          + '<i style="--d:270ms"></i><i style="--d:360ms"></i>'
+        + '</span></span>'
+        + (age !== null ? '<span class="bday-sub">' + age + ' anys. Avui toca PR.</span>' : '');
+    } else {
+      el.textContent = name ? 'Hola, ' + name + '!' : 'Hola!';
+    }
   }
   if (window.lucide) lucide.createIcons();
 }
@@ -7512,10 +8127,20 @@ function loadAjProfile(){
   const nameEl=document.getElementById('ajProfileName');
   const wtEl=document.getElementById('ajProfileWeight');
   const htEl=document.getElementById('ajProfileHeight');
+  const dobEl=document.getElementById('ajProfileDob');
   if(nameEl) nameEl.value=p.name||'';
   if(wtEl) wtEl.value=p.weightKg||'';
   if(htEl) htEl.value=p.heightCm||'';
+  if(dobEl) dobEl.value=p.dob||'';
+  ajDobEcho();
   selAjSex(p.sex||'male');
+}
+function ajDobEcho(){
+  const el=document.getElementById('ajDobEcho'), inp=document.getElementById('ajProfileDob');
+  if(!el||!inp) return;
+  const a=ageFromDob(inp.value);
+  el.textContent = a===null ? 'Serveix per a l\'edat (es calcula sola) i per felicitar-te el dia que toca.'
+                            : a+' anys.';
 }
 function selAjSex(sex){
   const p=D.profile||{};
@@ -7531,6 +8156,7 @@ function saveAjProfile(){
   D.profile.name=document.getElementById('ajProfileName').value.trim();
   D.profile.weightKg=+document.getElementById('ajProfileWeight').value||0;
   D.profile.heightCm=+document.getElementById('ajProfileHeight').value||0;
+  D.profile.dob=document.getElementById('ajProfileDob').value||'';
   D.profile.setupDone=true;
   save();
   renderAjGreeting();
@@ -8335,10 +8961,15 @@ function saveSetup(skip) {
     const name = document.getElementById('setupName').value.trim();
     const w = +document.getElementById('setupWeight').value || 0;
     const h = +document.getElementById('setupHeight').value || 0;
+    const dob = document.getElementById('setupDob').value || '';
     // MERGE, never replace: a wholesale rebuild here destroys every other
     // profile-held field (legalAccepted, future preferences like high-contrast)
     // whenever a user re-runs the setup wizard.
-    D.profile = Object.assign({}, D.profile || {}, { name, sex: setupSex, weightKg: w, heightCm: h, setupDone: true });
+    D.profile = Object.assign({}, D.profile || {}, { name, sex: setupSex, dob, weightKg: w, heightCm: h, setupDone: true });
+    if (gymDraft && gymDraft.denoms && gymDraft.denoms.length) {
+      D.profile.plateSet = { bar: gymDraft.bar, denoms: [...gymDraft.denoms].sort((a,b)=>b-a) };
+      invalidatePlateDP();
+    }
   } else {
     if (!D.profile) D.profile = {};
     D.profile.setupDone = true;
@@ -9436,6 +10067,7 @@ function closeDeleteSheet() {
 // ══════════════════════════════════════════
 // ONBOARDING
 // ══════════════════════════════════════════
+// Three slides, three jobs: what this is · who you are · what you lift with.
 const OB_SLIDES = ['ob0','ob1','ob2'];
 let obCurrent = 0;
 
@@ -9453,8 +10085,43 @@ function obShowSlide(n) {
     `<div style="width:${i===obCurrent?24:8}px;height:8px;border-radius:20px;background:${i===obCurrent?'var(--h-acc)':'var(--bg4)'};transition:width .25s var(--ease-out),background .25s ease"></div>`
   ).join('');
 }
-function obNext() { obShowSlide(obCurrent + 1); }
+function obNext() {
+  obShowSlide(obCurrent + 1);
+  if (OB_SLIDES[obCurrent] === 'ob2') obRenderGym();
+}
 function obBack() { obShowSlide(obCurrent - 1); }
+
+// Echo the derived age back, so the date entered is visibly the right one.
+function setupDobEcho() {
+  const el = document.getElementById('setupDobEcho'); if (!el) return;
+  const a = ageFromDob(document.getElementById('setupDob').value);
+  el.textContent = a === null ? '' : a + ' anys. L\'app l\'anirà actualitzant sola.';
+}
+// The onboarding gym picker shares gymDraft with Més → El teu gimnàs.
+function obRenderGym() {
+  if (!gymDraft) { const s = plateSet(); gymDraft = {bar:s.bar, denoms:[...s.denoms]}; }
+  document.getElementById('obBarPick').innerHTML = ALL_BARS.map(b =>
+    '<button type="button" class="'+(gymDraft.bar===b?'on':'')+'" onclick="obPickBar('+b+')">'+b+' kg</button>').join('');
+  document.getElementById('obPlatePick').innerHTML = ALL_PLATE_DENOMS.map(p => {
+    const on = gymDraft.denoms.indexOf(p) >= 0;
+    return '<button type="button" class="pchip p'+String(p).replace('.','_')+(on?'':' off')
+      +'" onclick="obTogglePlate('+p+')" aria-pressed="'+on+'">'+p+'</button>';
+  }).join('');
+  obGymPreview();
+}
+function obPickBar(b) { gymDraft.bar = b; obRenderGym(); haptic('light'); }
+function obTogglePlate(p) {
+  const i = gymDraft.denoms.indexOf(p);
+  if (i >= 0) gymDraft.denoms.splice(i,1); else gymDraft.denoms.push(p);
+  gymDraft.denoms.sort((a,b)=>b-a);
+  obRenderGym(); haptic('light');
+}
+function obGymPreview() {
+  const el = document.getElementById('obGymPreview'); if (!el) return;
+  if (!gymDraft.denoms.length) { el.innerHTML = '<span style="color:var(--red)">Tria com a mínim un disc.</span>'; return; }
+  const min = Math.min(...gymDraft.denoms);
+  el.innerHTML = 'Podràs pujar de <b>'+fmtKg(min*2)+' kg en '+fmtKg(min*2)+' kg</b>, des de <b>'+gymDraft.bar+' kg</b>.';
+}
 
 function checkShowSetup() {
   if (!D.profile || !D.profile.setupDone) {
@@ -9485,6 +10152,20 @@ function wipeAllLocalData(){
   }catch(e){}
   try{ sessionStorage.removeItem('prsonal_skip_install'); }catch(e){}
 }
+// The danger warning is opt-in: you ask for the delete, THEN you are told what
+// it costs and given a real confirm. Nobody browsing Dades has to read it.
+function revealDangerZone(){
+  document.getElementById('dangerOpenBtn').style.display='none';
+  const z=document.getElementById('dangerZone');
+  z.style.display='block';
+  renderIcons(z);
+  haptic('light');
+}
+function hideDangerZone(){
+  const z=document.getElementById('dangerZone'), b=document.getElementById('dangerOpenBtn');
+  if(z) z.style.display='none';
+  if(b) b.style.display='';
+}
 function resetApp(){
   showDeleteSheet(
     'Eliminar totes les dades',
@@ -9508,13 +10189,33 @@ function exportData(){
 
 // ── Backup nudge: a real file on disk is the only thing a wiped browser
 //    can't take away. Nag gently, never modally, and only once it matters.
-const BACKUP_AFTER_DAYS=14;
+const BACKUP_AFTER_DAYS=7;
+const BACKUP_SNOOZE_DAYS=7;
+const BACKUP_SNOOZE='alerx_backup_snooze';
 function daysSinceExport(){
   try{
     const t=+localStorage.getItem(LAST_EXPORT)||0;
     if(!t) return Infinity;
     return (Date.now()-t)/86400000;
   }catch(e){return Infinity;}
+}
+// Dismissing the nudge is a real answer, not a no-op: it goes quiet for a week.
+// Exporting resets the clock, so a backup silences it the same way.
+function backupSnoozed(){
+  try{
+    const t=+localStorage.getItem(BACKUP_SNOOZE)||0;
+    return t>0 && (Date.now()-t)/86400000 < BACKUP_SNOOZE_DAYS;
+  }catch(e){return false;}
+}
+function backupNudgeDue(){
+  return entryCount(D)>0 && daysSinceExport()>=BACKUP_AFTER_DAYS && !backupSnoozed();
+}
+function dismissBackupNudge(){
+  try{localStorage.setItem(BACKUP_SNOOZE,String(Date.now()));}catch(e){}
+  const el=document.getElementById('backupNudge');
+  if(el) el.style.display='none';
+  updateTabBadges();
+  haptic('light');
 }
 // Tab attention signals: a dot means "this tab needs you".
 //  · Objectius — open-goal count (existing numeric badge)
@@ -9525,25 +10226,26 @@ function updateTabBadges(){
   if(met) met.style.display=(!D.profile||!D.profile.weightKg)?'block':'none';
   const mes=document.getElementById('tabBadgeMes');
   if(mes){
-    const stale=entryCount(D)>0 && daysSinceExport()>=BACKUP_AFTER_DAYS;
+    const stale=backupNudgeDue();
     mes.style.display=stale?'block':'none';
     mes.classList.toggle('warn',stale);
   }
 }
 function renderBackupNudge(){
   const el=document.getElementById('backupNudge'); if(!el) return;
-  const stale=daysSinceExport()>=BACKUP_AFTER_DAYS;
-  if(!stale || entryCount(D)===0){el.style.display='none';return;}
+  if(!backupNudgeDue()){el.style.display='none';return;}
   const never=daysSinceExport()===Infinity;
   el.innerHTML='<div class="nudge-txt">'+icSVG('alert-triangle',13,'color:var(--h-ink)')+
     ' <b>'+(never?'Encara no has fet cap còpia':'Fa temps de l\'última còpia')+'.</b> '+
     'Les dades viuen només en aquest navegador.</div>'+
-    '<button class="btn btn-p btn-sm" onclick="exportData()">Exporta ara</button>';
+    '<button class="btn btn-p btn-sm" onclick="exportData()">Exporta ara</button>'+
+    '<button class="nudge-x" onclick="dismissBackupNudge()" aria-label="Amagar l\'avís">×</button>';
   el.style.display='flex';
 }
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.17':['La calculadora de % ja no et proposa pesos impossibles: a Més → El teu gimnàs marques quins discos teniu al box i quina barra, i tots els càlculs s\'hi ajusten.','Cada percentatge et diu el pes que pots muntar de veritat, amb els discos exactes de cada banda.','A sota, el material que has de portar a la plataforma per a tota la sessió.','Toca la icona de la barra per canviar-la (10, 15 o 20 kg) sense sortir de la calculadora.','Toca «Base» per posar-hi el teu propi 100% d\'un exercici.','Els exercicis de la calculadora es trien per família, com a Inici.','Ara et demanem la data de naixement: l\'edat es calcula sola i el dia del teu aniversari l\'app t\'ho celebra.','Arreglat: a l\'iPhone algunes icones no es veien (Registrar, Plantilles i la resta de llistes).','Arreglat: el calendari de l\'historial se sortia de la targeta.','Arreglat: amb Rècords obert, canviar de secció no feia res i et quedaves encallat.','L\'avís de còpia de seguretat es pot tancar i només torna al cap d\'una setmana.','Inici respira més, i l\'avís de «zona de perill» només surt si demanes esborrar les dades.','La vibració ara funciona a l\'iPhone (abans no feia res). La pots activar o desactivar i provar-la a Més → Accessibilitat.'],
   '8.16':['A l\'historial, cada sessió té un botó d\'editar: s\'obre el registrar ja emplenat i pots canviar-ho tot.','Calendari més compacte i els dies s\'acoloreixen segons què vas fer.','A la calculadora, toca un percentatge per activar-lo o desactivar-lo; els discos es recalculen.','Discos amb els colors oficials de competició, en una sola línia.','Nou botó per registrar tota la sessió amb els percentatges actius ja preparats.','Objectius també es pot lliscar entre Força i WoD.'],
   '8.15':['Registrar un WoD ara és guiat pas a pas, igual que la força.','Cada tipus et pregunta el que toca: durada per a l\'AMRAP, esquema per a For Time, feina i descans per a la Tabata…','EMOM i E2MOM amb estacions que s\'alternen (senars i parells).','Cash-in i cash-out per a qualsevol WoD.','Tot això es desa, es pot repetir des d\'una plantilla i compta a les estadístiques.'],
   '8.14':['Ara pots muntar el WoD moviment a moviment, amb repeticions i pes.','Desa\'l com a plantilla i repeteix-lo quan vulguis: els moviments i els pesos es mantenen.','Nova secció \"Per moviment\" a Mètriques → WoD: repeticions, volum i pes màxim de cada moviment.','L\'historial mostra de què estava fet cada WoD.'],
@@ -9575,14 +10277,60 @@ function maybeShowWhatsNew(){
   let seen=null;
   try{seen=localStorage.getItem(SEEN_VER);}catch(e){}
   try{localStorage.setItem(SEEN_VER,APP_VERSION);}catch(e){}
-  if(!seen || seen===APP_VERSION) return;            // first run, or unchanged
-  const items=WHATS_NEW[APP_VERSION]; if(!items) return;
+  if(!seen || seen===APP_VERSION){ maybeProfileTopUp(); return; }   // first run, or unchanged
+  const items=WHATS_NEW[APP_VERSION]; if(!items){ maybeProfileTopUp(); return; }
   const body=document.getElementById('whatsNewBody'); if(!body) return;
   body.innerHTML='<div class="wn-ver">v'+APP_VERSION+'</div>'+
     '<ul class="wn-list">'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
   document.getElementById('whatsNewSheet').classList.add('on');
 }
-function closeWhatsNew(){animClose(document.getElementById('whatsNewSheet'));}
+function closeWhatsNew(){
+  animClose(document.getElementById('whatsNewSheet'));
+  setTimeout(maybeProfileTopUp,420);            // let the sheet finish leaving
+}
+
+// ── Asking existing users for what v8.17 added ───────────────────────
+// A profile made before this release has no date of birth and no plate set.
+// Neither can be guessed, and both silently degrade the app (the calculator
+// assumes a full IWF rack; the birthday never fires), so ask once — and only
+// once — rather than defaulting quietly and being wrong forever.
+const PROFILE_TOPUP_SEEN='alerx_topup_seen';
+function profileNeedsTopUp(){
+  const p=D.profile||{};
+  if(!p.setupDone) return false;                 // the wizard will collect it
+  return !p.dob || !p.plateSet;
+}
+function maybeProfileTopUp(){
+  try{ if(localStorage.getItem(PROFILE_TOPUP_SEEN)) return; }catch(e){}
+  if(!profileNeedsTopUp()) return;
+  if(document.querySelector('.sheet.on, .ov.on, .goals-ov.on')) return;
+  const p=D.profile||{};
+  const bits=[];
+  if(!p.dob) bits.push('la teva <b>data de naixement</b> (per calcular l\'edat sola i felicitar-te el dia que toca)');
+  if(!p.plateSet) bits.push('quins <b>discos i barra</b> teniu al box (perquè la calculadora de % no et proposi pesos impossibles)');
+  document.getElementById('topUpBody').innerHTML =
+    '<p style="margin:0 0 10px;line-height:1.55">Aquesta versió afegeix dues dades al teu perfil que abans no demanàvem:</p>'
+    +'<ul class="wn-list">'+bits.map(b=>'<li>'+b+'</li>').join('')+'</ul>'
+    +'<p style="margin:12px 0 0;line-height:1.55;color:var(--text3);font-size:var(--fs-label)">'
+    +'Es guarden al teu dispositiu com la resta i viatgen dins les còpies de seguretat. '
+    +'Si ja tens una còpia desada, torna\'n a fer una quan ho hagis omplert.</p>';
+  document.getElementById('topUpSheet').classList.add('on');
+}
+function dismissTopUp(){
+  try{ localStorage.setItem(PROFILE_TOPUP_SEEN,'1'); }catch(e){}
+  animClose(document.getElementById('topUpSheet'));
+}
+function goTopUp(){
+  dismissTopUp();
+  // Land on whichever section is actually missing, already unfolded.
+  const wantGym=!!(D.profile||{}).dob;
+  setTimeout(()=>{
+    switchTab('ajustaments');
+    toggleAjSection(wantGym?'ajGymBody':'ajPBody', wantGym?'ajGymArrow':'ajPArrow');
+    const t=document.getElementById(wantGym?'ajGymBody':'ajPBody');
+    if(t) t.scrollIntoView({behavior:'smooth',block:'center'});
+  },260);
+}
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
