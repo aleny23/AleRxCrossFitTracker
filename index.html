@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.12</title>
+<title>PRsonal v8.16</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -190,22 +190,34 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .pct-row .zn{font-size:var(--fs-label);color:var(--text2);margin-top:2px;}
 .pct-row .pl{font-size:var(--fs-label);color:var(--text3);text-align:right;max-width:110px;}
 .pct-row.hi{border-color:var(--h-acc);background:var(--h-dim);}
+.pct-row.off{opacity:.42;background:transparent;border-style:dashed;}
+.pct-row.off .p{color:var(--text3);}
+.pct-row.off .kg{color:var(--text3);font-weight:700;}
 
 /* ─── HISTORIAL (point 16): near-fullscreen, calendar + editable list ── */
 .hist-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px;}
 .hist-dow{font-size:var(--fs-label);color:var(--text3);text-align:center;font-weight:700;padding-bottom:4px;}
+.hist-cal{gap:4px;}
 .hist-day{
-  aspect-ratio:1;border-radius:12px;border:1px solid transparent;background:var(--bg3);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  font-size:var(--fs-body-sm);font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;
+  aspect-ratio:1;border-radius:10px;border:1.5px solid transparent;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:var(--fs-body-sm);font-weight:700;color:var(--text3);cursor:pointer;font-family:inherit;
+  position:relative;transition:transform var(--dur-fast) var(--ease-out);
 }
-.hist-day.empty{background:transparent;cursor:default;color:var(--text3);opacity:.35;}
-.hist-day.has{color:var(--text);border-color:var(--border2);}
-.hist-day.sel{background:var(--h-acc);color:#000;border-color:transparent;}
-.hist-dots{display:flex;gap:3px;height:5px;}
-.hist-dot{width:5px;height:5px;border-radius:50%;background:var(--h-acc);}
-.hist-dot.w{background:var(--w-acc);}
-.hist-day.sel .hist-dot{background:#000;}
+.hist-day:active{transform:scale(0.92);}
+.hist-day.empty{background:transparent;cursor:default;opacity:0;pointer-events:none;}
+/* The day itself carries the colour of what you did: gold = força, teal = WoD,
+   split = both. No dots — the cell is the signal. */
+.hist-day.h  {background:var(--h-dim);color:var(--h-ink);border-color:var(--h-acc);}
+.hist-day.w  {background:var(--w-dim);color:var(--w-ink);border-color:var(--w-acc);}
+.hist-day.hw {color:var(--text);border-color:var(--h-acc);
+  background:linear-gradient(135deg,var(--h-dim) 0 50%,var(--w-dim) 50% 100%);}
+.hist-day.today{outline:2px solid var(--text3);outline-offset:1px;}
+.hist-day.sel{background:var(--h-acc);color:#000;border-color:var(--h-acc);}
+.hist-day.sel.w{background:var(--w-acc);border-color:var(--w-acc);}
+.hist-day.sel.hw{background:linear-gradient(135deg,var(--h-acc) 0 50%,var(--w-acc) 50% 100%);color:#000;}
+.hist-legend{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:var(--fs-label);color:var(--text2);}
+.hist-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px;}
 
 /* Weekly progress ring/bar on Inici (Àlex's idea; fed by frequency goals) */
 .wk{margin-bottom:18px;}
@@ -249,6 +261,23 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .ex-row.none .ex-nm{color:var(--text3);font-weight:600;}
 .ex-row.none .ex-val{font-size:var(--fs-label);color:var(--text3);}
 
+.wiz-opt.sel{border-color:var(--w-acc);background:var(--w-dim);}
+.stn{border:1px solid var(--border);border-radius:var(--r-btn);padding:12px;margin-bottom:10px;background:var(--bg3);}
+.stn-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.stn-t{font-size:var(--fs-body-sm);font-weight:800;color:var(--w-ink);}
+.cash-wrap{margin-top:18px;border-top:1px solid var(--border);padding-top:14px;}
+.cash{margin-bottom:10px;}
+.cash-tog{background:none;border:none;color:var(--w-ink);font-family:inherit;font-weight:700;
+  font-size:var(--fs-body-sm);cursor:pointer;padding:8px 0;min-height:var(--tap);text-align:left;}
+.hist-wodsum{font-size:var(--fs-label);color:var(--text2);line-height:1.6;margin:0 0 12px;
+  padding-left:10px;border-left:2px solid var(--w-acc);}
+
+/* WoD movement builder rows */
+.mov-row{display:grid;grid-template-columns:1fr 62px 68px 40px;gap:8px;align-items:end;margin-bottom:8px;}
+.mov-row label{display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:3px;}
+.mov-row select,.mov-row input{width:100%;}
+.mov-empty{font-size:var(--fs-body-sm);color:var(--text3);padding:6px 0;}
+
 /* Historial entry boxes: colour-coded by kind (gold = Força, teal = WoD) */
 .hist-box{background:var(--bg2);border:1px solid var(--border);border-left:4px solid var(--h-acc);
   border-radius:var(--r-card);padding:14px 16px;margin-bottom:12px;}
@@ -264,12 +293,22 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 .hist-inp{flex:1;min-width:0;text-align:center;}
 .hist-x-lbl{color:var(--text3);font-size:var(--fs-body-sm);}
 .hist-unit{font-size:var(--fs-body-sm);color:var(--text2);width:22px;}
+.hist-movs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;}
+.hist-mov{font-size:var(--fs-label);background:var(--w-dim);color:var(--w-ink);
+  padding:4px 10px;border-radius:var(--r-pill);font-weight:600;}
 .hist-lbl{display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:4px;}
 .hist-meta-line{font-size:var(--fs-label);color:var(--text2);margin-bottom:8px;}
 .hist-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .hist-note{font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5;margin-top:10px;
   padding-left:10px;border-left:2px solid var(--border2);}
 .hist-acts{display:flex;gap:10px;margin-top:12px;}
+.hist-line{font-size:var(--fs-body-sm);color:var(--text2);margin-top:3px;}
+.hist-acts-mini{display:flex;gap:6px;flex-shrink:0;}
+.icon-btn{width:var(--tap);height:var(--tap);border-radius:50%;background:var(--bg3);
+  border:1px solid var(--border);color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.icon-btn:active{transform:scale(0.92);}
+.icon-btn.danger{color:var(--red);border-color:rgba(255,85,85,0.35);}
 .hist-acts .btn,.hist-acts .dangr{flex:1;}
 
 /* ─── SPLIT MODE TABS (point 14) ──────────────────────────────────────
@@ -527,14 +566,25 @@ select option{background:var(--bg3);}
 .zt tr.toggled-off{display:none;}
 
 /* ─── PLATE CHIPS ─── */
-.pchip{display:inline-flex;align-items:center;justify-content:center;padding:3px 7px;border-radius:20px;font-size:12px;font-weight:700;margin:1px;}
-.p20{background:#444;color:#eee;} .p15{background:#383838;color:#ccc;}
-.p10{background:#2e2e2e;color:#bbb;} .p5{background:var(--h-dim);color:var(--h-ink);}
-.p1{background:rgba(74,158,255,.15);color:var(--blue);}
-.p05{background:rgba(78,203,113,.15);color:var(--green);}
+.pchip{display:inline-flex;align-items:center;justify-content:center;padding:3px 8px;
+  border-radius:var(--r-pill);font-size:var(--fs-label);font-weight:800;margin:0;flex-shrink:0;}
+.plates{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.plates::-webkit-scrollbar{display:none;}
+/* IWF competition plate colours: 25 red · 20 blue · 15 yellow · 10 green · 5 white,
+   and the same hues for the small plates (2.5/2/1.5/1/0.5). */
+.p25{background:#D32F2F;color:#fff;}
+.p20{background:#1565C0;color:#fff;}
+.p15{background:#F9C21B;color:#1a1a1a;}
+.p10{background:#2E7D32;color:#fff;}
+.p5 {background:#f2f2f2;color:#1a1a1a;border:1px solid rgba(0,0,0,.25);}
+.p2_5{background:#D32F2F;color:#fff;}
+.p2 {background:#1565C0;color:#fff;}
+.p1_5{background:#F9C21B;color:#1a1a1a;}
+.p1 {background:#2E7D32;color:#fff;}
+.p0_5{background:#f2f2f2;color:#1a1a1a;border:1px solid rgba(0,0,0,.25);}
 @media(prefers-color-scheme:light){
-  .p20{background:#666;color:#fff;} .p15{background:#555;color:#eee;}
-  .p10{background:#888;color:#fff;}
+  
 }
 
 /* ─── PR BOARD ─── */
@@ -2537,7 +2587,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.12<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.16<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2990,6 +3040,11 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
       <div class="hist-cal" id="histDow"></div>
       <div class="hist-cal" id="histGrid"></div>
+      <div class="hist-legend">
+        <span><i style="background:var(--h-acc)"></i>Força</span>
+        <span><i style="background:var(--w-acc)"></i>WoD</span>
+        <span><i style="background:linear-gradient(135deg,var(--h-acc) 0 50%,var(--w-acc) 50% 100%)"></i>Tots dos</span>
+      </div>
     </div>
     <div id="histDayList"></div>
   </div>
@@ -3055,25 +3110,41 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <textarea id="wizNote" class="fb-field" rows="2" placeholder="Com ha anat?"></textarea></div>
     </div>
 
-    <!-- step 5: the WoD half -->
-    <div class="wiz-step" id="wizStepWod">
+    <!-- ── The WoD half: four guided steps, mirroring the Força side ── -->
+    <div class="wiz-step" id="wizStepWodType">
       <div class="wiz-kicker">WoD</div>
-      <div class="wiz-q">El WoD</div>
-      <div class="fg"><label>Nom</label>
+      <div class="wiz-q">Quin tipus?</div>
+      <div id="wizWodTypeList"></div>
+    </div>
+
+    <div class="wiz-step" id="wizStepWodStruct">
+      <div class="wiz-kicker" id="wizWodStructKicker">Estructura</div>
+      <div class="wiz-q" id="wizWodStructQ">Com és?</div>
+      <div class="wiz-sum" id="wizWodStructHint"></div>
+      <div id="wizWodStructFields"></div>
+      <div class="fg" style="margin-top:14px"><label>Nom (opcional)</label>
         <input type="text" id="wizWName" class="fb-field" placeholder="p. ex. Fran"></div>
-      <div class="fg" style="margin-top:12px"><label>Tipus</label>
-        <select id="wizWType" class="fb-field">
-          <option>For Time</option><option>AMRAP</option><option>EMOM</option>
-          <option>Tabata</option><option>Chipper</option><option>Altres</option>
-        </select></div>
-      <div class="fg" style="margin-top:12px"><label>Resultat</label>
-        <input type="text" id="wizWResult" class="fb-field" placeholder="p. ex. 5:38 o 7 rondes"></div>
+    </div>
+
+    <div class="wiz-step" id="wizStepWodMovs">
+      <div class="wiz-kicker">Moviments</div>
+      <div class="wiz-q" id="wizWodMovsQ">De què està fet?</div>
+      <div id="wizWodMovsBody"></div>
+    </div>
+
+    <div class="wiz-step" id="wizStepWodResult">
+      <div class="wiz-kicker">Resultat</div>
+      <div class="wiz-q">Com ha anat?</div>
+      <div class="wiz-sum" id="wizWodRecap"></div>
+      <div class="fg"><label>Resultat</label>
+        <input type="text" id="wizWResult" class="fb-field" placeholder="resultat"></div>
       <div class="fg" style="margin-top:12px"><label>Escala</label>
         <select id="wizWScale" class="fb-field"><option>Rx</option><option>Scaled</option></select></div>
       <div class="fg" style="margin-top:12px"><label>Nota</label>
         <textarea id="wizWNote" class="fb-field" rows="2"></textarea></div>
     </div>
 
+    <select id="wizWType" style="display:none"><option>For Time</option><option>AMRAP</option><option>EMOM</option><option>Tabata</option><option>Chipper</option><option>RFT</option></select>
     <div class="wiz-nav" id="wizNav" style="display:none">
       <button class="btn btn-s" id="wizBack" onclick="wizPrev()">← Enrere</button>
       <button class="btn btn-p next" id="wizNext" onclick="wizNext()">Continua →</button>
@@ -3156,7 +3227,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.12</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.16</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3359,7 +3430,7 @@ function famWrapCls(fam){
   return map[fam]||'';
 }
 const TAGS=['Bon dia','Fatiga alta','Post-descans','Tècnica bona','Tècnica dolenta','PR intent','Lesió lleu','Competició'];
-const PLATES=[20,15,10,5,1,0.5];
+const PLATES=[25,20,15,10,5,2.5,2,1.5,1,0.5];
 const ALL_PCTS=[40,45,50,55,60,65,70,75,80,85,90,95,100];
 
 const DEF_HEX=[
@@ -3638,7 +3709,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.12';
+const APP_VERSION='8.16';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -3829,14 +3900,16 @@ function calcPlates(tgt,bar=20){
   return res;
 }
 function plateHtml(tgt){
-  if(tgt<=20)return'<span style="font-size:12px;color:var(--text3)">barra sola</span>';
+  if(tgt<=20)return'<span style="font-size:var(--fs-label);color:var(--text3)">barra sola</span>';
   const ps=calcPlates(tgt);
-  if(!ps.length)return'<span style="color:var(--red);font-size:12px">—</span>';
-  return ps.map(({p,c})=>{
-    const cl=p===20?'p20':p===15?'p15':p===10?'p10':p===5?'p5':p===1?'p1':'p05';
-    return`<span class="pchip ${cl}">${p}×${c}</span>`;
-  }).join('');
+  if(!ps.length)return'<span style="color:var(--red);font-size:var(--fs-label)">—</span>';
+  // one line, heaviest first — the order you actually load the bar
+  return '<span class="plates">'+ps.map(({p,c})=>{
+    const cl='p'+String(p).replace('.','_');
+    return '<span class="pchip '+cl+'">'+p+(c>1?'×'+c:'')+'</span>';
+  }).join('')+'</span>';
 }
+
 
 // ══ HELPERS ══
 const fmt=d=>{if(!d)return'';return new Date(d+'T12:00:00').toLocaleDateString('ca-ES',{weekday:'short',day:'numeric',month:'short',year:'numeric'});};
@@ -3993,7 +4066,7 @@ const ICONS = {
   'more-horizontal': '<circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
   settings: '<circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.1 5.1l2.1 2.1M16.8 16.8l2.1 2.1M18.9 5.1 16.8 7.2M7.2 16.8 5.1 18.9"/>',
   zap: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>',
-  flame: '<path d="M12 2.5c2.5 3 4.5 4.8 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.5.6-2.7 1.5-3.6 0 1.8 1 2.8 2 2.8 1.1 0 1.8-.9 1.8-2.2 0-2.3-1.3-3.6-.8-5.5z"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   'chevron-right': '<path d="M9 6l6 6-6 6"/>',
   'chevron-down': '<path d="M6 9l6 6 6-6"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/>',
@@ -4001,6 +4074,10 @@ const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   trophy: '<path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M9 13v3M15 13v3M8 20h8M10 20v-3h4v3"/>',
   bug: '<path d="m8 2 1.88 1.88"/><path d="M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  play: '<path d="M7 4.5v15l12-7.5-12-7.5z"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/>',
   share: '<path d="M12 14V4"/><path d="m8.5 7.5 3.5-3.5 3.5 3.5"/><path d="M6 11H5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-1"/>'
 };
 function icSVG(name,size,style){
@@ -4533,11 +4610,14 @@ function showWSub(sec, btn) {
 // was reachable at all times, so "Continua" meant nothing.
 // ══════════════════════════════════════════
 let wizS = null;
-const WIZ_FLOW = { forca:['date','ex','sets','det'], both:['date','ex','sets','det','wod'], wod:['date','wod'] };
+const WOD_STEPS = ['wodType','wodStruct','wodMovs','wodResult'];
+const WIZ_FLOW = { forca:['date','ex','sets','det'],
+                   both:['date','ex','sets','det', ...WOD_STEPS],
+                   wod:['date', ...WOD_STEPS] };
 
 function openWizard(){
   wizS = { kind:null, i:-1, date:localToday(), cat:'haltero', exId:'', sets:[{r:5,w:'',rpe:''}],
-           pct:'', tags:[], note:'', wod:{}, touched:false };
+           pct:'', tags:[], note:'', wod:{type:null,movements:[],cashIn:[],cashOut:[],stations:[[]],struct:{}}, touched:false };
   // Reset the DOM too, not just the state object: the inputs are reused across
   // sessions, so without this the previous WoD's name/result leak into the next
   // entry (caught in testing — a second WoD inherited the first one's name).
@@ -4546,8 +4626,9 @@ function openWizard(){
   });
   const wt=document.getElementById('wizWType'); if(wt) wt.selectedIndex=0;
   const ws=document.getElementById('wizWScale'); if(ws) ws.selectedIndex=0;
-  ['wizStepMode','wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWod']
-    .forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['wizStepMode','wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWodType',
+   'wizStepWodStruct','wizStepWodMovs','wizStepWodResult']
+    .forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('on');});
   document.getElementById('wizStepMode').classList.add('on');
   document.getElementById('wizNav').style.display='none';
   document.getElementById('wizOv').classList.add('on');
@@ -4573,18 +4654,25 @@ function wizPickKind(kind){
   wizShow();
 }
 function wizStepId(name){
-  return {date:'wizStepDate',ex:'wizStepEx',sets:'wizStepSets',det:'wizStepDet',wod:'wizStepWod'}[name];
+  return {date:'wizStepDate',ex:'wizStepEx',sets:'wizStepSets',det:'wizStepDet',
+          wodType:'wizStepWodType',wodStruct:'wizStepWodStruct',
+          wodMovs:'wizStepWodMovs',wodResult:'wizStepWodResult'}[name];
 }
 function wizShow(){
   const flow=WIZ_FLOW[wizS.kind];
-  ['wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWod']
-    .forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWodType',
+   'wizStepWodStruct','wizStepWodMovs','wizStepWodResult']
+    .forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('on');});
   const name=flow[wizS.i];
   document.getElementById(wizStepId(name)).classList.add('on');
   if(name==='date') document.getElementById('wizDate').value=wizS.date;
   if(name==='ex') wizFillCats();
   if(name==='sets') wizRenderSets();
   if(name==='det') wizRenderTags();
+  if(name==='wodType')   wizRenderWodTypes();
+  if(name==='wodStruct') wizRenderWodStruct();
+  if(name==='wodMovs')   wizRenderWodMovs();
+  if(name==='wodResult') wizRenderWodRecap();
   const last = wizS.i===flow.length-1;
   document.getElementById('wizNext').textContent = last ? 'Guardar' : 'Continua →';
   document.getElementById('wizBack').style.visibility = wizS.i===0 ? 'hidden' : 'visible';
@@ -4596,12 +4684,13 @@ function wizCollect(name){
   if(name==='date'){ wizS.date=document.getElementById('wizDate').value||localToday(); }
   if(name==='ex'){ wizS.cat=document.getElementById('wizCat').value; wizS.exId=document.getElementById('wizEx').value; }
   if(name==='det'){ wizS.pct=document.getElementById('wizPct').value; wizS.note=document.getElementById('wizNote').value.trim(); }
-  if(name==='wod'){
-    wizS.wod={ name:document.getElementById('wizWName').value.trim(),
-      type:document.getElementById('wizWType').value,
-      result:document.getElementById('wizWResult').value.trim(),
-      scale:document.getElementById('wizWScale').value,
-      note:document.getElementById('wizWNote').value.trim() };
+  if(name==='wodStruct'){
+    wizS.wod.name=(document.getElementById('wizWName').value||'').trim();
+  }
+  if(name==='wodResult'){
+    wizS.wod.result=(document.getElementById('wizWResult').value||'').trim();
+    wizS.wod.scale=document.getElementById('wizWScale').value;
+    wizS.wod.note=(document.getElementById('wizWNote').value||'').trim();
   }
   wizS.touched=true;
 }
@@ -4611,7 +4700,8 @@ function wizValidate(name){
     const ok=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
     if(!ok.length){ toast(wizS.cat==='gym'?'Afegeix una sèrie amb repeticions':'Afegeix una sèrie amb pes i repeticions','error'); return false; }
   }
-  if(name==='wod' && !wizS.wod.name && !wizS.wod.result){ toast('Posa el nom o el resultat del WoD','error'); return false; }
+  if(name==='wodType' && !wizS.wod.type){ toast('Tria un tipus de WoD','error'); return false; }
+  if(name==='wodResult' && !wizS.wod.name && !wizS.wod.result){ toast('Posa el nom o el resultat del WoD','error'); return false; }
   return true;
 }
 function wizNext(){
@@ -4660,6 +4750,288 @@ function wizRenderSets(){
     +'<button class="xbtn" onclick="wizDelSet('+i+')" aria-label="Elimina la sèrie">×</button></div>'
   ).join('');
 }
+// ── WoD types and their real structures (v8.15) ───────────────────────
+// A Tabata is not an AMRAP. Each type asks only for the fields that define it.
+const WOD_TYPES = {
+  'AMRAP':   {ico:'repeat',  sub:'Tantes rondes com puguis en un temps fix',
+              fields:['duration'], resultHint:'p. ex. 7 rondes + 12 reps'},
+  'For Time':{ico:'flame',   sub:'Completa la feina el més ràpid possible',
+              fields:['scheme','timeCap'], resultHint:'p. ex. 8:42'},
+  'RFT':     {ico:'layers',  sub:'X rondes completes, per temps',
+              fields:['rounds','timeCap'], resultHint:'p. ex. 12:30'},
+  'EMOM':    {ico:'clock',   sub:'Cada X minuts, una feina. Pots alternar estacions',
+              fields:['interval','totalMin'], stations:true, resultHint:'p. ex. completat, o on has fallat'},
+  'Tabata':  {ico:'zap',     sub:'Intervals curts de feina i descans',
+              fields:['rounds','work','rest'], resultHint:'p. ex. 8 reps la ronda més baixa'},
+  'Chipper': {ico:'list',    sub:'Una llista llarga, una sola volta',
+              fields:['timeCap'], resultHint:'p. ex. 18:05'},
+};
+const WOD_FIELD_DEFS = {
+  duration:{label:'Durada (min)', def:12, hint:'Quant dura l\'AMRAP'},
+  timeCap: {label:'Temps límit (min)', def:0, hint:'0 = sense límit'},
+  rounds:  {label:'Rondes', def:5, hint:''},
+  scheme:  {label:'Esquema de reps', def:'21-15-9', hint:'Deixa-ho buit si totes les rondes són iguals', text:true},
+  interval:{label:'Cada (min)', def:1, hint:'1 = EMOM, 2 = E2MOM…'},
+  totalMin:{label:'Minuts totals', def:12, hint:''},
+  work:    {label:'Feina (s)', def:20, hint:''},
+  rest:    {label:'Descans (s)', def:10, hint:''},
+};
+
+// ── WoD movement builder (v8.14) ──────────────────────────────────────
+// Movements are what make a WoD re-trainable and analysable. Stored as
+// {exId, reps, weight} to match the shape the shipped benchmarks already use.
+function wizAddMov(){
+  wizS.wod = wizS.wod || {};
+  wizS.wod.movements = wizS.wod.movements || [];
+  const first=(D.wEx||[])[0];
+  wizS.wod.movements.push({exId:first?first.id:'', reps:10, weight:0});
+  wizS.touched=true;
+  wizRenderMovs();
+}
+function wizDelMov(i){
+  if(!wizS.wod||!wizS.wod.movements) return;
+  wizS.wod.movements.splice(i,1);
+  wizRenderMovs();
+}
+function wizMovVal(i,field,v){
+  if(!wizS.wod||!wizS.wod.movements||!wizS.wod.movements[i]) return;
+  wizS.wod.movements[i][field] = (field==='exId') ? v : (+v||0);
+  wizS.touched=true;
+}
+function wizRenderMovs(){
+  const host=document.getElementById('wizWMovs');
+  if(!host) return;
+  const movs=(wizS.wod&&wizS.wod.movements)||[];
+  if(!movs.length){ host.innerHTML='<div class="mov-empty">Cap moviment encara.</div>'; return; }
+  // group the catalogue by family so the picker is navigable
+  const byFam={};
+  (D.wEx||[]).forEach(x=>{ (byFam[x.family||'Altres']=byFam[x.family||'Altres']||[]).push(x); });
+  const opts=exId=>Object.keys(byFam).sort().map(f=>
+    '<optgroup label="'+f+'">'+byFam[f].sort((a,b)=>a.name.localeCompare(b.name))
+      .map(x=>'<option value="'+x.id+'"'+(x.id===exId?' selected':'')+'>'+x.name+'</option>').join('')
+    +'</optgroup>').join('');
+  host.innerHTML=movs.map((m,i)=>
+    '<div class="mov-row">'
+    +'<div><label>Moviment</label><select class="fb-field" onchange="wizMovVal('+i+',\'exId\',this.value)">'+opts(m.exId)+'</select></div>'
+    +'<div><label>Reps</label><input type="number" class="fb-field" value="'+(m.reps||'')+'" onchange="wizMovVal('+i+',\'reps\',this.value)"></div>'
+    +'<div><label>Pes kg</label><input type="number" class="fb-field" value="'+(m.weight||'')+'" placeholder="0" onchange="wizMovVal('+i+',\'weight\',this.value)"></div>'
+    +'<button class="xbtn" onclick="wizDelMov('+i+')" aria-label="Elimina el moviment">×</button>'
+    +'</div>').join('');
+}
+
+// ── Editing an existing session (v8.16) ───────────────────────────────
+// Re-uses the whole registrar so editing feels identical to logging: the same
+// guided card, prefilled, and Guardar updates in place instead of adding.
+function openWizardEditWod(id){
+  const e=D.wEnt.find(x=>x.id===id); if(!e) return;
+  openWizard();
+  wizS.kind='wod'; wizS.editId=id; wizS.editKind='wod'; wizS.date=e.date;
+  const wd=e.wodData||{};
+  wizS.wod={ type:e.type||wd.type||'For Time', name:e.name||'', result:e.result||'',
+             scale:e.scale||'Rx', note:e.note||'',
+             struct:{...(wd.struct||{})},
+             movements:(wd.movements||[]).map(m=>({...m})),
+             stations:(wd.stations||[]).map(st=>st.map(m=>({...m}))),
+             cashIn:(wd.cashIn||[]).map(m=>({...m})),
+             cashOut:(wd.cashOut||[]).map(m=>({...m})) };
+  if(!wizS.wod.stations.length) wizS.wod.stations=[[]];
+  document.getElementById('wizStepMode').classList.remove('on');
+  document.getElementById('wizNav').style.display='flex';
+  document.getElementById('wizDate').value=wizS.date;
+  document.getElementById('wizWName').value=wizS.wod.name;
+  document.getElementById('wizWResult').value=wizS.wod.result;
+  document.getElementById('wizWScale').value=wizS.wod.scale;
+  document.getElementById('wizWNote').value=wizS.wod.note;
+  wizS.i=0; wizShow();
+}
+function openWizardEditForca(id){
+  const e=D.hEnt.find(x=>x.id===id); if(!e) return;
+  const ex=D.hEx.find(x=>x.id===e.exId);
+  openWizard();
+  wizS.kind='forca'; wizS.editId=id; wizS.editKind='forca'; wizS.date=e.date;
+  wizS.cat=(ex&&ex.cat)||'haltero'; wizS.exId=e.exId;
+  wizS.sets=(e.sets||[]).map(st=>({...st}));
+  if(!wizS.sets.length) wizS.sets=[{r:5,w:'',rpe:''}];
+  wizS.pct=e.pct||''; wizS.note=e.note||''; wizS.tags=[...(e.tags||[])];
+  document.getElementById('wizStepMode').classList.remove('on');
+  document.getElementById('wizNav').style.display='flex';
+  document.getElementById('wizDate').value=wizS.date;
+  document.getElementById('wizPct').value=wizS.pct;
+  document.getElementById('wizNote').value=wizS.note;
+  wizS.i=0; wizShow();
+}
+
+// ── WoD step 1: type ──────────────────────────────────────────────────
+function wizRenderWodTypes(){
+  const host=document.getElementById('wizWodTypeList');
+  host.innerHTML=Object.keys(WOD_TYPES).map(t=>{
+    const c=WOD_TYPES[t];
+    const on = wizS.wod.type===t;
+    return '<button class="wiz-opt w'+(on?' sel':'')+'" onclick="wizPickWodType(\''+t+'\')">'
+      +'<span class="wiz-opt-ico">'+icSVG(c.ico,20)+'</span>'
+      +'<span><span class="wiz-opt-t">'+t+'</span><span class="wiz-opt-s">'+c.sub+'</span></span></button>';
+  }).join('');
+}
+function wizPickWodType(t){
+  wizS.wod.type=t;
+  const sel=document.getElementById('wizWType'); if(sel) sel.value=t;
+  // seed the structure defaults for this type
+  const cfg=WOD_TYPES[t];
+  wizS.wod.struct=wizS.wod.struct||{};
+  cfg.fields.forEach(f=>{ if(wizS.wod.struct[f]===undefined) wizS.wod.struct[f]=WOD_FIELD_DEFS[f].def; });
+  if(cfg.stations && !(wizS.wod.stations||[]).length) wizS.wod.stations=[[]];
+  wizS.touched=true;
+  wizS.i++; wizShow(); haptic('light');
+}
+
+// ── WoD step 2: the structure that defines this type ──────────────────
+function wizRenderWodStruct(){
+  const t=wizS.wod.type||'For Time', cfg=WOD_TYPES[t];
+  document.getElementById('wizWodStructKicker').textContent=t;
+  document.getElementById('wizWodStructQ').textContent =
+    t==='EMOM' ? 'Cada quant i quanta estona?' :
+    t==='Tabata' ? 'Quants intervals?' :
+    t==='AMRAP' ? 'Quant dura?' : 'Com és?';
+  document.getElementById('wizWodStructHint').textContent=cfg.sub;
+  document.getElementById('wizWodStructFields').innerHTML =
+    '<div class="frow">'+cfg.fields.map(f=>{
+      const d=WOD_FIELD_DEFS[f], v=wizS.wod.struct[f];
+      return '<div><label>'+d.label+'</label>'
+        +'<input type="'+(d.text?'text':'number')+'" class="fb-field" value="'+(v==null?'':v)+'" '
+        +'onchange="wizStructVal(\''+f+'\',this.value)">'
+        +(d.hint?'<div style="font-size:var(--fs-label);color:var(--text3);margin-top:4px">'+d.hint+'</div>':'')
+        +'</div>';
+    }).join('')+'</div>';
+}
+function wizStructVal(f,v){
+  const d=WOD_FIELD_DEFS[f];
+  wizS.wod.struct[f]= d.text ? String(v).trim() : (+v||0);
+  wizS.touched=true;
+}
+
+// ── WoD step 3: movements, with cash-in/out and EMOM stations ─────────
+function wizRenderWodMovs(){
+  const t=wizS.wod.type||'For Time', cfg=WOD_TYPES[t];
+  const host=document.getElementById('wizWodMovsBody');
+  document.getElementById('wizWodMovsQ').textContent =
+    cfg.stations ? 'Què fas a cada estació?' : 'De què està fet?';
+  let html='';
+  if(cfg.stations){
+    // EMOM/E2MOM: stations cycle. Two stations = odd/even alternating.
+    html+='<div class="wiz-sum">Les estacions es van alternant. Dues estacions = senars i parells.</div>';
+    (wizS.wod.stations||[[]]).forEach((st,si)=>{
+      html+='<div class="stn"><div class="stn-hd"><span class="stn-t">Estació '+(si+1)+'</span>'
+        +((wizS.wod.stations.length>1)?'<button class="xbtn" onclick="wizDelStation('+si+')" aria-label="Elimina estació">×</button>':'')
+        +'</div>'+movRowsHtml(st,'st'+si)
+        +'<button class="btn btn-s btn-sm" style="margin-top:6px" onclick="wizAddMovTo(\'st'+si+'\')">+ Moviment</button></div>';
+    });
+    html+='<button class="btn btn-s" style="margin-top:10px" onclick="wizAddStation()">+ Afegir estació</button>';
+  } else {
+    html+=movRowsHtml(wizS.wod.movements,'main')
+      +'<button class="btn btn-s" style="margin-top:8px" onclick="wizAddMovTo(\'main\')">+ Afegir moviment</button>';
+  }
+  // cash-in / cash-out apply to every type
+  html+='<div class="cash-wrap">'
+    +cashBlock('cashIn','Cash-in','Feina abans del cos principal')
+    +cashBlock('cashOut','Cash-out','Feina després del cos principal')
+    +'</div>';
+  host.innerHTML=html;
+}
+function cashBlock(key,label,hint){
+  const list=wizS.wod[key]||[];
+  const open=list.length>0;
+  return '<div class="cash">'
+    +'<button class="cash-tog" onclick="wizToggleCash(\''+key+'\')">'
+    +(open?'−':'+')+' '+label+'</button>'
+    +(open? '<div style="font-size:var(--fs-label);color:var(--text3);margin:4px 0 8px">'+hint+'</div>'
+            +movRowsHtml(list,key)
+            +'<button class="btn btn-s btn-sm" style="margin-top:6px" onclick="wizAddMovTo(\''+key+'\')">+ Moviment</button>'
+      : '')
+    +'</div>';
+}
+function wizToggleCash(key){
+  wizS.wod[key]=wizS.wod[key]||[];
+  if(wizS.wod[key].length) wizS.wod[key]=[];
+  else wizS.wod[key]=[{exId:(D.wEx[0]||{}).id||'',reps:10,weight:0}];
+  wizS.touched=true; wizRenderWodMovs();
+}
+// one shared renderer for every movement list in the WoD half
+function movRowsHtml(list,bucket){
+  if(!list||!list.length) return '<div class="mov-empty">Cap moviment.</div>';
+  const byFam={};
+  (D.wEx||[]).forEach(x=>{ (byFam[x.family||'Altres']=byFam[x.family||'Altres']||[]).push(x); });
+  const opts=exId=>Object.keys(byFam).sort().map(f=>
+    '<optgroup label="'+f+'">'+byFam[f].sort((a,b)=>a.name.localeCompare(b.name))
+      .map(x=>'<option value="'+x.id+'"'+(x.id===exId?' selected':'')+'>'+x.name+'</option>').join('')
+    +'</optgroup>').join('');
+  return list.map((m,i)=>
+    '<div class="mov-row">'
+    +'<div><label>Moviment</label><select class="fb-field" onchange="wizMovSet(\''+bucket+'\','+i+',\'exId\',this.value)">'+opts(m.exId)+'</select></div>'
+    +'<div><label>Reps</label><input type="number" class="fb-field" value="'+(m.reps||'')+'" onchange="wizMovSet(\''+bucket+'\','+i+',\'reps\',this.value)"></div>'
+    +'<div><label>Pes kg</label><input type="number" class="fb-field" value="'+(m.weight||'')+'" placeholder="0" onchange="wizMovSet(\''+bucket+'\','+i+',\'weight\',this.value)"></div>'
+    +'<button class="xbtn" onclick="wizMovDel(\''+bucket+'\','+i+')" aria-label="Elimina">×</button></div>'
+  ).join('');
+}
+function bucketList(bucket){
+  if(bucket==='main')   return wizS.wod.movements;
+  if(bucket==='cashIn') return wizS.wod.cashIn;
+  if(bucket==='cashOut')return wizS.wod.cashOut;
+  const m=/^st(\d+)$/.exec(bucket);
+  if(m) return wizS.wod.stations[+m[1]];
+  return null;
+}
+function wizAddMovTo(bucket){
+  const l=bucketList(bucket); if(!l) return;
+  l.push({exId:(D.wEx[0]||{}).id||'',reps:10,weight:0});
+  wizS.touched=true; wizRenderWodMovs();
+}
+function wizMovSet(bucket,i,field,v){
+  const l=bucketList(bucket); if(!l||!l[i]) return;
+  l[i][field]= field==='exId' ? v : (+v||0);
+  wizS.touched=true;
+}
+function wizMovDel(bucket,i){
+  const l=bucketList(bucket); if(!l) return;
+  l.splice(i,1); wizRenderWodMovs();
+}
+function wizAddStation(){ wizS.wod.stations.push([]); wizS.touched=true; wizRenderWodMovs(); }
+function wizDelStation(i){ wizS.wod.stations.splice(i,1); if(!wizS.wod.stations.length) wizS.wod.stations=[[]]; wizRenderWodMovs(); }
+
+// ── WoD step 4: result, with a recap so the user sees what they built ──
+function wizRenderWodRecap(){
+  document.getElementById('wizWodRecap').innerHTML = wodSummaryHtml(wizS.wod);
+  const hint=(WOD_TYPES[wizS.wod.type]||{}).resultHint||'';
+  const el=document.getElementById('wizWResult'); if(el) el.placeholder=hint;
+}
+// shared summary used by the recap, the historial and the template confirm
+function wodSummaryHtml(w){
+  if(!w||!w.type) return '';
+  const nm=x=>{const e=(D.wEx||[]).find(y=>y.id===x.exId); return (x.reps?x.reps+'× ':'')+(e?e.name:x.exId)+(x.weight?' @'+x.weight+'kg':'');};
+  const st=w.struct||{};
+  const bits=[];
+  if(st.duration) bits.push(st.duration+' min');
+  if(st.rounds)   bits.push(st.rounds+' rondes');
+  if(st.scheme)   bits.push(st.scheme);
+  if(st.interval&&st.totalMin) bits.push('cada '+st.interval+' min × '+st.totalMin+' min');
+  if(st.work&&st.rest) bits.push(st.work+'s/'+st.rest+'s');
+  if(st.timeCap)  bits.push('cap '+st.timeCap+' min');
+  let h='<b>'+w.type+'</b>'+(bits.length?' · '+bits.join(' · '):'');
+  if((w.cashIn||[]).length)  h+='<br><b>Cash-in:</b> '+w.cashIn.map(nm).join(', ');
+  if(WOD_TYPES[w.type]&&WOD_TYPES[w.type].stations){
+    (w.stations||[]).forEach((s2,i)=>{ if(s2.length) h+='<br><b>Estació '+(i+1)+':</b> '+s2.map(nm).join(', '); });
+  } else if((w.movements||[]).length){
+    h+='<br>'+w.movements.map(nm).join('<br>');
+  }
+  if((w.cashOut||[]).length) h+='<br><b>Cash-out:</b> '+w.cashOut.map(nm).join(', ');
+  return h;
+}
+// every movement in the WoD, wherever it lives — used for the flattened index
+function wodAllMovements(w){
+  const all=[...(w.cashIn||[]),...(w.movements||[]),...(w.cashOut||[])];
+  (w.stations||[]).forEach(s2=>all.push(...s2));
+  return all.filter(m=>m&&m.exId);
+}
+
 function wizRenderTags(){
   document.getElementById('wizTags').innerHTML = TAGS.map(t=>
     '<button class="pill'+(wizS.tags.indexOf(t)>=0?' active':'')+'" onclick="wizToggleTag(\''+t.replace(/'/g,"\\'")+'\')">'+t+'</button>'
@@ -4673,6 +5045,36 @@ function wizToggleTag(t){
 function wizSave(){
   wizS.saving=true;
   const k=wizS.kind;
+  // Editing an existing entry: patch it in place rather than adding a new one.
+  if(wizS.editId){
+    if(wizS.editKind==='wod'){
+      const e=D.wEnt.find(x=>x.id===wizS.editId);
+      if(e){
+        const w=wizS.wod, all=wodAllMovements(w);
+        e.date=wizS.date; e.name=w.name||w.type||'WoD'; e.type=w.type||'For Time';
+        e.result=w.result||''; e.scale=w.scale||'Rx'; e.note=w.note||'';
+        e.wodData={type:e.type, struct:{...(w.struct||{})},
+          movements:(w.movements||[]).filter(m=>m.exId).map(m=>({...m})),
+          stations:(w.stations||[]).map(st=>st.filter(m=>m.exId).map(m=>({...m}))),
+          cashIn:(w.cashIn||[]).filter(m=>m.exId).map(m=>({...m})),
+          cashOut:(w.cashOut||[]).filter(m=>m.exId).map(m=>({...m}))};
+        e.exercises=all.map(m=>m.exId);
+      }
+    } else {
+      const e=D.hEnt.find(x=>x.id===wizS.editId);
+      if(e){
+        const valid=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
+        e.date=wizS.date; e.exId=wizS.exId; e.pct=wizS.pct; e.note=wizS.note;
+        e.tags=[...wizS.tags]; e.sets=valid.map(st=>({...st}));
+        recomputeRM1(e.exId);        // an edited-down PR must lower the ratchet
+      }
+    }
+    save(); refreshGoalCompletion();
+    wizS.touched=false; wizClose();
+    toast('Actualitzat ✓'); haptic('success');
+    if(document.getElementById('histOv').classList.contains('on')){ renderHistCal(); renderHistDay(); }
+    return;
+  }
   if(k==='forca'||k==='both'){
     const valid=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
     const ent={id:Date.now(),date:wizS.date,exId:wizS.exId,pct:wizS.pct,note:wizS.note,
@@ -4691,9 +5093,18 @@ function wizSave(){
   }
   if(k==='wod'||k==='both'){
     const w=wizS.wod||{};
+    const allMovs=wodAllMovements(w);
     D.wEnt.push({id:Date.now()+1,date:wizS.date,name:w.name||w.type||'WoD',type:w.type||'For Time',
       result:w.result||'',scale:w.scale||'Rx',
-      wodData:{type:w.type||'For Time',movements:[]},exercises:[],note:w.note||'',tags:[]});
+      wodData:{type:w.type||'For Time',
+               struct:{...(w.struct||{})},
+               movements:(w.movements||[]).filter(m=>m.exId).map(m=>({...m})),
+               stations:(w.stations||[]).map(st=>st.filter(m=>m.exId).map(m=>({...m}))),
+               cashIn:(w.cashIn||[]).filter(m=>m.exId).map(m=>({...m})),
+               cashOut:(w.cashOut||[]).filter(m=>m.exId).map(m=>({...m}))},
+      // flattened index spans cash-in, body, stations and cash-out, or stats desync
+      exercises:allMovs.map(m=>m.exId),
+      note:w.note||'',tags:[]});
   }
   // Started from Plantilles > Crear: also persist it as a reusable template
   if(wizS.saveAsTemplate){
@@ -4705,7 +5116,12 @@ function wizSave(){
       tpl.halBlocks=[{exId:wizS.exId,sets:wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat)).map(st=>({...st}))}];
     }
     if(k==='wod'||k==='both'){
-      tpl.wodBlock={type:wizS.wod.type||'For Time',duration:0,timeCap:0,rounds:1,movements:[]};
+      const w2=wizS.wod;
+      tpl.wodBlock={type:w2.type||'For Time', struct:{...(w2.struct||{})},
+        movements:(w2.movements||[]).filter(m=>m.exId).map(m=>({...m})),
+        stations:(w2.stations||[]).map(st=>st.filter(m=>m.exId).map(m=>({...m}))),
+        cashIn:(w2.cashIn||[]).filter(m=>m.exId).map(m=>({...m})),
+        cashOut:(w2.cashOut||[]).filter(m=>m.exId).map(m=>({...m}))};
     }
     D.templates.push(tpl);
     toast('Plantilla desada ✓');
@@ -4768,25 +5184,41 @@ function calcPickEx(){
     '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">'
     +'<div style="font-size:var(--fs-headline);font-weight:800">'+ex.name+'</div>'
     +'<div style="font-size:var(--fs-body-sm);color:var(--text2)">base <b style="color:var(--h-ink)">'+base.toFixed(1)+'</b> '+unit+'</div></div>'
-    + D.calcPcts.map(pc=>{
+    + ALL_PCTS.map(pc=>{
+        const on=D.calcPcts.includes(pc);
         const w=Math.round(base*pc/100*2)/2;
-        return '<div class="pct-row'+(pc>=80?' hi':'')+'" onclick="calcRegister(\''+exId+'\','+pc+','+w+')">'
+        return '<div class="pct-row'+(on&&pc>=80?' hi':'')+(on?'':' off')+'" onclick="calcTogglePct('+pc+')">'
           +'<div class="p">'+pc+'%</div>'
           +'<div><div class="kg">'+w+' kg</div><div class="zn">'+(typeof zlbl==='function'?zlbl(pc):'')+'</div></div>'
-          +'<div class="pl">'+(typeof plateHtml==='function'?plateHtml(w):'')+'</div></div>';
+          +'<div class="pl">'+(on?(typeof plateHtml==='function'?plateHtml(w):''):'')+'</div></div>';
       }).join('')
-    +'<div style="font-size:var(--fs-label);color:var(--text3);text-align:center;margin:14px 0 4px">Toca un percentatge per registrar-lo</div>';
+    +'<div style="font-size:var(--fs-label);color:var(--text3);text-align:center;margin:12px 0 14px">Toca un percentatge per activar-lo o desactivar-lo</div>'
+    +'<button class="btn btn-p" onclick="calcRegisterSession(\''+exId+'\')">Registrar aquest entrenament</button>';
 }
-// "Register it": jumps into the wizard prefilled with this exercise, weight and today
-function calcRegister(exId,pct,w){
+// Tapping a percentage activates/deactivates it; the plate maths re-runs for
+// whatever is left active, and only active rungs go into a logged session.
+function calcTogglePct(pc){
+  const i=D.calcPcts.indexOf(pc);
+  if(i>=0) D.calcPcts.splice(i,1); else D.calcPcts.push(pc);
+  D.calcPcts.sort((a,b)=>a-b);
+  save(); haptic('light'); calcPickEx();
+}
+// Register the whole session: this exercise, today, one set per ACTIVE percentage,
+// prefilled and still editable (you may have changed something mid-training).
+function calcRegisterSession(exId){
   const ex=D.hEx.find(e=>e.id===exId); if(!ex) return;
+  const base = isGymEx(ex) ? gymRecords(exId).lastre : best1RM(exId);
+  if(!base){ toast('Aquest exercici no té marca','error'); return; }
+  const pcts=[...D.calcPcts].sort((a,b)=>a-b);
+  if(!pcts.length){ toast('Activa almenys un percentatge','error'); return; }
   openWizard();
   wizPickKind('forca');
-  wizS.cat=ex.cat; wizS.exId=exId; wizS.pct=String(pct);
-  wizS.sets=[{r:3,w:w,rpe:''}];
-  wizS.i=WIZ_FLOW.forca.indexOf('sets');   // date + exercise are already answered
+  wizS.cat=ex.cat; wizS.exId=exId;
+  wizS.sets=pcts.map(pc=>({r:3, w:Math.round(base*pc/100*2)/2, rpe:''}));
+  wizS.pct='';
+  wizS.i=WIZ_FLOW.forca.indexOf('sets');   // date and exercise are already answered
   wizShow();
-  toast(ex.name+' · '+w+' kg');
+  toast(ex.name+' · '+pcts.length+' sèries a punt');
 }
 
 // ══════════════════════════════════════════
@@ -4872,18 +5304,22 @@ function tplPick(id){
   document.getElementById('tplConfirmName').textContent=t.name;
   const isW=!!t.wodBlock;
   let body = t.notes ? '<div style="margin-bottom:10px">'+t.notes+'</div>' : '';
-  if(isW && (t.wodBlock.movements||[]).length){
-    body += '<b>'+t.wodBlock.type+'</b><br>'+t.wodBlock.movements.map(m=>{
-      const ex=(D.wEx||[]).find(x=>x.id===m.exId);
-      return (m.reps?m.reps+' × ':'')+(ex?ex.name:m.exId)+(m.weight?' @ '+m.weight+' kg':'');
-    }).join('<br>');
+  if(isW && wodAllMovements(t.wodBlock).length){
+    body += wodSummaryHtml(t.wodBlock);
   } else {
     body += (t.halBlocks||[]).map(b=>{
       const ex=D.hEx.find(x=>x.id===b.exId);
       return (ex?ex.name:b.exId)+' — '+(b.sets||[]).length+' sèries';
     }).join('<br>');
   }
-  document.getElementById('tplConfirmBody').innerHTML=body||'—';
+  // A template with no movements and no notes previously rendered a bare "—".
+  // Say what will actually happen instead of showing the user a dash.
+  if(!body){
+    body = isW
+      ? '<b>'+(tplSel.wodBlock.type||'WoD')+'</b><br>Sense moviments detallats: en aplicar-la registrarem el WoD amb el nom, el tipus i el resultat que hi posis.'
+      : 'Aquesta plantilla encara no té blocs. Pots aplicar-la igualment i editar la sessió després.';
+  }
+  document.getElementById('tplConfirmBody').innerHTML=body;
   document.getElementById('tplDate').value=localToday();
   document.getElementById('tplWodFields').style.display=isW?'block':'none';
   document.getElementById('tplResult').value='';
@@ -4898,8 +5334,12 @@ function tplApply(){
     D.wEnt.push({id:Date.now(),date,name:tplSel.name,type:tplSel.wodBlock.type,
       result:document.getElementById('tplResult').value.trim(),
       scale:document.getElementById('tplScale').value,
-      wodData:{type:tplSel.wodBlock.type,movements:[...(tplSel.wodBlock.movements||[])]},
-      exercises:(tplSel.wodBlock.movements||[]).map(m=>m.exId),
+      wodData:{type:tplSel.wodBlock.type, struct:{...(tplSel.wodBlock.struct||{})},
+               movements:(tplSel.wodBlock.movements||[]).map(m=>({...m})),
+               stations:(tplSel.wodBlock.stations||[]).map(st=>st.map(m=>({...m}))),
+               cashIn:(tplSel.wodBlock.cashIn||[]).map(m=>({...m})),
+               cashOut:(tplSel.wodBlock.cashOut||[]).map(m=>({...m}))},
+      exercises:wodAllMovements(tplSel.wodBlock).map(m=>m.exId),
       note:tplSel.notes||'',tags:[]});
   }
   (tplSel.halBlocks||[]).forEach(b=>{
@@ -4939,14 +5379,14 @@ function renderHistCal(){
   let lead=(first.getDay()+6)%7;            // week starts Monday
   const days=new Date(histY,histM+1,0).getDate();
   let html='';
+  const today=localToday();
   for(let i=0;i<lead;i++) html+='<div class="hist-day empty"></div>';
   for(let d=1;d<=days;d++){
     const ds=histY+'-'+String(histM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const hasH=D.hEnt.some(e=>e.date===ds), hasW=D.wEnt.some(e=>e.date===ds);
-    const cls='hist-day'+((hasH||hasW)?' has':'')+(ds===histSel?' sel':'');
-    html+='<button class="'+cls+'" onclick="histPick(\''+ds+'\')">'+d
-      +'<span class="hist-dots">'+(hasH?'<span class="hist-dot"></span>':'')
-      +(hasW?'<span class="hist-dot w"></span>':'')+'</span></button>';
+    const kind = hasH&&hasW ? 'hw' : hasH ? 'h' : hasW ? 'w' : '';
+    const cls='hist-day'+(kind?' '+kind:'')+(ds===today?' today':'')+(ds===histSel?' sel':'');
+    html+='<button class="'+cls+'" onclick="histPick(\''+ds+'\')" aria-label="'+d+'">'+d+'</button>';
   }
   document.getElementById('histGrid').innerHTML=html;
 }
@@ -4975,45 +5415,41 @@ function renderHistDay(){
   }
   // Each entry is its own colour-coded box: gold = Força, teal = WoD.
   // The heading names the week as well as the day, so a day always reads in context.
+  // Compact rows: what you did, plus a small edit affordance. Editing opens the
+  // registrar prefilled (v8.16) instead of an inline box eating the screen.
   let html='<div class="ctitle" style="margin:18px 0 2px">'+fmt(histSel)+'</div>'
     +'<div style="font-size:var(--fs-label);color:var(--text3);margin-bottom:12px">'+weekLabelFor(histSel)+'</div>';
   hs.forEach(e=>{
     const ex=D.hEx.find(x=>x.id===e.exId);
-    const gym=ex&&ex.cat==='gym';
+    const ss=(e.sets||[]).map(st=>st.r+'×'+(st.w===''?'0':st.w)+'kg').join(' · ');
     html+='<div class="hist-box h">'
-      +'<div class="hist-box-top"><div class="hist-box-t">'+(ex?ex.name:e.exId)+'</div>'
-      +'<span class="hist-tag h">Força</span></div>'
-      +(e.pct?'<div class="hist-meta-line">Intentat al <b>'+e.pct+'%</b></div>':'')
-      +'<div class="hist-sets">'+(e.sets||[]).map((st,i)=>
-          '<div class="hist-set">'
-          +'<span class="hist-set-n">'+(i+1)+'</span>'
-          +'<input type="number" class="fb-field hist-inp" value="'+(st.r||'')+'" '
-          +'onchange="histSetEdit('+e.id+','+i+',\'r\',this.value)" aria-label="Repeticions">'
-          +'<span class="hist-x-lbl">×</span>'
-          +'<input type="number" class="fb-field hist-inp" value="'+(st.w===''?'':st.w)+'" '
-          +'onchange="histSetEdit('+e.id+','+i+',\'w\',this.value)" aria-label="'+(gym?'Lastre':'Pes')+'">'
-          +'<span class="hist-unit">kg</span></div>').join('')+'</div>'
+      +'<div class="hist-box-top">'
+      +'<div style="flex:1;min-width:0"><div class="hist-box-t">'+(ex?ex.name:e.exId)+'</div>'
+      +'<div class="hist-line">'+ss+(e.pct?' · al '+e.pct+'%':'')+'</div></div>'
+      +'<div class="hist-acts-mini">'
+      +'<button class="icon-btn" onclick="openWizardEditForca('+e.id+')" aria-label="Edita">'+icSVG('pencil',17)+'</button>'
+      +'<button class="icon-btn danger" onclick="histDelH('+e.id+')" aria-label="Elimina">'+icSVG('trash',17)+'</button>'
+      +'</div></div>'
       +((e.tags&&e.tags.length)?'<div class="hist-tags">'+e.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div>':'')
       +(e.note?'<div class="hist-note">'+e.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'')
-      +'<div class="hist-acts">'
-      +'<button class="btn btn-s btn-sm" onclick="histSaveH('+e.id+')">Desar</button>'
-      +'<button class="dangr btn-sm" onclick="histDelH('+e.id+')">Elimina</button></div>'
       +'</div>';
   });
   ws.forEach(e=>{
     html+='<div class="hist-box w">'
-      +'<div class="hist-box-top"><div class="hist-box-t">'+(e.name||e.type||'WoD')+'</div>'
-      +'<span class="hist-tag w">WoD</span></div>'
-      +'<label class="hist-lbl">Resultat</label>'
-      +'<input class="fb-field" id="histW'+e.id+'" value="'+(e.result||'').replace(/"/g,'&quot;')+'" placeholder="p. ex. 5:38">'
+      +'<div class="hist-box-top">'
+      +'<div style="flex:1;min-width:0"><div class="hist-box-t" style="color:var(--w-ink)">'+(e.name||e.type||'WoD')+'</div>'
+      +'<div class="hist-line">'+(e.result||'sense resultat')+(e.scale?' · '+e.scale:'')+'</div></div>'
+      +'<div class="hist-acts-mini">'
+      +'<button class="icon-btn" onclick="openWizardEditWod('+e.id+')" aria-label="Edita">'+icSVG('pencil',17)+'</button>'
+      +'<button class="icon-btn danger" onclick="histDelW('+e.id+')" aria-label="Elimina">'+icSVG('trash',17)+'</button>'
+      +'</div></div>'
+      +(e.wodData ? '<div class="hist-wodsum">'+wodSummaryHtml(e.wodData)+'</div>' : '')
       +(e.note?'<div class="hist-note">'+e.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'')
-      +'<div class="hist-acts">'
-      +'<button class="btn btn-s btn-sm" onclick="histSaveW('+e.id+')">Desar</button>'
-      +'<button class="dangr btn-sm" onclick="histDelW('+e.id+')">Elimina</button></div>'
       +'</div>';
   });
   host.innerHTML=html;
 }
+
 // Edits are staged in memory and only written when "Desar" is pressed.
 const histPending={};
 function histSetEdit(entId,i,field,val){
@@ -5412,6 +5848,35 @@ function renderWodMetrics(host){
       +'<div style="font-size:var(--fs-body);font-weight:800;color:var(--w-ink)">'
       +(best?fmtSecs(best):byName[n].length+'×')+'</div></div>';
   }).join('');
+  // movement-level aggregation across every logged WoD
+  const movAgg={};
+  wods.forEach(w=>{
+    wodAllMovements(w.wodData||{}).forEach(m=>{
+      if(!m.exId) return;
+      const a=movAgg[m.exId]=movAgg[m.exId]||{reps:0,vol:0,times:0,maxW:0};
+      const reps=+m.reps||0, wt=+m.weight||0;
+      a.reps+=reps; a.vol+=reps*wt; a.times++;
+      if(wt>a.maxW) a.maxW=wt;
+    });
+  });
+  const movRows=Object.keys(movAgg)
+    .sort((a,b)=>movAgg[b].reps-movAgg[a].reps)
+    .slice(0,12)
+    .map(id=>{
+      const ex=(D.wEx||[]).find(x=>x.id===id);
+      const a=movAgg[id];
+      const bits=[a.reps+' reps', a.times+(a.times===1?' WoD':' WoDs')];
+      if(a.vol>0) bits.push(Math.round(a.vol)+' kg de volum');
+      if(a.maxW>0) bits.push('màx '+a.maxW+' kg');
+      return '<div class="strength-row"><div class="strength-ex">'+(ex?ex.name:id)+'</div>'
+        +'<div style="font-size:var(--fs-body-sm);color:var(--text2);text-align:right">'+bits.join(' · ')+'</div></div>';
+    }).join('');
+  const movCard = movRows
+    ? '<div class="card"><div class="ctitle">Per moviment</div>'
+      +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5;margin:-4px 0 12px">Suma de tot el que has fet als teus WoDs.</div>'
+      +movRows+'</div>'
+    : '<div class="card"><div class="ctitle">Per moviment</div>'
+      +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5">Encara no has detallat els moviments de cap WoD. Quan en registris un, afegeix-hi els moviments i aquí veuràs quantes repeticions i quin volum portes de cadascun.</div></div>';
   host.innerHTML='<div class="card"><div class="ctitle">Aquesta setmana</div>'
     +'<div style="display:flex;gap:22px"><div><div style="font-size:var(--fs-display);font-weight:800;line-height:1">'+sessionCount('wod','week')+'</div>'
     +'<div style="font-size:var(--fs-body-sm);color:var(--text2)">WoDs</div></div>'
@@ -5419,7 +5884,8 @@ function renderWodMetrics(host){
     +'<div style="font-size:var(--fs-body-sm);color:var(--text2)">sessions de força</div></div></div></div>'
     +'<div class="card"><div class="ctitle">Els teus WoDs</div>'
     +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.5;margin:-4px 0 12px">Millor temps registrat, o nombre de vegades si no hi ha temps.</div>'
-    +rows+'</div>';
+    +rows+'</div>'
+    + movCard;
 }
 
 function renderObjectiusTab() {
@@ -5591,9 +6057,10 @@ function animateModeSwipe(dir) {
     if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
     if (document.querySelector('.ov.on, .sheet.on, .goals-ov.on')) return;
     // Modes only exist on the Entrenar tab — don't hijack swipes elsewhere
-    if (activeTab !== 'metriques') return;   // v8.7: modes live in Mètriques now
-    if (dx < 0 && splitMode.met === 'h') setSplitMode('met','w');
-    else if (dx > 0 && splitMode.met === 'w') setSplitMode('met','h');
+    if (activeTab !== 'metriques' && activeTab !== 'objectius') return;   // both split tabs
+    const sec = activeTab==='objectius' ? 'obj' : 'met';
+    if (dx < 0 && splitMode[sec] === 'h') setSplitMode(sec,'w');
+    else if (dx > 0 && splitMode[sec] === 'w') setSplitMode(sec,'h');
   }, {passive:true});
 })();
 
@@ -9077,6 +9544,10 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.16':['A l\'historial, cada sessió té un botó d\'editar: s\'obre el registrar ja emplenat i pots canviar-ho tot.','Calendari més compacte i els dies s\'acoloreixen segons què vas fer.','A la calculadora, toca un percentatge per activar-lo o desactivar-lo; els discos es recalculen.','Discos amb els colors oficials de competició, en una sola línia.','Nou botó per registrar tota la sessió amb els percentatges actius ja preparats.','Objectius també es pot lliscar entre Força i WoD.'],
+  '8.15':['Registrar un WoD ara és guiat pas a pas, igual que la força.','Cada tipus et pregunta el que toca: durada per a l\'AMRAP, esquema per a For Time, feina i descans per a la Tabata…','EMOM i E2MOM amb estacions que s\'alternen (senars i parells).','Cash-in i cash-out per a qualsevol WoD.','Tot això es desa, es pot repetir des d\'una plantilla i compta a les estadístiques.'],
+  '8.14':['Ara pots muntar el WoD moviment a moviment, amb repeticions i pes.','Desa\'l com a plantilla i repeteix-lo quan vulguis: els moviments i els pesos es mantenen.','Nova secció \"Per moviment\" a Mètriques → WoD: repeticions, volum i pes màxim de cada moviment.','L\'historial mostra de què estava fet cada WoD.'],
+  '8.13':['Restaurar una còpia ara comprova de debò que el fitxer sigui una còpia vàlida abans de substituir res.'],
   '8.12':['Arreglat un error que petava en tocar un valor de RM amb Rècords obert.','L\'historial torna a mostrar les notes, les etiquetes i el % de cada sessió.','El botó Tornar és més gran i més fàcil de tocar.'],
   '8.11':['\"Força\" és ara el nom de la secció; Haltero, Complex i Gymnastics són les categories de dins.','Última passada de textos després de la reconstrucció.'],
   '8.10':['Els objectius es creen aquí mateix, pas a pas, sense saltar a cap altra pantalla.','Cada objectiu té barra de progrés, i si el tens a tocar t\'anima a intentar-ho.','Quan l\'assoleixes, passa a la llista d\'assolits.','Nova barra setmanal a Inici amb les sessions que portes.','A Inici, Activitat recent ara va abans de Progrés recent, amb els selectors ben etiquetats.'],
@@ -9118,7 +9589,14 @@ function importData(ev){
   r.onload=e=>{
     try{
       const data=JSON.parse(e.target.result);
-      if(data.hEx&&data.hEnt){
+      // v8.13: this used to be `data.hEx && data.hEnt`, which is truthy for ANY
+      // non-empty value — so a file with the right key names but wrong types
+      // (e.g. {"hEx":"nope","hEnt":"nope"}) passed validation and REPLACED all
+      // data with an empty state. Import is destructive, so it must actually
+      // verify the shape before overwriting.
+      const looksLikeBackup = data && typeof data==='object' && !Array.isArray(data)
+        && Array.isArray(data.hEx) && Array.isArray(data.hEnt);
+      if(looksLikeBackup){
         D = (typeof migrate === 'function') ? migrate(data) : data;
         save();
         renderExList();
