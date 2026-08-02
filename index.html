@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.18</title>
+<title>PRsonal v8.19</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -51,6 +51,11 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
      aliases the accent; the light block overrides ink only. Never use *-acc for
      text — use *-ink; never put white ink on an accent fill (Black Ink Rule). */
   --h-ink:var(--h-acc);--w-ink:var(--w-acc);
+  /* PRIMARY BUTTON FILL (v8.19, Àlex's call): light ink instead of black, which
+     needs a darker fill than the accent to stay legible. Deep enough for white
+     text (>=4.5:1) and still >=3:1 against the surface it sits on, per theme.
+     The bright accent survives everywhere else — bubbles, chips, charts, tabs. */
+  --btn-h:#96660E;--btn-h2:#7F550B;--btn-w:#47747A;--btn-w2:#3C6266;--btn-ink:#fff;
   --acc:var(--h-acc);--acc2:var(--h-acc2);--dim:var(--h-dim);--ink:var(--h-ink);
   --blue:#4a9eff;--green:#4ecb71;--red:#ff5555;--purple:#a78bfa;
   --r:14px;--rs:10px;
@@ -78,6 +83,8 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
     /* … INK is darkened for text/icons. Verd Ràpita as text was 2.87:1 (Àlex's
        "too pale" complaint, 36% below AA); these clear 4.5:1 on every surface. */
     --h-ink:#815409;--w-ink:#3F6569;
+    /* On a white card the button can go deeper still — more contrast both ways. */
+    --btn-h:#7A4E08;--btn-h2:#653F06;--btn-w:#2F585C;--btn-w2:#24474A;--btn-ink:#fff;
     --blue:#0062c4;--green:#1e7e34;--red:#cc0000;--purple:#5a4cbe;
     --h-glow:rgba(201,138,32,0.25);--w-glow:rgba(90,154,160,0.25);
   }
@@ -569,8 +576,13 @@ select option{background:var(--bg3);}
 
 /* ─── BUTTONS ─── */
 .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--tap);padding:14px 20px;border-radius:var(--r-btn);font-size:var(--fs-body);font-weight:700;letter-spacing:0.2px;cursor:pointer;border:1px solid transparent;transition:background var(--dur-fast) ease,border-color var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out);}
-.btn-p{background:var(--acc);color:#000;}
-@media(hover:hover){.btn-p:hover{background:var(--acc2);}}
+.btn-p{background:var(--btn-h);color:var(--btn-ink);}
+@media(hover:hover){.btn-p:hover{background:var(--btn-h2);}}
+/* WoD primary. The teal side of the app was still handing out gold buttons, and
+   the one place that did override used white ink on a pale teal fill (~3:1). */
+.btn-w{background:var(--btn-w);color:var(--btn-ink);}
+@media(hover:hover){.btn-w:hover{background:var(--btn-w2);}}
+.ghost-w{background:var(--w-dim);color:var(--w-ink);border-color:var(--w-acc);}
 .btn-s{background:var(--bg3);color:var(--text);border:1px solid var(--border2);}
 @media(hover:hover){.btn-s:hover{background:var(--bg4);}}
 .btn-sm{display:inline-flex;width:auto;min-height:var(--tap);padding:11px 18px;font-size:var(--fs-body-sm);border-radius:var(--r-btn);}
@@ -681,18 +693,22 @@ select option{background:var(--bg3);}
 .plates{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;overflow-x:auto;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .plates::-webkit-scrollbar{display:none;}
-/* IWF competition plate colours: 25 red · 20 blue · 15 yellow · 10 green · 5 white,
-   and the same hues for the small plates (2.5/2/1.5/1/0.5). */
-.p25{background:#D32F2F;color:#fff;}
-.p20{background:#1565C0;color:#fff;}
-.p15{background:#F9C21B;color:#1a1a1a;}
-.p10{background:#2E7D32;color:#fff;}
-.p5 {background:#f2f2f2;color:#1a1a1a;border:1px solid rgba(0,0,0,.25);}
-.p2_5{background:#D32F2F;color:#fff;}
-.p2 {background:#1565C0;color:#fff;}
-.p1_5{background:#F9C21B;color:#1a1a1a;}
-.p1 {background:#2E7D32;color:#fff;}
-.p0_5{background:#f2f2f2;color:#1a1a1a;border:1px solid rgba(0,0,0,.25);}
+/* TEN DISTINCT PLATE COLOURS (v8.19). The four competition plates keep their IWF
+   hues — 25 red · 20 blue · 15 yellow · 10 green — because a lifter reads those
+   faster than a number. Everything below 10 is ours: IWF gives 5 white and then
+   *repeats* the four hues for 2.5/2/1.5/1/0.5, so the app was showing five pairs
+   of identical chips and a near-white 5 that vanished against the board. Each
+   denomination now has its own hue; every one clears 4.5:1 against its ink. */
+.p25 {background:#D32F2F;color:#fff;}      /* red     */
+.p20 {background:#1565C0;color:#fff;}      /* blue    */
+.p15 {background:#F9C21B;color:#1a1a1a;}   /* yellow  */
+.p10 {background:#2E7D32;color:#fff;}      /* green   */
+.p5  {background:#6A3DBF;color:#fff;}      /* purple  */
+.p2_5{background:#C75100;color:#fff;}      /* orange — darkened so white ink clears AA */
+.p2  {background:#00838F;color:#fff;}      /* teal    */
+.p1_5{background:#C2185B;color:#fff;}      /* magenta */
+.p1  {background:#455A64;color:#fff;}      /* slate   */
+.p0_5{background:#8D6E63;color:#fff;}      /* brown   */
 @media(prefers-color-scheme:light){
   
 }
@@ -724,7 +740,11 @@ select option{background:var(--bg3);}
 .ssub{font-size:14px;color:var(--text2);margin-bottom:13px;}
 
 /* ─── FOOTER CC ─── */
-.cc-footer{text-align:center;padding:10px 16px 6px;font-size:13px;color:var(--text3);border-top:0.5px solid var(--border);}
+/* The colophon sits BELOW the resting scroll limit: you only meet it if you
+   deliberately pull past the end. At rest the logo used to peek above the fold,
+   which read like a layout mistake rather than an easter egg. */
+.cc-footer{text-align:center;padding:64px 16px 6px;font-size:13px;color:var(--text3);
+  border-top:0.5px solid var(--border);margin-top:56px;}
 .cc-footer a{color:var(--text3);text-decoration:none;}
 
 .log-mode-btn{flex:1;padding:8px 4px;border-radius:var(--rs);background:var(--bg3);border:0.5px solid var(--border2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;transition:background var(--dur-fast) ease,color var(--dur-fast) ease,border-color var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out);text-align:center;}
@@ -1047,9 +1067,27 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
 }
+/* Symmetric 1fr auto 1fr, not space-between: the two side slots are now equal
+   widths, so the title is optically centred whatever the button says. Under
+   space-between a 70px "Tornar" and a 60px spacer pushed it 5px off, and this
+   rule used to zero the horizontal padding, leaving "Tornar" flush at x=0. */
 .goals-ov > .app-navbar > .app-navbar-in{
-  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px;
   max-width:560px; margin:0 auto; width:100%;
+  padding-inline: var(--gutter);
+}
+/* The overlays that carry their row directly on .app-navbar (Objectius, Mètriques,
+   Ajustaments) get the same treatment. */
+.app-navbar:not(:has(> .app-navbar-in)){
+  display:grid; grid-template-columns:1fr auto 1fr;
+}
+.app-navbar-in > :first-child,
+.app-navbar:not(:has(> .app-navbar-in)) > :first-child{ justify-self:start; }
+.app-navbar-in > :last-child,
+.app-navbar:not(:has(> .app-navbar-in)) > :last-child{ justify-self:end; }
+.app-navbar-in > .app-navbar-title,
+.app-navbar:not(:has(> .app-navbar-in)) > .app-navbar-title{
+  justify-self:center; flex:none; min-width:0; max-width:100%;
 }
 
 /* ── Status-bar scrim (point 8) ───────────────────────────────
@@ -1351,7 +1389,51 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   flex-shrink: 0;
   line-height: 1.4;
 }
-.inici-body { padding: 22px var(--gutter) 16px; }
+/* ─── WEATHER (Inici masthead) ───
+   Not a card and not dismissible: it belongs to the masthead the way the date
+   does. No border, no fill, no accent colour — it is context, not a metric; the
+   numbers that get to be gold on this screen are the athlete's. The icon is the
+   only thing that moves, and it moves the way the sky it describes does. */
+.wx{
+  display:flex; align-items:flex-start; gap:13px;
+  margin:0 var(--gutter); padding:2px 0 4px;
+}
+.wx-ico{flex-shrink:0;color:var(--text2);width:34px;height:34px;position:relative;
+  display:flex;align-items:center;justify-content:center;}
+.wx-ico svg{width:30px;height:30px;}
+.wx-body{flex:1;min-width:0;}
+.wx-line{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+.wx-now{font-size:26px;font-weight:800;letter-spacing:-0.8px;font-variant-numeric:tabular-nums;
+  line-height:1;color:var(--text);}
+.wx-range{font-size:var(--fs-label);color:var(--text3);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.wx-range b{font-weight:700;color:var(--text2);}
+.wx-cond{font-size:var(--fs-body-sm);font-weight:600;color:var(--text2);}
+.wx-note{font-size:var(--fs-label);color:var(--text3);line-height:1.45;margin-top:5px;}
+
+/* Condition-specific motion. Slow, looping, and small — ambient, not a cartoon. */
+@keyframes wxSpin{to{transform:rotate(360deg);}}
+@keyframes wxDrift{0%,100%{transform:translateX(-1.5px);}50%{transform:translateX(1.5px);}}
+@keyframes wxFall{0%{transform:translateY(-3px);opacity:0;}
+  25%{opacity:1;}70%{opacity:1;}100%{transform:translateY(7px);opacity:0;}}
+@keyframes wxFlash{0%,92%,100%{opacity:1;}94%{opacity:.35;}96%{opacity:1;}98%{opacity:.5;}}
+.wx-ico.a-sun svg{animation:wxSpin 42s linear infinite;transform-origin:50% 50%;}
+.wx-ico.a-cloud svg{animation:wxDrift 7s ease-in-out infinite;}
+.wx-ico.a-storm svg{animation:wxFlash 4s linear infinite;}
+/* rain and snow keep the cloud still and animate real drops beneath it */
+.wx-drops{position:absolute;left:0;right:0;bottom:1px;height:9px;pointer-events:none;}
+.wx-drops i{position:absolute;top:0;width:2px;height:5px;border-radius:1px;
+  background:currentColor;opacity:0;animation:wxFall 1.5s linear infinite;}
+.wx-drops i:nth-child(1){left:26%;animation-delay:0s;}
+.wx-drops i:nth-child(2){left:50%;animation-delay:.45s;}
+.wx-drops i:nth-child(3){left:74%;animation-delay:.9s;}
+.wx-ico.a-snow .wx-drops i{width:3px;height:3px;border-radius:50%;animation-duration:2.6s;}
+@media(prefers-reduced-motion:reduce){
+  .wx-ico svg,.wx-drops i{animation:none;}
+  .wx-drops i{opacity:.65;}
+}
+
+/* the sessions block gets its air back now that weather sits above it */
+.inici-body { padding: 26px var(--gutter) 16px; }
 /* One rhythm for the whole board: every block gets the same air below it, and
    every section title the same air above its content. Inici was reading as a
    stack of headings glued to their contents. */
@@ -1876,16 +1958,20 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     </div>
     <div class="inici-hero-date" id="inicDate"></div>
   </div>
+  <!-- Weather strip. Empty and invisible unless location is switched on in
+       Més → El temps; the layout below is identical when it is off. -->
+  <div id="weatherStrip" class="wx" style="display:none"></div>
+
   <div class="inici-body">
     <!-- Weekly bar + activity strip: ABOVE Progrés recent (point 7) -->
     <div class="home-cal" id="calStripCard">
       <div id="weekBar"></div>
-      <div class="ctitle">Activitat recent</div>
+      <div class="ctitle">Aquests dies</div>
       <div class="cal-strip" id="calStrip"></div>
     </div>
     <!-- Progress chart -->
     <div class="home-focus anim-fadeup" id="homeChartCardInici" style="display:none">
-      <div class="ctitle">Progrés recent</div>
+      <div class="ctitle">D&#39;una ullada</div>
       <!-- point 6: the selectors were unlabelled and the first defaulted to a meaningless "Totes" -->
       <div class="home-focus-controls">
         <label style="flex:1;min-width:0"><span style="display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:4px">Família</span>
@@ -1895,7 +1981,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
       <div class="home-focus-val" id="homeStatRMInici">—</div>
       <div class="home-focus-meta">1RM estimat · màx <b id="homeStatMaxInici">—</b> · <b id="homeStatSessInici">—</b> sessions · <b id="homeStatTrendInici">—</b></div>
-      <div class="home-chart-wrap"><canvas id="homeChartInici" role="img" aria-label="Progrés recent"></canvas></div>
+      <div class="home-chart-wrap"><canvas id="homeChartInici" role="img" aria-label="Progressió de l'exercici"></canvas></div>
       <button id="homeSuggestion" onclick="applyHomeSuggestion()" class="home-suggestion" style="display:none"></button>
     </div>
     <!-- Backup nudge -->
@@ -2048,7 +2134,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
     </div>
     <table class="zt" style="width:100%">
-      <thead><tr><th>%</th><th>Pes (kg)</th><th>Ús</th><th>Discos/costat</th></tr></thead>
+      <thead><tr><th>%</th><th>Pes (kg)</th><th>Ús</th><th>Discs/costat</th></tr></thead>
       <tbody id="calcBody"></tbody>
     </table>
   </div>
@@ -2103,7 +2189,13 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="sc anim-popin anim-delay-3"><div class="sv" id="stTrend">—</div><div class="sl">Tendència</div></div>
     </div>
   </div>
-  <div class="card anim-fadeup">
+  <!-- Shown instead of the chart when the exercise has no sessions yet: an empty
+       plot is just a black rectangle that tells you nothing. -->
+  <div class="card" id="progEmpty" style="display:none;text-align:center;padding:26px 18px">
+    <div style="font-size:var(--fs-headline);font-weight:800;margin-bottom:6px">Encara no hi ha res a mostrar</div>
+    <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55">Registra una sessió d&#39;aquest exercici i aquí veuràs com evoluciona.</div>
+  </div>
+  <div class="card anim-fadeup" id="progChartCard">
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:7px;font-size:12px;color:var(--text2)">
       <span><span style="display:inline-block;width:10px;height:2px;background:var(--h-acc);vertical-align:middle;margin-right:3px"></span>Pes registrat</span>
       <span><span style="display:inline-block;width:10px;height:2px;border-top:2px dashed var(--blue);vertical-align:middle;margin-right:3px"></span>1RM estimat</span>
@@ -2194,7 +2286,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="fg"><label>Descripció / moviments</label><textarea id="benchDesc" placeholder="ex: 30 Clean & Jerks for time @ 60kg"></textarea></div>
     <div class="frow">
       <button class="btn btn-s" onclick="toggleAddBench()">Cancel·lar</button>
-      <button class="btn btn-p" style="background:var(--w-acc)" onclick="saveNewBench()">Afegir</button>
+      <button class="btn btn-w" onclick="saveNewBench()">Afegir</button>
     </div>
   </div>
   <div id="benchList"></div>
@@ -2226,7 +2318,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     </div>
     <div class="frow">
       <button class="btn btn-s" onclick="toggleAddWEx()">Cancel·lar</button>
-      <button class="btn btn-p" style="background:var(--w-acc)" onclick="saveNewWEx()">Afegir</button>
+      <button class="btn btn-w" onclick="saveNewWEx()">Afegir</button>
     </div>
   </div>
   <div class="card"><div id="wExList"></div></div>
@@ -2427,7 +2519,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         </div>
         <div class="frow" style="margin-top:4px">
           <button class="dangr" onclick="deleteWodEx()">Eliminar exercici</button>
-          <button class="btn btn-p" style="background:var(--w-acc)" onclick="saveAjWEx()">Guardar canvis</button>
+          <button class="btn btn-w" onclick="saveAjWEx()">Guardar canvis</button>
         </div>
       </div>
     </div>
@@ -2475,16 +2567,16 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <i data-lucide="scale" style="width:19px;height:19px;color:var(--h-ink)"></i>
           <div>
             <div style="font-size:15px;font-weight:700;color:var(--h-ink)">El teu gimnàs</div>
-            <div style="font-size:13px;color:var(--text2);margin-top:1px">Barra i discos disponibles</div>
+            <div style="font-size:13px;color:var(--text2);margin-top:1px">Barra i discs disponibles</div>
           </div>
         </div>
         <div id="ajGymArrow" style="font-size:17px;color:var(--text3);transition:transform var(--dur) var(--ease-out)">▸</div>
       </div>
       <div id="ajGymBody" style="display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(242,174,62,0.2)">
-        <div class="tip" style="border-color:var(--h-ink);margin-bottom:12px">La calculadora de % només et proposarà pesos que puguis muntar de veritat. Marca els discos que teniu al box (i el pes de la barra) i els càlculs s&#39;hi adaptaran.</div>
+        <div class="tip" style="border-color:var(--h-ink);margin-bottom:12px">La calculadora de % només et proposarà pesos que puguis muntar de veritat. Marca els discs que teniu al box (i el pes de la barra) i els càlculs s&#39;hi adaptaran.</div>
         <div class="fg"><label>Barra</label>
           <div class="bar-pick" id="ajBarPick"></div></div>
-        <div class="fg" style="margin-top:14px"><label>Discos disponibles (per parelles)</label>
+        <div class="fg" style="margin-top:14px"><label>Discs disponibles (per parelles)</label>
           <div class="plate-pick" id="ajPlatePick"></div></div>
         <div id="ajGymPreview" class="gym-preview"></div>
         <button class="btn btn-p" style="margin-top:12px" onclick="saveAjGym()">Guardar</button>
@@ -2528,7 +2620,42 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         </span>
         <input type="checkbox" id="hapticToggle" onchange="setHaptics(this.checked)">
       </label>
-      <button class="btn btn-s btn-sm" style="width:100%;margin-top:10px" onclick="testHaptic()">Provar la vibració</button>
+      <!-- Two tests, because they fail for different reasons. The first is the
+           app's own code path. The second is a REAL switch you toggle yourself —
+           iOS only plays its system tap for genuine interaction, so if this one
+           buzzes and the button above doesn't, the programmatic path is the
+           problem, not the device. -->
+      <button class="btn btn-s btn-sm" style="width:100%;margin-top:10px" onclick="testHaptic()">1 · Provar com ho fa l&#39;app</button>
+      <label class="toggle-row" style="margin-top:10px">
+        <span class="toggle-txt">
+          <span class="toggle-t">2 · Mou aquest interruptor</span>
+          <span class="toggle-s">Has notat un copet en moure&#39;l?</span>
+        </span>
+        <input type="checkbox" switch id="hapticProbe" onchange="probeHapticAnswer()">
+      </label>
+      <div id="hapticDiag" style="font-size:var(--fs-label);color:var(--text3);line-height:1.55;margin-top:10px"></div>
+      <button class="btn btn-s btn-sm" style="width:100%;margin-top:8px" onclick="copyHapticDiag()">Copiar el diagnòstic</button>
+    </div>
+
+    <div class="card anim-fadeup anim-delay-2">
+      <div class="ctitle">El temps</div>
+      <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:12px">
+        Mostra la temperatura i una nota d&#39;entrenament a Inici. És l&#39;única funció de PRsonal
+        que envia res fora del teu dispositiu, i només si l&#39;actives:
+      </div>
+      <ul class="wn-list" style="margin-bottom:14px">
+        <li>Demanem la teva ubicació al navegador i l&#39;<b>arrodonim a ~11 km</b> abans d&#39;enviar-la.</li>
+        <li>La consulta va a <b>Open-Meteo</b>, un servei gratuït que no demana cap compte ni clau.</li>
+        <li><b>No s&#39;envia cap identificador</b>: ni nom, ni dispositiu, ni res dels teus entrenaments.</li>
+        <li>La lectura es guarda <b>només al teu telèfon</b> durant 30 minuts, per no consultar-ho a cada obertura.</li>
+      </ul>
+      <label class="toggle-row">
+        <span class="toggle-txt">
+          <span class="toggle-t">Mostrar el temps a Inici</span>
+          <span class="toggle-s" id="wxNote"></span>
+        </span>
+        <input type="checkbox" id="wxToggle" onchange="this.checked?wxEnableAndFetch():wxSetEnabled(false)">
+      </label>
     </div>
 
     <div class="card anim-fadeup anim-delay-2">
@@ -2543,7 +2670,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.18<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.19<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2653,7 +2780,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <span class="ob-steps-dots"><i></i><i></i><i></i></span>
         </div>
         <button class="btn btn-p" onclick="obNext()" style="font-size:17px">Comencem →</button>
-        <div class="ob-foot" style="--i:4"><i data-lucide="lock" style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>Les teves dades es queden al teu dispositiu. Sense compte ni subscripció.</div>
+        <div class="ob-foot" style="--i:4"><i data-lucide="lock" style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>Les teves dades es queden al teu dispositiu. Sense compte ni subscripció.<br>L&#39;única excepció és el temps, que és opcional i el pots activar més tard.</div>
       </div>
 
       <!-- SLIDE 1: Your profile -->
@@ -2698,10 +2825,25 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <div class="fg"><label>Barra habitual</label>
             <div class="bar-pick" id="obBarPick"></div>
             <div style="font-size:13px;color:var(--text3);margin-top:7px;line-height:1.45">No t'hi capfiquis ara: a la calculadora pots canviar-la en un toc, sessió a sessió.</div></div>
-          <div class="fg" style="margin-top:14px"><label>Discos que teniu al box (per parelles)</label>
+          <div class="fg" style="margin-top:14px"><label>Discs que teniu al box (per parelles)</label>
             <div class="plate-pick" id="obPlatePick"></div></div>
           <div id="obGymPreview" class="gym-preview"></div>
           <div style="font-size:13px;color:var(--text3);margin-top:10px">Ho pots canviar sempre a <strong style="color:var(--text)">Més → El teu gimnàs</strong>.</div>
+        </div>
+        <!-- The one thing that leaves the device, offered plainly and off by default. -->
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span class="ob-feat-ico h" style="width:38px;height:38px"><i data-lucide="sun"></i></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:15px;font-weight:800">El temps a Inici <span style="font-weight:600;color:var(--text3)">(opcional)</span></div>
+              <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-top:3px">Temperatura i una nota d&#39;entrenament. Per saber-ho cal la teva ubicació: l&#39;arrodonim a ~11 km i la consulta va a Open-Meteo <strong style="color:var(--text)">sense cap identificador</strong>. És l&#39;única cosa que PRsonal envia fora del teu telèfon.</div>
+              <div style="font-size:13px;color:var(--text3);line-height:1.5;margin-top:6px">Pots deixar-ho per després: Més → El temps.</div>
+            </div>
+          </div>
+          <label class="toggle-row" style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border)">
+            <span class="toggle-txt"><span class="toggle-t">Vull veure el temps</span></span>
+            <input type="checkbox" id="obWeather">
+          </label>
         </div>
         <label id="acceptRow" style="display:flex;align-items:flex-start;gap:10px;margin:2px 2px 14px;cursor:pointer">
           <input type="checkbox" id="setupAccept" style="margin-top:1px;width:18px;height:18px;accent-color:var(--w-ink);flex-shrink:0">
@@ -2961,7 +3103,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="app-navbar-in">
       <button class="app-back-btn" onclick="closeHistorial()">Tornar</button>
       <div class="app-navbar-title">Historial</div>
-      <div style="min-width:60px"></div>
+      <div aria-hidden="true"></div>
     </div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:12px var(--gutter) 40px">
@@ -3136,7 +3278,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="app-navbar-in">
       <button class="app-back-btn" onclick="closeLegal()">Tornar</button>
       <div class="app-navbar-title" id="legalTitle">Legal</div>
-      <div style="min-width:60px"></div>
+      <div aria-hidden="true"></div>
     </div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:0 16px 40px">
@@ -3180,7 +3322,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.18</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.19</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3319,13 +3461,45 @@ function syncHapticUI(){
   n.textContent = cap.ok ? cap.detail
     : 'No disponible: ' + cap.detail;
   n.style.color = cap.ok ? 'var(--text2)' : 'var(--text3)';
+  renderHapticDiag();
 }
 function testHaptic(){
   const cap=hapticCapability();
-  if(!cap.ok){ toast('Aquest navegador no pot vibrar','error'); return; }
   if(!hapticsEnabled()){ toast('Activa la vibració primer','error'); return; }
+  if(!cap.ok){ toast('Aquest navegador no pot vibrar','error'); renderHapticDiag(); return; }
   haptic('warning');                       // the most noticeable pattern we have
   setTimeout(()=>toast('Has notat res? ('+cap.how+')'),260);
+  renderHapticDiag();
+}
+function probeHapticAnswer(){
+  toast('I ara? Aquest és el toc del sistema');
+  renderHapticDiag();
+}
+// Everything needed to work out WHY nothing is felt, without me holding the phone.
+function hapticDiagText(){
+  const i=document.createElement('input'); i.type='checkbox';
+  const m=(navigator.userAgent.match(/OS (\d+)[_.](\d+)/)||[]);
+  return [
+    'PRsonal ' + APP_VERSION + ' — diagnòstic de vibració',
+    'switch suportat : ' + ('switch' in i),
+    'navigator.vibrate: ' + (typeof navigator.vibrate),
+    'iOS (de l\'UA)   : ' + (m[1] ? m[1]+'.'+m[2] : 'desconegut'),
+    'standalone (app) : ' + (navigator.standalone === true),
+    'reduced motion   : ' + (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
+    'vibració activada: ' + hapticsEnabled(),
+    'via              : ' + hapticCapability().how,
+    'UA               : ' + navigator.userAgent
+  ].join('\n');
+}
+function renderHapticDiag(){
+  const el=document.getElementById('hapticDiag'); if(!el) return;
+  el.textContent=hapticDiagText();
+}
+function copyHapticDiag(){
+  const t=hapticDiagText();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast('Diagnòstic copiat'),()=>toast('No s\'ha pogut copiar','error'));
+  } else { renderHapticDiag(); toast('Copia el text de sota'); }
 }
 function syncContrastToggle(){
   const t=document.getElementById('hcToggle');
@@ -3589,7 +3763,7 @@ function defaultData(){
     templates:[...DEF_TPL.map(t=>({...t}))],goals:[],tplRemoved:[],seenHints:[],
     // dob, not age: an age typed once is wrong within a year. Everything that
     // needs a number derives it from the date (ageFromDob).
-    profile:{name:'',sex:'male',dob:'',weightKg:0,heightCm:0,setupDone:false}};
+    profile:{name:'',sex:'male',dob:'',weightKg:0,heightCm:0,setupDone:false,weather:{enabled:false,asked:false}}};
 }
 function migrate(parsed){
   // Always ensure all arrays exist regardless of schema version
@@ -3701,7 +3875,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.18';
+const APP_VERSION='8.19';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4171,6 +4345,13 @@ const ICONS = {
   // A loaded barbell seen side-on: sleeve, collars, plates. Distinct from the
   // `dumbbell` glyph, which is the section mark for Força.
   barbell: '<path d="M2 12h2M20 12h2M4 8.5v7M20 8.5v7M7 6.5v11M17 6.5v11M7 12h10"/>',
+  // Weather set — WMO codes collapse onto these six.
+  sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  'cloud-sun': '<path d="M15 5.5a4 4 0 0 1 2.6 2.1M12.5 3.2V4.6M18.6 4.6l-1 1M21 10.4h-1.4"/><path d="M7 20h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.7 1.2A3.4 3.4 0 0 0 7 20z"/>',
+  cloud: '<path d="M7 19h9.5a3.8 3.8 0 0 0 .3-7.6 5.4 5.4 0 0 0-10.5 1.3A3.7 3.7 0 0 0 7 19z"/>',
+  rain: '<path d="M7 15h9.5a3.6 3.6 0 0 0 .3-7.2 5.2 5.2 0 0 0-10.1 1.2A3.5 3.5 0 0 0 7 15z"/><path d="M8.5 18.5l-1 2.5M12.5 18.5l-1 2.5M16.5 18.5l-1 2.5"/>',
+  snow: '<path d="M7 15h9.5a3.6 3.6 0 0 0 .3-7.2 5.2 5.2 0 0 0-10.1 1.2A3.5 3.5 0 0 0 7 15z"/><path d="M9 19h.01M12 20.5h.01M15 19h.01"/>',
+  storm: '<path d="M7 14h9.5a3.6 3.6 0 0 0 .3-7.2 5.2 5.2 0 0 0-10.1 1.2A3.5 3.5 0 0 0 7 14z"/><path d="M13 16l-3 3.5h3l-1 3"/>',
   layers: '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/>',
   share: '<path d="M12 14V4"/><path d="m8.5 7.5 3.5-3.5 3.5 3.5"/><path d="M6 11H5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-1"/>'
 };
@@ -4234,7 +4415,7 @@ function linkFormLabels(root){
     if (!ctrl.id) ctrl.id = 'fld_' + (++_lblSeq);
     lab.setAttribute('for', ctrl.id);
   });
-  // The rest ("Sexe", "Barra", "Discos disponibles", "Tipus de WoD", "Escala",
+  // The rest ("Sexe", "Barra", "Discs disponibles", "Tipus de WoD", "Escala",
   // "Etiquetes") head a row of BUTTONS, not a form control — `for` does not
   // apply. Name the row as a group instead, so the choice is announced with the
   // question it answers rather than as five loose buttons.
@@ -4352,7 +4533,7 @@ function switchTab(tab) {
   // Show/hide % calc FAB
 
   // Lazy render tab content
-  if (tab === 'inici') { renderInici(); renderBackupNudge(); renderWeekBar(); }
+  if (tab === 'inici') { renderInici(); renderBackupNudge(); renderWeekBar(); renderWeather(); }
   if (tab === 'entrenar') renderEntrenarSuggestion();
   updateTabBadges();
   updateDbgBubble();
@@ -4374,6 +4555,9 @@ function switchTab(tab) {
 
 // ── INICI TAB ──────────────────────────────────────────────────
 function renderInici() {
+  // Weather belongs to this screen, so it renders with it — hooking only into
+  // switchTab missed the boot path, where Inici renders without a tab change.
+  if (typeof renderWeather === 'function') renderWeather();
   // Logo
   const logoEl = document.getElementById('logoImgInici');
   const mainLogo = document.getElementById('logoImg');
@@ -4430,7 +4614,7 @@ const HINTS = {
   ajustaments: 'Edita els teus exercicis, el perfil personal i fes còpies de seguretat de les dades.',
   h_log: 'Registra les teves sèries de força: reps, pes i RPE per a cada sèrie.',
   h_tpl: 'Crea plantilles de sessió i carrega-les amb un toc un altre dia.',
-  h_calc: 'Tria un exercici i veus tots els percentatges i els discos a posar a cada costat.',
+  h_calc: 'Tria un exercici i veus tots els percentatges i els discs a posar a cada costat.',
   h_pr: 'Els teus rècords (1RM, 2RM, 3RM) per exercici. Toca per alternar-los.',
   h_prog: 'Gràfics d\'evolució i volum per exercici al llarg del temps.',
   h_exs: 'Tots els exercicis per família. Toca\'n un per veure detalls, fer un registre ràpid o posar-hi un objectiu.',
@@ -5520,6 +5704,150 @@ function calcRegisterSession(exId){
   toast(ex.name+' · '+pcts.length+' sèries a punt');
 }
 
+// ══════════════════════════════════════════
+// WEATHER (v8.19) — opt-in, and the only feature that sends anything anywhere
+// ══════════════════════════════════════════
+// This is the first thing in PRsonal that talks to a third party, so it is built
+// to give away as little as possible:
+//   · OFF by default. Nothing happens until you turn it on in Més → El temps.
+//   · Coordinates are rounded to ONE decimal (~11 km) before they leave the
+//     device — plenty for "is it hot out", useless for locating anyone.
+//   · No identifier of any kind is sent. No account, no cookie, no device id.
+//   · The provider (Open-Meteo) needs no API key and asks for no registration.
+//   · The reading is cached locally for 30 min so a normal day makes 1-2 calls.
+//   · The rounded pair is kept only inside that cache, purely to know whether
+//     you have moved enough to refetch. wipeAllLocalData() clears it like
+//     everything else, because the key is `alerx_`-prefixed.
+const WX_KEY='alerx_weather', WX_TTL=30*60*1000;
+const WX_ENDPOINT='https://api.open-meteo.com/v1/forecast';
+
+// WMO code → icon, Catalan label, and a note that is about TRAINING, not weather.
+function wxMeaning(code, temp){
+  const c=+code;
+  let ico='cloud', label='Ennuvolat';
+  if(c===0){ico='sun';label='Cel serè';}
+  else if(c===1||c===2){ico='cloud-sun';label='Poc ennuvolat';}
+  else if(c===3){ico='cloud';label='Ennuvolat';}
+  else if(c===45||c===48){ico='cloud';label='Boira';}
+  else if(c>=51&&c<=57){ico='rain';label='Plugim';}
+  else if(c>=61&&c<=67){ico='rain';label='Pluja';}
+  else if(c>=71&&c<=77){ico='snow';label='Neu';}
+  else if(c>=80&&c<=82){ico='rain';label='Ruixats';}
+  else if(c>=85&&c<=86){ico='snow';label='Nevades';}
+  else if(c>=95){ico='storm';label='Tempesta';}
+  let note='';
+  if(temp>=30) note='Fa molta calor: beu més aigua i allarga l\'escalfament curt.';
+  else if(temp>=25) note='Calor: hidrata\'t entre sèries.';
+  else if(temp<=3) note='Fred de veritat: escalfa a consciència abans de carregar la barra.';
+  else if(temp<=10) note='Fa fred: dedica-li més estona a l\'escalfament.';
+  else if(ico==='storm') note='Tempesta: res a fora avui, passa el WoD a cobert.';
+  else if(ico==='rain') note='Plou: si el WoD era a fora, val més tenir un pla B.';
+  else if(ico==='snow') note='Neu: compte amb el terreny si vas al box a peu.';
+  else note='Bones condicions per entrenar.';
+  return {ico,label,note};
+}
+function wxEnabled(){ return !!(D.profile&&D.profile.weather&&D.profile.weather.enabled); }
+function wxCache(){
+  try{ const c=JSON.parse(localStorage.getItem(WX_KEY)||'null');
+       return (c&&typeof c==='object'&&isFinite(c.temp))?c:null; }catch(e){ return null; }
+}
+// Ask the browser for a position. Never called unless wxEnabled().
+function wxPosition(){
+  return new Promise((res,rej)=>{
+    if(!navigator.geolocation) return rej(new Error('no geolocation'));
+    navigator.geolocation.getCurrentPosition(
+      p=>res({lat:Math.round(p.coords.latitude*10)/10, lon:Math.round(p.coords.longitude*10)/10}),
+      err=>rej(err),
+      {enableHighAccuracy:false, timeout:8000, maximumAge:15*60*1000});
+  });
+}
+async function wxFetch(force){
+  if(!wxEnabled()) return null;
+  const cached=wxCache();
+  if(!force && cached && (Date.now()-cached.at)<WX_TTL) return cached;
+  let pos;
+  try{ pos=await wxPosition(); }
+  catch(e){
+    // Denied or unavailable: stop asking, fall back to the plain layout.
+    if(e && e.code===1){ wxSetEnabled(false); }
+    return cached||null;
+  }
+  try{
+    const url=WX_ENDPOINT+'?latitude='+pos.lat+'&longitude='+pos.lon
+      +'&current=temperature_2m,weather_code'
+      +'&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto';
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok) throw new Error('http '+r.status);
+    const j=await r.json();
+    const cur=j&&j.current;
+    if(!cur||!isFinite(cur.temperature_2m)) throw new Error('bad payload');
+    const d=j.daily||{};
+    const hi=Array.isArray(d.temperature_2m_max)?d.temperature_2m_max[0]:null;
+    const lo=Array.isArray(d.temperature_2m_min)?d.temperature_2m_min[0]:null;
+    const out={at:Date.now(), temp:Math.round(cur.temperature_2m), code:cur.weather_code,
+               hi:isFinite(hi)?Math.round(hi):null, lo:isFinite(lo)?Math.round(lo):null,
+               lat:pos.lat, lon:pos.lon};
+    try{ localStorage.setItem(WX_KEY, JSON.stringify(out)); }catch(e){}
+    return out;
+  }catch(e){ return cached||null; }   // offline or provider down: last reading, or nothing
+}
+function renderWeather(){
+  const el=document.getElementById('weatherStrip'); if(!el) return;
+  if(!wxEnabled()){ el.style.display='none'; el.innerHTML=''; return; }
+  const paint=w=>{
+    if(!w){ el.style.display='none'; return; }
+    const m=wxMeaning(w.code,w.temp);
+    // Rain and snow get real falling drops under a still cloud; everything else
+    // animates the glyph itself.
+    const wet=(m.ico==='rain'||m.ico==='snow');
+    const anim=wet?(m.ico==='rain'?'a-rain':'a-snow')
+      :m.ico==='sun'?'a-sun':m.ico==='storm'?'a-storm':'a-cloud';
+    const range=(w.hi!=null&&w.lo!=null)
+      ? '<span class="wx-range">màx <b>'+w.hi+'°</b> · mín <b>'+w.lo+'°</b></span>' : '';
+    el.innerHTML='<span class="wx-ico '+anim+'">'+icSVG(m.ico,30)
+        +(wet?'<span class="wx-drops" aria-hidden="true"><i></i><i></i><i></i></span>':'')
+      +'</span>'
+      +'<span class="wx-body">'
+        +'<span class="wx-line">'
+          +'<span class="wx-now">'+w.temp+'°</span>'
+          +'<span class="wx-cond">'+m.label+'</span>'
+          +range
+        +'</span>'
+        +'<span class="wx-note">'+m.note+'</span>'
+      +'</span>';
+    el.style.display='flex';
+  };
+  paint(wxCache());                       // show the cached reading immediately
+  wxFetch(false).then(paint).catch(()=>{});
+}
+function syncWeatherUI(){
+  const t=document.getElementById('wxToggle'), n=document.getElementById('wxNote');
+  if(!t||!n) return;
+  t.checked=wxEnabled();
+  const geo=!!navigator.geolocation;
+  t.disabled=!geo;
+  n.textContent = !geo ? 'Aquest navegador no permet consultar la ubicació.'
+    : wxEnabled() ? 'Activat. Pots desactivar-ho quan vulguis; s\'esborra la lectura desada.'
+    : 'Desactivat. No s\'envia res enlloc.';
+}
+function wxSetEnabled(on){
+  if(!D.profile) D.profile={};
+  D.profile.weather=Object.assign({},D.profile.weather,{enabled:!!on,asked:true});
+  if(!on){ try{ localStorage.removeItem(WX_KEY); }catch(e){} }
+  save();
+  renderWeather();
+  if(typeof syncWeatherUI==='function') syncWeatherUI();
+}
+// Turning it on is the moment the permission prompt appears — deliberately tied
+// to an explicit tap, never to app start.
+async function wxEnableAndFetch(){
+  wxSetEnabled(true);
+  const w=await wxFetch(true);
+  if(!w && !wxEnabled()) toast('Sense ubicació no puc mostrar el temps','error');
+  else if(!w) toast('No s\'ha pogut consultar el temps','error');
+  renderWeather();
+}
+
 // ── Bar picker, right on the calculator ──────────────────────────────
 function toggleBarPop(ev){
   if(ev) ev.stopPropagation();
@@ -6214,7 +6542,7 @@ function renderWodGoals(host){
     host.innerHTML='<div class="card" style="text-align:center;padding:26px 18px">'
       +'<div style="font-size:var(--fs-headline);font-weight:800;margin-bottom:6px">Cap objectiu de WoD</div>'
       +'<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:18px">Marca\'t un temps per a un WoD (Fran per sota de 5:00) o una constància setmanal.</div>'
-      +'<button class="btn btn-p" onclick="openGoalWiz()">Crear el primer objectiu</button></div>';
+      +'<button class="btn btn-w" onclick="openGoalWiz()">Crear el primer objectiu</button></div>';
     return;
   }
   const open=goals.filter(g=>!g.done), done=goals.filter(g=>g.done);
@@ -6231,7 +6559,7 @@ function renderWodGoals(host){
       +'<div class="goal-bar-track"><div class="goal-bar-fill" style="background:var(--w-acc);width:'+pct+'%"></div></div>'
       +'<div style="text-align:right;font-size:var(--fs-body-sm);font-weight:700;color:var(--w-ink);margin-top:6px">'+pct+'%</div></div>';
   };
-  host.innerHTML='<button class="btn btn-p" style="margin-bottom:16px" onclick="openGoalWiz()">+ Nou objectiu</button>'
+  host.innerHTML='<button class="btn btn-w" style="margin-bottom:16px" onclick="openGoalWiz()">+ Nou objectiu</button>'
     + open.map(card).join('')
     + (done.length? '<div class="ctitle" style="margin:24px 0 12px">Assolits</div>'+done.map(card).join('') : '');
 }
@@ -6389,6 +6717,7 @@ function renderAjGreeting() {
   gymDraft = null;                      // re-read the saved set on every visit
   if (typeof renderAjGym === 'function') renderAjGym();
   if (typeof syncHapticUI === 'function') syncHapticUI();
+  if (typeof syncWeatherUI === 'function') syncWeatherUI();
   hideDangerZone();                     // never re-enter Més with the wipe armed
   // Greeting with name — and once a year, a small party.
   const el = document.getElementById('ajGreeting');
@@ -6971,6 +7300,17 @@ function renderProg(){
   if(!exId){document.getElementById('progStats').style.display='none';return;}
   const ex=D.hEx.find(e=>e.id===exId);
   const ents=D.hEnt.filter(e=>e.exId===exId).sort((a,b)=>a.date.localeCompare(b.date));
+  // No sessions → no chart. Plotting nothing renders an empty black panel.
+  const chartCard=document.getElementById('progChartCard'), emptyCard=document.getElementById('progEmpty');
+  const hasData=ents.length>0;
+  if(chartCard) chartCard.style.display=hasData?'':'none';
+  if(emptyCard) emptyCard.style.display=hasData?'none':'block';
+  if(!hasData){
+    if(progCI){progCI.destroy();progCI=null;}
+    document.getElementById('progStats').style.display='none';
+    const z=document.getElementById('zonesCard'); if(z) z.style.display='none';
+    return;
+  }
   document.getElementById('progStats').style.display='block';
   const rm1=best1RM(exId);
   const maxW=ents.reduce((m,e)=>Math.max(m,...(e.sets||[]).map(s=>s.w||0)),0);
@@ -7478,7 +7818,7 @@ function renderWodTemplates(){
         </div>
       </div>
       ${movs?`<div style="font-size:13px;color:var(--text2);margin-bottom:8px">${movs}</div>`:''}
-      <button class="btn btn-p" style="background:var(--w-acc);color:#fff;margin-top:6px" onclick="loadWodTpl('${t.id}')">Registrar aquest WoD →</button>
+      <button class="btn btn-w" style="margin-top:6px" onclick="loadWodTpl('${t.id}')">Registrar aquest WoD →</button>
     </div>`;
   }).join('');
 }
@@ -7704,7 +8044,7 @@ function renderWodTplFullList() {
       </div>
       <div class="tpl-wod-badge">${wb.type}${wb.duration?' '+wb.duration+' min':''}</div>
       ${movSummary?`<div style="font-size:13px;color:var(--text2);margin-top:4px;margin-bottom:8px">${movSummary}</div>`:''}
-      <button class="btn btn-p" style="background:var(--w-acc);color:#000" onclick="loadWodTpl('${t.id}')">Usar plantilla →</button>
+      <button class="btn btn-w" onclick="loadWodTpl('${t.id}')">Usar plantilla →</button>
     </div>`;
   }).join('');
 }
@@ -8826,6 +9166,8 @@ function saveSetup(skip) {
       D.profile.plateSet = { bar: gymDraft.bar, denoms: [...gymDraft.denoms].sort((a,b)=>b-a) };
       invalidatePlateDP();
     }
+    const wxWanted = document.getElementById('obWeather');
+    D.profile.weather = { enabled: !!(wxWanted && wxWanted.checked), asked: true };
   } else {
     if (!D.profile) D.profile = {};
     D.profile.setupDone = true;
@@ -8840,7 +9182,7 @@ function saveSetup(skip) {
 // ══════════════════════════════════════════
 // LEGAL / PRIVACY — documents, acceptance, in-app screens
 // ══════════════════════════════════════════
-const LEGAL_VERSION = '1.0';
+const LEGAL_VERSION = '1.1';   // v8.19: optional location/weather added
 const LEGAL_HOLDER = 'Àlex Alemany Muñoz';
 const LEGAL_EMAIL  = 'alexalemanymunoz@gmail.com';
 
@@ -8946,26 +9288,27 @@ const LEGAL_DOCS = {
 <ul><li><strong>Responsable:</strong> ${LEGAL_HOLDER}</li><li><strong>Contacte:</strong> ${LEGAL_EMAIL}</li></ul>
 <p>No s'ha designat Delegat de Protecció de Dades (no concorren els supòsits de l'art. 37 RGPD).</p>
 <h2>2. On són les teves dades</h2>
-<p>PRsonal és una aplicació autònoma sense compte ni servidor propi. <strong>La immensa majoria de les teves dades no surten mai del teu dispositiu:</strong> es guarden localment al navegador i el Responsable ni les rep ni hi pot accedir. Cap dada que arribi a tercers inclou el teu nom.</p>
+<p>PRsonal és una aplicació autònoma sense compte ni servidor propi. <strong>La immensa majoria de les teves dades no surten mai del teu dispositiu:</strong> es guarden localment al navegador i el Responsable ni les rep ni hi pot accedir. Cap dada que arribi a tercers inclou el teu nom. <strong>L'única funció que envia res fora del dispositiu és «El temps», que està desactivada per defecte</strong> (vegeu 3.B).</p>
 <h2>3. Dades, finalitats i base jurídica</h2>
 <h3>3.A Dades que es guarden només al teu dispositiu</h3>
 <p>Perfil (nom opcional, sexe, pes, alçada), registres d'entrenament, objectius, plantilles, preferències i còpies JSON que generis tu. El pes i el sexe poden considerar-se dades de salut (categoria especial, art. 9 RGPD); es tracten només al teu dispositiu i no es transmeten. El teu nom, si l'introdueixes, es guarda només al dispositiu i no s'envia enlloc.</p>
 <p><strong>Base jurídica:</strong> el teu consentiment (art. 6.1.a) i, per a dades de salut, el consentiment explícit (art. 9.2.a), que atorgues en acceptar aquesta política i introduir les dades. Pots retirar-lo esborrant les dades. <strong>Conservació:</strong> fins que les esborris.</p>
 <h3>3.B Dades que es transmeten a tercers</h3>
 <p><strong>Mètrica d'ús anònima (Google Forms):</strong> en completar o ometre la configuració inicial, s'envia un esdeveniment anònim amb només la data i hora. <strong>No inclou el teu nom ni cap identificador personal.</strong> Finalitat: comptar de forma agregada les configuracions completades. Destinatari: Google.</p>
-<p><strong>Dades tècniques de connexió:</strong> en carregar l'app, el navegador es connecta a GitHub Pages (allotjament) i a Cloudflare (llibreria de gràfics), que poden registrar la teva adreça IP, l'agent d'usuari i la data/hora. Base jurídica: interès legítim (art. 6.1.f).</p>
+<p><strong>Dades tècniques de connexió:</strong> en carregar l'app, el navegador es connecta a GitHub Pages (allotjament), que pot registrar la teva adreça IP, l'agent d'usuari i la data/hora. Base jurídica: interès legítim (art. 6.1.f). <em>Des de la v8.1 la llibreria de gràfics va incorporada dins l'app: ja no hi ha cap connexió a Cloudflare.</em></p>
+<p><strong>Ubicació aproximada, només si actives «El temps» (opcional):</strong> si l'actives a Més → El temps, l'app demana la teva ubicació al navegador, l'<strong>arrodoneix a una posició decimal (~11 km)</strong> i envia només aquestes coordenades aproximades a <strong>Open-Meteo</strong> per obtenir la temperatura del dia. <strong>No s'hi envia cap identificador, ni el teu nom, ni cap dada d'entrenament.</strong> La lectura es desa <strong>només al teu dispositiu</strong> durant 30 minuts. <strong>Base jurídica:</strong> el teu consentiment (art. 6.1.a), que atorgues activant la funció i que pots retirar desactivant-la (llavors s'esborra la lectura desada). Si no l'actives, <strong>no s'envia res</strong> i l'app funciona igual.</p>
 <h3>3.C Caràcter voluntari</h3>
 <p>Facilitar dades és totalment voluntari. L'única conseqüència de no fer-ho és que algunes funcions (càlcul d'índexs, seguiment) no estaran disponibles.</p>
 <h2>4. Analítica</h2>
 <p>No fem servir Google Analytics, píxels publicitaris, cookies de seguiment ni xarxes de publicitat, i no venem les teves dades. L'única mètrica és l'esdeveniment anònim descrit a 3.B.</p>
 <h2>5. Cookies i emmagatzematge local</h2>
-<p>No fem servir cookies publicitàries ni de seguiment. Fem servir localStorage per guardar les teves dades i preferències, necessari per al funcionament que sol·licites (art. 22.2 LSSI). Vegeu la Política de Cookies.</p>
+<p>No fem servir cookies publicitàries ni de seguiment. Fem servir localStorage per guardar les teves dades i preferències, necessari per al funcionament que sol·licites (art. 22.2 LSSI). Si actives «El temps», s'hi afegeix <code>alerx_weather</code> amb la darrera lectura i la posició arrodonida. Vegeu la Política de Cookies.</p>
 <h2>6. Destinataris</h2>
-<p>Google (mètrica anònima), GitHub/Microsoft (allotjament) i Cloudflare (CDN). No es cedeixen dades personals a cap altre tercer, llevat d'obligació legal.</p>
+<p>Google (mètrica anònima), GitHub/Microsoft (allotjament) i, <strong>només si actives «El temps»</strong>, Open-Meteo (temperatura a partir de coordenades aproximades). No es cedeixen dades personals a cap altre tercer, llevat d'obligació legal.</p>
 <h2>7. Transferències internacionals</h2>
-<p>Aquests proveïdors poden tractar dades als EUA. Les transferències es cobreixen pel Marc de Privacitat de Dades UE-EUA (decisió d'adequació de 10.07.2023) i/o per Clàusules Contractuals Tipus (art. 46 RGPD). A juliol de 2026 els tres proveïdors consten adherits al Marc; el Responsable en revisa la vigència.</p>
+<p>Google i GitHub/Microsoft poden tractar dades als EUA. Les transferències es cobreixen pel Marc de Privacitat de Dades UE-EUA (decisió d'adequació de 10.07.2023) i/o per Clàusules Contractuals Tipus (art. 46 RGPD); el Responsable en revisa la vigència. <strong>Open-Meteo</strong> opera des de Suïssa, país amb decisió d'adequació de la Comissió Europea, de manera que aquesta transferència no requereix garanties addicionals.</p>
 <h2>8. Conservació</h2>
-<p>Dades locals: fins que les esborris. Mètrica anònima: supressió com a màxim als 12 mesos. Registres tècnics: segons les polítiques de GitHub i Cloudflare.</p>
+<p>Dades locals: fins que les esborris. Lectura del temps: 30 minuts al teu dispositiu (i s'esborra en desactivar la funció). Mètrica anònima: supressió com a màxim als 12 mesos. Registres tècnics: segons les polítiques de GitHub.</p>
 <h2>9. Els teus drets</h2>
 <p>Accés, rectificació, supressió, limitació, portabilitat, oposició, no ser objecte de decisions automatitzades i retirar el consentiment (sense afectar la licitud prèvia). Com que la major part de les dades són al teu dispositiu, molts drets els exerceixes directament (editar, esborrar o exportar en JSON = portabilitat). Per a la resta, escriu a ${LEGAL_EMAIL}. Pots reclamar davant l'AEPD (C/ Jorge Juan 6, 28001 Madrid · www.aepd.es) o l'APDCAT (apdcat.gencat.cat).</p>
 <h2>10. Menors</h2>
@@ -10104,9 +10447,10 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.19':['Nou: el temps a Inici (opcional). Temperatura actual, màxima, mínima i una nota d\'entrenament. Cal la teva ubicació: l\'arrodonim a ~11 km i no s\'envia cap identificador. Ho actives o desactives a Més → El temps.','Cada disc té ara el seu color: abans el 5 era gairebé blanc i els petits repetien els colors dels grans.','Botons principals amb text clar sobre un fons més fosc, més fàcils de llegir.','Els botons de la part de WoD ara són de color verd-blau, com la resta de la secció.','El botó Tornar i el títol de les pantalles ja estan ben col·locats.','A Mètriques, si un exercici no té dades, ja no es mostra un gràfic buit.','"Discos" ara és "Discs".'],
   '8.18':['Arreglat: al mode fosc, les tres opcions de Registrar (Força, Força + WoD, WoD) es veien negre sobre negre. Ara es llegeixen.','Colors corregits al mode clar: la pestanya activa, el botó Tornar i el dia d\'avui no arribaven al mínim de contrast.','Tots els botons i camps són ara de 44px com a mínim, pensats per al dit entre sèries.','L\'app és més lleugera: hem esborrat la pantalla de registre antiga que ja no feia servir ningú.','Retocs visuals a l\'historial i als avisos.'],
   '8.17':['La calculadora de % ja no et proposa pesos impossibles: a Més → El teu gimnàs marques quins discos teniu al box i quina barra, i tots els càlculs s\'hi ajusten.','Cada percentatge et diu el pes que pots muntar de veritat, amb els discos exactes de cada banda.','A sota, el material que has de portar a la plataforma per a tota la sessió.','Toca la icona de la barra per canviar-la (10, 15 o 20 kg) sense sortir de la calculadora.','Toca «Base» per posar-hi el teu propi 100% d\'un exercici.','Els exercicis de la calculadora es trien per família, com a Inici.','Ara et demanem la data de naixement: l\'edat es calcula sola i el dia del teu aniversari l\'app t\'ho celebra.','Arreglat: a l\'iPhone algunes icones no es veien (Registrar, Plantilles i la resta de llistes).','Arreglat: el calendari de l\'historial se sortia de la targeta.','Arreglat: amb Rècords obert, canviar de secció no feia res i et quedaves encallat.','L\'avís de còpia de seguretat es pot tancar i només torna al cap d\'una setmana.','Inici respira més, i l\'avís de «zona de perill» només surt si demanes esborrar les dades.','La vibració ara funciona a l\'iPhone (abans no feia res). La pots activar o desactivar i provar-la a Més → Accessibilitat.'],
-  '8.16':['A l\'historial, cada sessió té un botó d\'editar: s\'obre el registrar ja emplenat i pots canviar-ho tot.','Calendari més compacte i els dies s\'acoloreixen segons què vas fer.','A la calculadora, toca un percentatge per activar-lo o desactivar-lo; els discos es recalculen.','Discos amb els colors oficials de competició, en una sola línia.','Nou botó per registrar tota la sessió amb els percentatges actius ja preparats.','Objectius també es pot lliscar entre Força i WoD.'],
+  '8.16':['A l\'historial, cada sessió té un botó d\'editar: s\'obre el registrar ja emplenat i pots canviar-ho tot.','Calendari més compacte i els dies s\'acoloreixen segons què vas fer.','A la calculadora, toca un percentatge per activar-lo o desactivar-lo; els discs es recalculen.','Discos amb els colors oficials de competició, en una sola línia.','Nou botó per registrar tota la sessió amb els percentatges actius ja preparats.','Objectius també es pot lliscar entre Força i WoD.'],
   '8.15':['Registrar un WoD ara és guiat pas a pas, igual que la força.','Cada tipus et pregunta el que toca: durada per a l\'AMRAP, esquema per a For Time, feina i descans per a la Tabata…','EMOM i E2MOM amb estacions que s\'alternen (senars i parells).','Cash-in i cash-out per a qualsevol WoD.','Tot això es desa, es pot repetir des d\'una plantilla i compta a les estadístiques.'],
   '8.14':['Ara pots muntar el WoD moviment a moviment, amb repeticions i pes.','Desa\'l com a plantilla i repeteix-lo quan vulguis: els moviments i els pesos es mantenen.','Nova secció \"Per moviment\" a Mètriques → WoD: repeticions, volum i pes màxim de cada moviment.','L\'historial mostra de què estava fet cada WoD.'],
   '8.13':['Restaurar una còpia ara comprova de debò que el fitxer sigui una còpia vàlida abans de substituir res.'],
@@ -10158,7 +10502,7 @@ const PROFILE_TOPUP_SEEN='alerx_topup_seen';
 function profileNeedsTopUp(){
   const p=D.profile||{};
   if(!p.setupDone) return false;                 // the wizard will collect it
-  return !p.dob || !p.plateSet;
+  return !p.dob || !p.plateSet || !(p.weather && p.weather.asked);
 }
 function maybeProfileTopUp(){
   try{ if(localStorage.getItem(PROFILE_TOPUP_SEEN)) return; }catch(e){}
@@ -10167,7 +10511,8 @@ function maybeProfileTopUp(){
   const p=D.profile||{};
   const bits=[];
   if(!p.dob) bits.push('la teva <b>data de naixement</b> (per calcular l\'edat sola i felicitar-te el dia que toca)');
-  if(!p.plateSet) bits.push('quins <b>discos i barra</b> teniu al box (perquè la calculadora de % no et proposi pesos impossibles)');
+  if(!p.plateSet) bits.push('quins <b>discs i barra</b> teniu al box (perquè la calculadora de % no et proposi pesos impossibles)');
+  if(!p.weather||!p.weather.asked) bits.push('si vols veure <b>el temps</b> a Inici (opcional, i és l\'única funció que envia res fora del telèfon)');
   document.getElementById('topUpBody').innerHTML =
     '<p style="margin:0 0 10px;line-height:1.55">Aquesta versió afegeix dues dades al teu perfil que abans no demanàvem:</p>'
     +'<ul class="wn-list">'+bits.map(b=>'<li>'+b+'</li>').join('')+'</ul>'
