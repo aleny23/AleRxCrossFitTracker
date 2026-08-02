@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.21</title>
+<title>PRsonal v8.22</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -675,7 +675,13 @@ select option{background:var(--bg3);}
 .ov{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:14px;}
 .ov.on{display:block;}
 .ov-in{max-width:480px;margin:0 auto;}
-.ov-hd{display:flex;align-items:center;gap:11px;margin-bottom:16px;padding-bottom:11px;border-bottom:0.5px solid var(--border);}
+/* Two rows, same as the overlay navbar (v8.21): the back button sits on its own
+   line and the exercise name gets the full width beneath it. Side by side, a name
+   like "Clean & Jerk (from blocks)" crowded straight into "Tornar". */
+.ov-hd{display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  margin-bottom:16px;padding-bottom:11px;border-bottom:0.5px solid var(--border);}
+.ov-hd > div{min-width:0;max-width:100%;}
+.ov-hd #detNm{font-size:23px;font-weight:800;letter-spacing:-0.4px;line-height:1.2;}
 .backbtn{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:15px;font-weight:600;padding:8px 14px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;}
 
 /* ─── ZONES TABLE ─── */
@@ -2391,7 +2397,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <div class="ov" id="detailOv">
   <div class="ov-in">
     <div class="ov-hd"><button class="backbtn" onclick="closeDetail()">← Tornar</button>
-      <div><div style="font-size:19px;font-weight:800" id="detNm"></div><div id="detBadge" style="margin-top:2px"></div></div>
+      <div><div id="detNm"></div><div id="detBadge" style="margin-top:2px"></div></div>
     </div>
     <div id="detStats"></div>
     <div class="det-sec">
@@ -2695,7 +2701,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.21<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.22<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3233,8 +3239,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     </div>
 
     <div class="wiz-step" id="wizStepWodResult">
-      <div class="wiz-kicker">Resultat</div>
-      <div class="wiz-q">Com ha anat?</div>
+      <div class="wiz-kicker" id="wizWScoreKicker">Resultat</div>
+      <div class="wiz-q" id="wizWScoreQ">Com ha anat?</div>
       <div class="wiz-sum" id="wizWodRecap"></div>
       <!-- The score is typed per WoD kind (v8.21): a time picker for For Time,
            rounds+reps for AMRAP, and so on. The free-text box stays for anything
@@ -3346,7 +3352,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.21</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.22</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3955,7 +3961,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.21';
+const APP_VERSION='8.22';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -5443,8 +5449,20 @@ function wizRenderScoreFields(){
   const host=document.getElementById('wizWScoreFields'); if(!host) return;
   const kind=wodScoreKind(wizS.wod.type);
   const sc=wizS.wod.score||{};
-  document.getElementById('wizWScoreLbl').textContent=
-    kind==='time'?'Temps (mm:ss)':kind==='rounds'?'Rondes completades':kind==='reps'?'Repeticions totals':'Com ha acabat';
+  const type=wizS.wod.type||'WoD';
+  // Name the measure, every time. "Resultat" is the same word for six different
+  // things; a For Time is a clock and an AMRAP is a count, and the screen should
+  // say which one it wants before you start typing.
+  const ASK = {
+    time:   {kicker:'Temps',   q:'Quant has trigat?',        lbl:'Temps (mm:ss)'},
+    rounds: {kicker:'Rondes',  q:'Quantes rondes has fet?',  lbl:'Rondes completades'},
+    reps:   {kicker:'Reps',    q:'Quantes repeticions?',     lbl:'Repeticions totals'},
+    done:   {kicker:'Final',   q:'Has aguantat tot l\'EMOM?',lbl:'Com ha acabat'}
+  }[kind];
+  const kEl=document.getElementById('wizWScoreKicker'), qEl=document.getElementById('wizWScoreQ');
+  if(kEl) kEl.textContent=type+' · '+ASK.kicker;
+  if(qEl) qEl.textContent=ASK.q;
+  document.getElementById('wizWScoreLbl').textContent=ASK.lbl;
   if(kind==='time'){
     host.innerHTML='<input type="text" inputmode="numeric" id="wizScTime" class="fb-field" placeholder="8:42" value="'
       +(sc.sec!=null?clockFromSec(sc.sec):(sc.raw||''))+'">';
@@ -5509,8 +5527,11 @@ function showWodPR(name, prevTxt, nowTxt, date){
 }
 function wizRenderWodRecap(){
   document.getElementById('wizWodRecap').innerHTML = wodSummaryHtml(wizS.wod);
-  const hint=(WOD_TYPES[wizS.wod.type]||{}).resultHint||'';
-  const el=document.getElementById('wizWResult'); if(el) el.placeholder=hint;
+  // The type's hint belonged to the old single free-text box. The score now has
+  // its own typed field, so the notes box keeps its own placeholder — it was
+  // telling you to type "8:42" into the notes.
+  const el=document.getElementById('wizWResult');
+  if(el) el.placeholder='p. ex. amb goma, DNF, escalat…';
 }
 // shared summary used by the recap, the historial and the template confirm
 function wodSummaryHtml(w){
@@ -7946,51 +7967,38 @@ function renderWodTemplates(){
   }).join('');
 }
 
+// Using a WoD template opens the REGISTRAR, prefilled — the same way the Força
+// side works. Until v8.21 this still drove the pre-rebuild editor, so when that
+// markup was deleted in v8.18 the guard turned the whole thing into a silent
+// no-op: "Registrar aquest WoD" did nothing at all, and no score could be typed,
+// which is why a template WoD never produced a record.
 function loadWodTpl(id){
-  if(!document.getElementById('wName')) return;   // pre-rebuild editor, removed v8.18
   const t=(D.templates||[]).find(t=>t.id===id);
-  if(!t||!t.wodBlock)return;
+  if(!t||!t.wodBlock) return;
   const wb=t.wodBlock;
-  // Navigate to Entrenar → WoD → Registrar so the form is visible
-  if(typeof switchTab==='function') switchTab('entrenar');
-  if(typeof setModePill==='function') setModePill('w');
-  if(typeof showWSub==='function') showWSub('log', document.querySelector('#subnavW .entr-sub-btn'));
-  // Pre-fill the WoD form with template data
-  document.getElementById('wName').value=t.name;
-  // Set wod type
-  wodType=wb.type;
-  document.querySelectorAll('#wtypeGrid .wtbtn').forEach(b=>b.classList.toggle('active',b.textContent===wb.type));
-  renderWodTypeForm();
-  // Pre-fill movements after form renders
-  setTimeout(()=>{
-    if(wb.type==='AMRAP'){
-      amrapMovs=(wb.movements||[]).map(m=>({...m,w:m.weight||0}));
-      if(document.getElementById('wDur'))document.getElementById('wDur').value=wb.duration||'';
-      renderAmrapMovs();
-    } else if(wb.type==='For Time'){
-      ftMovs=(wb.movements||[]).map(m=>({...m,w:m.weight||0}));
-      if(document.getElementById('ftRounds'))document.getElementById('ftRounds').value=wb.rounds||1;
-      if(document.getElementById('ftCap'))document.getElementById('ftCap').value=wb.timeCap||'';
-      renderFtMovs();
-    } else if(wb.type==='Tabata'){
-      tabMovs=(wb.movements||[]).map(m=>({...m,w:m.weight||0}));
-      if(document.getElementById('tabWork'))document.getElementById('tabWork').value=wb.work||20;
-      if(document.getElementById('tabRest'))document.getElementById('tabRest').value=wb.rest||10;
-      if(document.getElementById('tabRounds'))document.getElementById('tabRounds').value=wb.rounds||8;
-      renderTabMovs();
-    } else if(wb.type==='Chipper'){
-      chipMovs=(wb.movements||[]).map(m=>({...m,w:m.weight||0}));
-      if(document.getElementById('chipCap'))document.getElementById('chipCap').value=wb.timeCap||'';
-      renderChipMovs();
-    } else if(wb.type==='EMOM'){
-      emomMins=(wb.minutes||[]).map(b=>({...b}));
-      if(document.getElementById('emomTotal'))document.getElementById('emomTotal').value=wb.totalMin||10;
-      if(document.getElementById('emomInterval'))document.getElementById('emomInterval').value=wb.interval||1;
-      renderEmomBlocs();
-    }
-    const wl=document.getElementById('w-log'); if(wl) wl.scrollIntoView({behavior:'smooth',block:'start'});
-  },120);
-  toast('Plantilla WoD carregada ✓');
+  closeTplPanel(true);
+  try{ closeTplReview&&closeTplReview(); }catch(e){}
+  switchTab('entrenar');
+  openWizard();
+  wizPickKind('wod');
+  // Carry the template's structure in, and remember WHICH template it was so the
+  // entry gets a stable wodKey (tpl:<id>) instead of relying on the name string.
+  wizS.wod = {
+    tplId: t.id,
+    name: t.name || wb.type || 'WoD',
+    type: wb.type || 'For Time',
+    struct: {...(wb.struct||{})},
+    movements: (wb.movements||[]).map(m=>({...m})),
+    stations: (wb.stations||[]).map(st=>(st||[]).map(m=>({...m}))),
+    cashIn: (wb.cashIn||[]).map(m=>({...m})),
+    cashOut: (wb.cashOut||[]).map(m=>({...m})),
+    result:'', scale:'Rx', note:'', score:null
+  };
+  // Jump straight to the score: the structure came from the template, so the only
+  // thing left to ask is how it went.
+  wizS.i = wizFlow().indexOf('wodResult');
+  wizShow();
+  toast(t.name+' a punt — posa el resultat');
 }
 
 
@@ -10643,6 +10651,7 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.22':['Arreglat: fer servir una plantilla de WoD no feia absolutament res. Ara obre el registrar ja emplenat i només et demana el resultat.','La pantalla del resultat ara diu sempre què et demana: "Quant has trigat?" per a un For Time, "Quantes rondes?" per a un AMRAP, i així amb cada tipus.','El nom de l\'exercici ja no s\'amuntega amb el botó Tornar: va a la seva pròpia línia.'],
   '8.21':['Els WoDs ara tenen marca de veritat. En registrar-ne un et demanem el resultat en la forma que toca: temps per a For Time, rondes + reps per a l\'AMRAP, repeticions per a la Tabata.','Nova secció Rècords a Mètriques → WoD: la teva millor marca de cada WoD i quants cops l\'has fet. Toca\'l per veure tots els intents.','Si millores la teva marca, tens celebració i confeti, igual que amb un rècord de força.','L\'app ja sap que "Murph" i "murph" són el mateix WoD.','Els WoDs antics s\'han convertit sols: si el resultat es podia entendre, ja té marca.'],
   '8.20':['Arreglat un error important: en fer un rècord nou, la celebració petava i no es veia mai. Ara sí.','En crear una plantilla ja no et demanem la data: una plantilla no té dia.','Hem tret la vibració. A l\'iPhone el navegador no la permet de debò, així que preferim no prometre-la; arribarà amb la versió nativa.'],
   '8.19':['Nou: el temps a Inici (opcional). Temperatura actual, màxima, mínima i una nota d\'entrenament. Cal la teva ubicació: l\'arrodonim a ~11 km i no s\'envia cap identificador. Ho actives o desactives a Més → El temps.','Cada disc té ara el seu color: abans el 5 era gairebé blanc i els petits repetien els colors dels grans.','Botons principals amb text clar sobre un fons més fosc, més fàcils de llegir.','Els botons de la part de WoD ara són de color verd-blau, com la resta de la secció.','El botó Tornar i el títol de les pantalles ja estan ben col·locats.','A Mètriques, si un exercici no té dades, ja no es mostra un gràfic buit.','"Discos" ara és "Discs".'],
