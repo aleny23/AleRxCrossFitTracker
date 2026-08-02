@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.19</title>
+<title>PRsonal v8.21</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -713,6 +713,33 @@ select option{background:var(--bg3);}
   
 }
 
+/* A WoD score is a phrase ("18 rondes + 5 reps"), not "120.0 kg" — the PR
+   overlay's kg typography wraps it badly, so it drops a step for WoD records. */
+#prOv.wodpr #prNewVal{font-size:28px;line-height:1.15;}
+#prOv.wodpr #prOldVal{font-size:19px;line-height:1.2;}
+
+/* ─── WOD BOARD (v8.21) — the WoD answer to Rècords ─── */
+.wodb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  min-height:var(--tap);padding:12px 2px;background:none;border:none;border-bottom:0.5px solid var(--border);
+  cursor:pointer;font-family:inherit;text-align:left;color:var(--text);}
+.wodb-row:last-child{border-bottom:none;}
+.wodb-row:active{opacity:.7;}
+.wodb-main{min-width:0;}
+.wodb-nm{display:block;font-size:var(--fs-body-sm);font-weight:700;}
+.wodb-meta{display:block;font-size:var(--fs-label);color:var(--text3);margin-top:2px;}
+.wodb-right{text-align:right;flex-shrink:0;}
+.wodb-val{display:block;font-size:var(--fs-title);font-weight:800;color:var(--w-ink);
+  font-variant-numeric:tabular-nums;letter-spacing:-0.3px;}
+.wodb-up{display:block;font-size:var(--fs-label);color:var(--green);font-weight:700;margin-top:2px;}
+.wodb-flat{display:block;font-size:var(--fs-label);color:var(--text3);margin-top:2px;}
+.wodt-head{font-size:var(--fs-body-sm);color:var(--text2);margin-bottom:10px;}
+.wodt-head b{color:var(--w-ink);}
+.wodt-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 2px;border-bottom:0.5px solid var(--border);font-size:var(--fs-body-sm);color:var(--text2);}
+.wodt-row:last-child{border-bottom:none;}
+.wodt-row b{color:var(--text);font-variant-numeric:tabular-nums;}
+.wodt-row.best b{color:var(--w-ink);}
+
 /* ─── PR BOARD ─── */
 .prrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);}
 .prrow:last-child{border-bottom:none;}
@@ -1188,7 +1215,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   overscroll-behavior-y: contain;
 }
 
-/* ─── HAPTIC PULSE (visual feedback) ──────────────────────────── */
+/* ─── PRESS PULSE (visual feedback) ───────────────────────────── */
 
 /* ─── HOME CHART CARD ───────────────────────────────────────────── */
 .home-chart-card {
@@ -2331,6 +2358,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 
 <!-- W-STATS -->
 <div id="w-stats" class="sec">
+  <!-- The WoD board (v8.21): your best score per WoD, and whether you are
+       getting better at it. This is the WoD answer to Rècords. -->
+  <div class="card anim-fadeup">
+    <div class="ctitle" style="color:var(--w-ink)">Els teus WoDs</div>
+    <div id="wodBoard"></div>
+  </div>
   <div class="card anim-fadeup">
     <div class="ctitle" style="color:var(--w-ink)">Stats per exercici WoD</div>
     <div class="fg"><select id="wStatEx" onchange="renderWStats()"></select></div>
@@ -2434,6 +2467,15 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <button class="btn btn-p" onclick="saveEdit()">Guardar</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- WoD trend: every attempt at one WoD, best marked -->
+<div class="sheet" id="wodTrendSheet">
+  <div class="sheet-in" style="max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div class="stitle" id="wodTrendTitle"></div>
+    <div id="wodTrendBody" style="margin-top:10px"></div>
+    <button class="btn btn-s" style="width:100%;margin-top:16px" onclick="closeWodTrend()">Tancar</button>
   </div>
 </div>
 
@@ -2618,30 +2660,6 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         </span>
         <input type="checkbox" switch id="hcToggle" onchange="setContrast(this.checked?'high':'normal')">
       </label>
-      <label class="toggle-row" style="margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border)">
-        <span class="toggle-txt">
-          <span class="toggle-t">Vibració</span>
-          <span class="toggle-s" id="hapticNote"></span>
-        </span>
-        <input type="checkbox" switch id="hapticToggle" onchange="setHaptics(this.checked)">
-      </label>
-      <!-- Two tests, because they fail for different reasons. The first is the
-           app's own code path. The second is a REAL switch you toggle yourself —
-           iOS only plays its system tap for genuine interaction, so if this one
-           buzzes and the button above doesn't, the programmatic path is the
-           problem, not the device. -->
-      <label class="toggle-row" style="margin-top:10px">
-        <span class="toggle-txt">
-          <span class="toggle-t">Provar-ho</span>
-          <span class="toggle-s">Mou aquest interruptor: hauries de notar un copet.</span>
-        </span>
-        <input type="checkbox" switch id="hapticProbe" onchange="probeHapticAnswer()">
-      </label>
-      <details style="margin-top:10px">
-        <summary style="font-size:var(--fs-label);color:var(--text3);cursor:pointer;min-height:var(--tap);display:flex;align-items:center">Detalls tècnics</summary>
-        <div id="hapticDiag" style="font-size:var(--fs-label);color:var(--text3);line-height:1.55;margin-top:8px;white-space:pre-wrap"></div>
-        <button class="btn btn-s btn-sm" style="width:100%;margin-top:8px" onclick="copyHapticDiag()">Copiar el diagnòstic</button>
-      </details>
     </div>
 
     <div class="card anim-fadeup anim-delay-2">
@@ -2677,7 +2695,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.19<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.21<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3218,8 +3236,13 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-kicker">Resultat</div>
       <div class="wiz-q">Com ha anat?</div>
       <div class="wiz-sum" id="wizWodRecap"></div>
-      <div class="fg"><label>Resultat</label>
-        <input type="text" id="wizWResult" class="fb-field" placeholder="resultat"></div>
+      <!-- The score is typed per WoD kind (v8.21): a time picker for For Time,
+           rounds+reps for AMRAP, and so on. The free-text box stays for anything
+           the shape cannot hold ("DNF", "amb goma"). -->
+      <div class="fg"><label id="wizWScoreLbl">Resultat</label>
+        <div id="wizWScoreFields"></div></div>
+      <div class="fg" style="margin-top:12px"><label>Notes del resultat (opcional)</label>
+        <input type="text" id="wizWResult" class="fb-field" placeholder="p. ex. amb goma, DNF…"></div>
       <div class="fg" style="margin-top:12px"><label>Escala</label>
         <select id="wizWScale" class="fb-field"><option>Rx</option><option>Scaled</option></select></div>
       <div class="fg" style="margin-top:12px"><label>Nota</label>
@@ -3323,7 +3346,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.19</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.21</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3441,59 +3464,6 @@ function setContrast(mode){
   if(D&&D.profile){ D.profile.highContrast=(mode==='high'); save(); }
   // charts read hardcoded hexes (canvas can't resolve CSS vars) — re-render
   if(typeof activeTab!=='undefined'&&activeTab) switchTab(activeTab);
-  haptic('light');
-}
-// The toggle, and a way to actually find out whether this device can do it —
-// there is no API that reports "the user felt that", so the honest answer is a
-// button that fires one and asks.
-function setHaptics(on){
-  if(!D.profile) D.profile={};
-  D.profile.haptics = !!on;
-  save();
-  syncHapticUI();
-  if(on) haptic('success');
-}
-function syncHapticUI(){
-  const t=document.getElementById('hapticToggle'), n=document.getElementById('hapticNote');
-  if(!t||!n) return;
-  const cap=hapticCapability();
-  t.checked = hapticsEnabled();
-  t.disabled = !cap.ok;
-  n.textContent = cap.ok ? cap.detail
-    : 'No disponible: ' + cap.detail;
-  n.style.color = cap.ok ? 'var(--text2)' : 'var(--text3)';
-  renderHapticDiag();
-}
-function probeHapticAnswer(){
-  const cap=hapticCapability();
-  toast(cap.partial ? 'Això és tot el que iOS permet' : 'Has notat el copet?');
-  renderHapticDiag();
-}
-// Everything needed to work out WHY nothing is felt, without me holding the phone.
-function hapticDiagText(){
-  const i=document.createElement('input'); i.type='checkbox';
-  const m=(navigator.userAgent.match(/OS (\d+)[_.](\d+)/)||[]);
-  return [
-    'PRsonal ' + APP_VERSION + ' — diagnòstic de vibració',
-    'switch suportat : ' + ('switch' in i),
-    'navigator.vibrate: ' + (typeof navigator.vibrate),
-    'iOS (de l\'UA)   : ' + (m[1] ? m[1]+'.'+m[2] : 'desconegut'),
-    'standalone (app) : ' + (navigator.standalone === true),
-    'reduced motion   : ' + (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
-    'vibració activada: ' + hapticsEnabled(),
-    'via              : ' + hapticCapability().how,
-    'UA               : ' + navigator.userAgent
-  ].join('\n');
-}
-function renderHapticDiag(){
-  const el=document.getElementById('hapticDiag'); if(!el) return;
-  el.textContent=hapticDiagText();
-}
-function copyHapticDiag(){
-  const t=hapticDiagText();
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(t).then(()=>toast('Diagnòstic copiat'),()=>toast('No s\'ha pogut copiar','error'));
-  } else { renderHapticDiag(); toast('Copia el text de sota'); }
 }
 function syncContrastToggle(){
   const t=document.getElementById('hcToggle');
@@ -3590,6 +3560,97 @@ function famWrapCls(fam){
 const TAGS=['Bon dia','Fatiga alta','Post-descans','Tècnica bona','Tècnica dolenta','PR intent','Lesió lleu','Competició'];
 const PLATES=[25,20,15,10,5,2.5,2,1.5,1,0.5];
 const ALL_PCTS=[40,45,50,55,60,65,70,75,80,85,90,95,100];
+
+// ══════════════════════════════════════════════════════════════════
+// WOD SCORES (v8.21) — the thing that was missing
+// ══════════════════════════════════════════════════════════════════
+// Força works because best1RM() turns raw sets into a NUMBER that improves.
+// The WoD half had no equivalent: every score went into one free-text field,
+// so "12 rounds", "5 rounds + 12 reps" and "225 reps" were opaque and the app
+// could not tell whether you had got better. Only `m:ss` ever parsed.
+//
+// Now each WoD type declares what a score *is*, and the entry stores a typed
+// `score` alongside the human string. Everything downstream — PRs, trends,
+// goal progress, "18s faster than March" — falls out of this.
+//
+// kind: 'time'   → seconds, LOWER is better
+//       'rounds' → rounds + reps, HIGHER is better
+//       'reps'   → total reps, HIGHER is better
+//       'load'   → kg, HIGHER is better
+//       'done'   → completed / failed at minute N (EMOM); not ranked
+const WOD_SCORE_KIND = {
+  'For Time':'time', 'RFT':'time', 'Chipper':'time',
+  'AMRAP':'rounds', 'Tabata':'reps', 'EMOM':'done'
+};
+function wodScoreKind(type){ return WOD_SCORE_KIND[type] || 'time'; }
+
+// mm:ss (or h:mm:ss) → seconds
+function secFromClock(txt){
+  const m=String(txt||'').trim().match(/^(?:(\d+):)?(\d{1,3}):(\d{2})$/);
+  if(!m) return null;
+  const h=+(m[1]||0), mm=+m[2], ss=+m[3];
+  if(ss>59) return null;
+  return h*3600+mm*60+ss;
+}
+function clockFromSec(sec){
+  sec=Math.max(0,Math.round(+sec||0));
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
+  return (h?h+':'+String(m).padStart(2,'0'):String(m))+':'+String(s).padStart(2,'0');
+}
+// A score object → the string a human reads.
+function wodScoreText(score){
+  if(!score||!score.kind) return '';
+  if(score.kind==='time')   return score.sec!=null?clockFromSec(score.sec):'';
+  if(score.kind==='rounds') return score.rounds!=null
+      ? score.rounds+(score.rounds===1?' ronda':' rondes')+(score.reps?' + '+score.reps+' reps':'') : '';
+  if(score.kind==='reps')   return score.reps!=null?score.reps+' reps':'';
+  if(score.kind==='load')   return score.kg!=null?fmtKg(score.kg)+' kg':'';
+  if(score.kind==='done')   return score.done ? 'Completat'
+      : (score.failedAt!=null ? 'Fallat al minut '+score.failedAt : '');
+  return '';
+}
+// A single comparable magnitude, plus which direction is better.
+function wodScoreValue(score){
+  if(!score) return null;
+  if(score.kind==='time')   return score.sec!=null?score.sec:null;
+  if(score.kind==='rounds') return score.rounds!=null?(score.rounds*1000+(+score.reps||0)):null;
+  if(score.kind==='reps')   return score.reps!=null?score.reps:null;
+  if(score.kind==='load')   return score.kg!=null?score.kg:null;
+  return null;                                   // 'done' is not ranked
+}
+const wodLowerIsBetter = kind => kind==='time';
+// Is `a` a better score than `b`? null-safe both ways.
+function wodScoreBeats(a,b){
+  const av=wodScoreValue(a), bv=wodScoreValue(b);
+  if(av==null) return false;
+  if(bv==null) return true;
+  if(a.kind!==b.kind) return false;              // never compare across kinds
+  return wodLowerIsBetter(a.kind) ? av<bv : av>bv;
+}
+
+// ── Canonical identity ──────────────────────────────────────────────
+// "The same WoD" used to mean "the name string matches", so Murph / murph /
+// Murph (scaled) were three different workouts. A template or benchmark id is
+// authoritative; otherwise fall back to a normalised slug of the name.
+function wodKeyFor(nameOrEntry, tplId){
+  if(tplId) return 'tpl:'+tplId;
+  const name=(typeof nameOrEntry==='string')?nameOrEntry:(nameOrEntry&&nameOrEntry.name)||'';
+  const slug=String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  return slug?('nm:'+slug):'';
+}
+function wodEntryKey(e){ return e && (e.wodKey || wodKeyFor(e, e.tplId)); }
+
+// Best score ever recorded for one WoD, and its whole history.
+function wodHistory(key){
+  return (D.wEnt||[]).filter(e=>wodEntryKey(e)===key && e.score && wodScoreValue(e.score)!=null)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+}
+function bestWodScore(key){
+  let best=null;
+  wodHistory(key).forEach(e=>{ if(wodScoreBeats(e.score,best)) best=e.score; });
+  return best;
+}
 
 const DEF_HEX=[
   {id:'power_clean',name:'Power Clean',cat:'haltero',family:'Clean',rm1:null},
@@ -3786,6 +3847,31 @@ function migrate(parsed){
     tplRemoved:Array.isArray(parsed.tplRemoved)?parsed.tplRemoved:[],
   };
 
+  // ── v8.21 backfill: typed WoD scores + canonical identity ──────────
+  // Old entries carry a free-text `result` and no identity, so nothing could be
+  // compared. Give every entry a wodKey, and recover a typed score wherever the
+  // text is unambiguous. Anything unparseable keeps its text and simply stays
+  // out of the rankings — better than inventing a number.
+  out.wEnt.forEach(e=>{
+    if(!e.wodKey) e.wodKey = wodKeyFor(e, e.tplId);
+    if(e.score && e.score.kind) return;
+    const kind = wodScoreKind(e.type);
+    const txt  = String(e.result||'').trim();
+    if(!txt){ return; }
+    if(kind==='time'){
+      const sec=secFromClock(txt) || (typeof parseTimeSec==='function'?parseTimeSec(txt):null);
+      if(sec) e.score={kind:'time',sec:sec};
+    } else if(kind==='rounds'){
+      const m=txt.match(/(\d+)\s*(?:rond|round|rd)/i);
+      if(m){ const r=+m[1];
+        const p=txt.match(/\+\s*(\d+)/) || txt.match(/(\d+)\s*reps/i);
+        e.score={kind:'rounds',rounds:r,reps:p?+p[1]:0}; }
+    } else if(kind==='reps'){
+      const m=txt.match(/(\d+)\s*reps?/i) || txt.match(/^(\d+)$/);
+      if(m) e.score={kind:'reps',reps:+m[1]};
+    }
+  });
+
   // ── v8.3 backfills ────────────────────────────────────────────────
   // (a) hEx gains a `metric` capability flag. Gym work is reps+lastre; a few
   //     movements are measured by distance. Existing rows keep their shape
@@ -3869,7 +3955,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.19';
+const APP_VERSION='8.21';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4250,7 +4336,7 @@ function showW(sec,btn){
     const sb=document.getElementById('searchBarWexs');
     if(sb&&!sb.innerHTML) sb.innerHTML=makeSearchBar('wexs','Cerca exercici WoD...');
   }
-  if(sec==='stats'){populateWStatSel();renderWStats();}
+  if(sec==='stats'){renderWodBoard();populateWStatSel();renderWStats();}
   if(sec==='bench')renderBenchList();
 }
 function animateSection(id){
@@ -4438,53 +4524,20 @@ function watchFormLabels(){
   }).observe(document.body, { childList: true, subtree: true });
 }
 
-// ── Haptic feedback ────────────────────────────────────────────
-// iOS Safari does not implement the Vibration API — `navigator.vibrate` is
-// simply undefined there, which is why every haptic in this app has been a
-// silent no-op on the iPhone since it was written. The one haptic the iPhone
-// does expose to the web is the system tap Safari plays when an
-// `<input type="checkbox" switch>` flips (Safari 17.4+). So: vibrate on
-// Android, the switch on iOS, nothing anywhere else.
+// ── Haptic feedback: removed in v8.20 ──────────────────────────
+// It never worked on the only device this app targets. iOS Safari has no
+// Vibration API, and the one haptic it does expose — the system tap on an
+// `<input type="checkbox" switch>` — fires ONLY for a real finger on a real
+// switch; `element.click()` from code is silent. Verified on iOS 18.7 with an
+// on-device test: the app's own path produced nothing, a hand-toggled switch
+// produced a tap. So all 55 call sites, the toggle, the stored preference and
+// the diagnostic are gone rather than left pretending.
 //
-// Two constraints inherited from the trick, both unavoidable:
-//   · it only fires inside a real user gesture, so haptics queued from a
-//     setTimeout (the PR celebration) may not play;
-//   · there is exactly one intensity. "Stronger" can only mean "more taps".
-const HAPTIC_SWITCH_OK = (() => {
-  try { const i = document.createElement('input'); i.type = 'checkbox'; return 'switch' in i; }
-  catch(e) { return false; }
-})();
-function hapticsEnabled(){ return !(D && D.profile && D.profile.haptics === false); }
-function haptic(type) {
-  if (!hapticsEnabled()) return;
-  try {
-    if (navigator.vibrate) {                       // Android
-      if (type === 'success')      navigator.vibrate([10, 30, 10]);
-      else if (type === 'light')   navigator.vibrate(8);
-      else if (type === 'warning') navigator.vibrate([20, 10, 20]);
-      else                         navigator.vibrate(12);
-      return;
-    }
-    // No iOS branch. Measured on iOS 18.7: toggling the hidden switch from code
-    // is SILENT — Safari plays the system tap only for a real finger on a real
-    // switch. Firing it anyway just churned the DOM for nothing. The app's own
-    // switches (contrast, vibració, el temps) carry the `switch` attribute, so
-    // those buzz when you move them, which is the whole of what iOS allows.
-  } catch(e) {}
-}
-// What this device can actually do — measured on Àlex's iPhone (iOS 18.7), not
-// assumed. The programmatic path does NOT fire on iOS: Safari plays the system
-// tap only when a switch is toggled by a real finger, so `el.click()` is silent.
-// Toggling one yourself works. The honest report says exactly that.
-function hapticCapability(){
-  if (navigator.vibrate) return {ok:true, how:'vibració',
-    detail:'Aquest dispositiu vibra amb els avisos de l\'app.'};
-  if (HAPTIC_SWITCH_OK)  return {ok:true, how:'sistema', partial:true,
-    detail:'A l\'iPhone només vibren els interruptors que mous tu (aquest mateix, el contrast, el temps). iOS no deixa que l\'app faci vibrar el telèfon pel seu compte.'};
-  return {ok:false, how:'cap',
-    detail:'Aquest navegador no deixa que les pàgines web facin vibrar el dispositiu.'};
-}
-
+// Deferred to the native build: proper UIImpactFeedbackGenerator haptics belong
+// in the iOS wrapper, where they are a single API call and actually fire.
+//
+// The settings toggles keep the native `switch` attribute — that is a control
+// type, not vibration code, and any tap the OS chooses to play there is its own.
 
 // ── Home screen progress chart ─────────────────────────────────
 let homeChartCI = null;
@@ -4511,7 +4564,6 @@ function closeTabOverlays(){
   });
 }
 function switchTab(tab) {
-  haptic('light');
   if (typeof activeTab !== 'undefined' && activeTab && activeTab !== tab) closeTabOverlays();
   // Hide all pages
   document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
@@ -4642,7 +4694,6 @@ function dismissHint(key, btn) {
 
 // ── Day activity detail (from Inici calendar) ──────────────────
 function showDayActivity(ds) {
-  haptic('light');
   const title = document.getElementById('dayActTitle');
   const body = document.getElementById('dayActBody');
   if (title) title.textContent = fmt(ds);
@@ -4828,7 +4879,6 @@ function renderHomeSuggestion() {
 function applyHomeSuggestion() {
   const el = document.getElementById('homeSuggestion');
   if (!el) return;
-  haptic('light');
   if (!el._exId && el._detailExId) { showDetail(el._detailExId); return; }
   if (!el._exId) return;
   const famSel = document.getElementById('homeChartFamInici');
@@ -4932,7 +4982,6 @@ function renderWeeklySummaryInici() {
 // ── ENTRENAR TAB ───────────────────────────────────────────────
 function setModePill(mode) {
   activeMode = mode;
-  haptic('light');
   const pillH = document.getElementById('pillH');
   const pillW = document.getElementById('pillW');
   const subH = document.getElementById('subnavH');
@@ -4964,7 +5013,6 @@ function findSubBtn(navId, sec) {
 
 function showHSub(sec, btn) {
   activeHSub = sec;
-  haptic('light');
   document.querySelectorAll('#subnavH .entr-sub-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   showH(sec, null);
@@ -4973,7 +5021,6 @@ function showHSub(sec, btn) {
 
 function showWSub(sec, btn) {
   activeWSub = sec;
-  haptic('light');
   document.querySelectorAll('#subnavW .entr-sub-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   showW(sec, null);
@@ -4990,9 +5037,17 @@ function showWSub(sec, btn) {
 // ══════════════════════════════════════════
 let wizS = null;
 const WOD_STEPS = ['wodType','wodStruct','wodMovs','wodResult'];
+
 const WIZ_FLOW = { forca:['date','ex','sets','det'],
                    both:['date','ex','sets','det', ...WOD_STEPS],
                    wod:['date', ...WOD_STEPS] };
+// The registrar doubles as the template builder. A template is a plan, not a
+// session — it has no date — so the "Quan?" step is dropped in that mode. Read
+// the flow through this, never WIZ_FLOW[kind] directly.
+function wizFlow(){
+  const f = WIZ_FLOW[wizS && wizS.kind] || [];
+  return (wizS && wizS.saveAsTemplate) ? f.filter(n => n !== 'date') : f;
+}
 
 function openWizard(){
   wizS = { kind:null, i:-1, date:localToday(), cat:'haltero', exId:'', sets:[{r:5,w:'',rpe:''}],
@@ -5011,7 +5066,6 @@ function openWizard(){
   document.getElementById('wizStepMode').classList.add('on');
   document.getElementById('wizNav').style.display='none';
   document.getElementById('wizOv').classList.add('on');
-  haptic('light');
 }
 function wizBackdrop(e){ if(e.target && e.target.id==='wizOv') wizAskClose(); }
 function wizAskClose(){
@@ -5038,7 +5092,7 @@ function wizStepId(name){
           wodMovs:'wizStepWodMovs',wodResult:'wizStepWodResult'}[name];
 }
 function wizShow(){
-  const flow=WIZ_FLOW[wizS.kind];
+  const flow=wizFlow();
   ['wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWodType',
    'wizStepWodStruct','wizStepWodMovs','wizStepWodResult']
     .forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('on');});
@@ -5051,7 +5105,7 @@ function wizShow(){
   if(name==='wodType')   wizRenderWodTypes();
   if(name==='wodStruct') wizRenderWodStruct();
   if(name==='wodMovs')   wizRenderWodMovs();
-  if(name==='wodResult') wizRenderWodRecap();
+  if(name==='wodResult'){ wizRenderWodRecap(); wizRenderScoreFields(); }
   const last = wizS.i===flow.length-1;
   document.getElementById('wizNext').textContent = last ? 'Guardar' : 'Continua →';
   document.getElementById('wizBack').style.visibility = wizS.i===0 ? 'hidden' : 'visible';
@@ -5070,6 +5124,7 @@ function wizCollect(name){
     wizS.wod.result=(document.getElementById('wizWResult').value||'').trim();
     wizS.wod.scale=document.getElementById('wizWScale').value;
     wizS.wod.note=(document.getElementById('wizWNote').value||'').trim();
+    wizS.wod.score=wizCollectScore();
   }
   wizS.touched=true;
 }
@@ -5080,16 +5135,21 @@ function wizValidate(name){
     if(!ok.length){ toast(wizS.cat==='gym'?'Afegeix una sèrie amb repeticions':'Afegeix una sèrie amb pes i repeticions','error'); return false; }
   }
   if(name==='wodType' && !wizS.wod.type){ toast('Tria un tipus de WoD','error'); return false; }
-  if(name==='wodResult' && !wizS.wod.name && !wizS.wod.result){ toast('Posa el nom o el resultat del WoD','error'); return false; }
+  if(name==='wodResult'){
+    const sc=wizS.wod.score;
+    const hasScore = sc && (wodScoreValue(sc)!=null || sc.kind==='done');
+    if(!wizS.wod.name && !hasScore && !wizS.wod.result){ toast('Posa el nom o el resultat del WoD','error'); return false; }
+    if(sc && sc.kind==='time' && sc.raw && sc.sec==null){ toast('El temps ha de ser mm:ss','error'); return false; }
+  }
   return true;
 }
 function wizNext(){
   if(!wizS || wizS.saving) return;    // ignore taps after the save has begun
-  const flow=WIZ_FLOW[wizS.kind];
+  const flow=wizFlow();
   const name=flow[wizS.i];
   wizCollect(name);
   if(!wizValidate(name)) return;
-  if(wizS.i < flow.length-1){ wizS.i++; wizShow(); haptic('light'); return; }
+  if(wizS.i < flow.length-1){ wizS.i++; wizShow(); return; }
   wizSave();
 }
 function wizFillCats(){
@@ -5260,7 +5320,7 @@ function wizPickWodType(t){
   cfg.fields.forEach(f=>{ if(wizS.wod.struct[f]===undefined) wizS.wod.struct[f]=WOD_FIELD_DEFS[f].def; });
   if(cfg.stations && !(wizS.wod.stations||[]).length) wizS.wod.stations=[[]];
   wizS.touched=true;
-  wizS.i++; wizShow(); haptic('light');
+  wizS.i++; wizShow();
 }
 
 // ── WoD step 2: the structure that defines this type ──────────────────
@@ -5377,6 +5437,76 @@ function wizAddStation(){ wizS.wod.stations.push([]); wizS.touched=true; wizRend
 function wizDelStation(i){ wizS.wod.stations.splice(i,1); if(!wizS.wod.stations.length) wizS.wod.stations=[[]]; wizRenderWodMovs(); }
 
 // ── WoD step 4: result, with a recap so the user sees what they built ──
+// One score input per WoD kind. The shape follows the type you already picked,
+// so the app gets a comparable number instead of a sentence.
+function wizRenderScoreFields(){
+  const host=document.getElementById('wizWScoreFields'); if(!host) return;
+  const kind=wodScoreKind(wizS.wod.type);
+  const sc=wizS.wod.score||{};
+  document.getElementById('wizWScoreLbl').textContent=
+    kind==='time'?'Temps (mm:ss)':kind==='rounds'?'Rondes completades':kind==='reps'?'Repeticions totals':'Com ha acabat';
+  if(kind==='time'){
+    host.innerHTML='<input type="text" inputmode="numeric" id="wizScTime" class="fb-field" placeholder="8:42" value="'
+      +(sc.sec!=null?clockFromSec(sc.sec):(sc.raw||''))+'">';
+  } else if(kind==='rounds'){
+    host.innerHTML='<div class="frow" style="margin-bottom:0">'
+      +'<div><label>Rondes</label><input type="number" inputmode="numeric" min="0" id="wizScRounds" class="fb-field" placeholder="7" value="'+(sc.rounds!=null?sc.rounds:'')+'"></div>'
+      +'<div><label>+ reps</label><input type="number" inputmode="numeric" min="0" id="wizScReps" class="fb-field" placeholder="12" value="'+(sc.reps!=null?sc.reps:'')+'"></div>'
+      +'</div>';
+  } else if(kind==='reps'){
+    host.innerHTML='<input type="number" inputmode="numeric" min="0" id="wizScReps" class="fb-field" placeholder="96" value="'+(sc.reps!=null?sc.reps:'')+'">';
+  } else {
+    host.innerHTML='<div class="wtype-grid" style="grid-template-columns:1fr 1fr">'
+      +'<button type="button" class="wtbtn'+(sc.done===true?' active':'')+'" onclick="wizSetEmomDone(true)">Completat</button>'
+      +'<button type="button" class="wtbtn'+(sc.done===false?' active':'')+'" onclick="wizSetEmomDone(false)">He fallat</button>'
+      +'</div>'
+      +'<div id="wizScFailWrap" style="margin-top:10px;display:'+(sc.done===false?'block':'none')+'">'
+        +'<label>A quin minut?</label>'
+        +'<input type="number" inputmode="numeric" min="1" id="wizScFail" class="fb-field" placeholder="9" value="'+(sc.failedAt!=null?sc.failedAt:'')+'">'
+      +'</div>';
+  }
+  linkFormLabels(host.parentElement);
+}
+function wizSetEmomDone(done){
+  wizS.wod.score=Object.assign({},wizS.wod.score,{kind:'done',done:done});
+  if(done) delete wizS.wod.score.failedAt;
+  wizRenderScoreFields();
+}
+function wizCollectScore(){
+  const kind=wodScoreKind(wizS.wod.type);
+  const val=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  if(kind==='time'){
+    const raw=val('wizScTime');
+    return raw?{kind:'time',sec:secFromClock(raw),raw:raw}:{kind:'time'};
+  }
+  if(kind==='rounds'){
+    const r=val('wizScRounds'), x=val('wizScReps');
+    return {kind:'rounds', rounds:r!==''?+r:null, reps:x!==''?+x:0};
+  }
+  if(kind==='reps'){
+    const x=val('wizScReps');
+    return {kind:'reps', reps:x!==''?+x:null};
+  }
+  const cur=wizS.wod.score||{};
+  const f=val('wizScFail');
+  return {kind:'done', done:cur.done===true, failedAt:(cur.done===false&&f!=='')?+f:null};
+}
+// The WoD equivalent of showPR — same overlay, same confetti, so beating Fran
+// feels like adding 5kg to a squat. Mirrors showPR's element ids and `.show`
+// class exactly; the only difference is that a WoD score is a string, not kg.
+function showWodPR(name, prevTxt, nowTxt, date){
+  try{
+    const set=(id,txt)=>{const el=document.getElementById(id); if(el) el.textContent=txt;};
+    set('prExName', name);
+    set('prOldVal', prevTxt || '—');
+    set('prNewVal', nowTxt);
+    set('prDelta', prevTxt ? 'Millor que el teu anterior resultat' : 'Primer cop que registres aquest WoD!');
+    set('prDate', fmt(date));
+    const ov=document.getElementById('prOv');
+    ov.classList.add('show','wodpr');            // wodpr retypes the value slots
+    if(typeof launchConfetti==='function') launchConfetti();
+  }catch(e){}
+}
 function wizRenderWodRecap(){
   document.getElementById('wizWodRecap').innerHTML = wodSummaryHtml(wizS.wod);
   const hint=(WOD_TYPES[wizS.wod.type]||{}).resultHint||'';
@@ -5448,8 +5578,7 @@ function wizSave(){
         // damage-then-bail shape that bit histSaveH in v8.12.
         if(!valid.length){
           wizS.saving=false;
-          toast('Cap sèrie vàlida: posa repeticions i pes','error');
-          haptic('warning'); return;
+          toast('Cap sèrie vàlida: posa repeticions i pes','error'); return;
         }
         e.date=wizS.date; e.exId=wizS.exId; e.pct=wizS.pct; e.note=wizS.note;
         e.tags=[...wizS.tags]; e.sets=valid.map(st=>({...st}));
@@ -5458,7 +5587,7 @@ function wizSave(){
     }
     save(); refreshGoalCompletion();
     wizS.touched=false; wizClose();
-    toast('Actualitzat ✓'); haptic('success');
+    toast('Actualitzat ✓');
     if(document.getElementById('histOv').classList.contains('on')){ renderHistCal(); renderHistDay(); }
     return;
   }
@@ -5468,8 +5597,7 @@ function wizSave(){
     // historial and in the weekly count. Refuse it outright.
     if(!valid.length){
       wizS.saving=false;
-      toast('Cap sèrie vàlida: posa repeticions i pes','error');
-      haptic('warning'); return;
+      toast('Cap sèrie vàlida: posa repeticions i pes','error'); return;
     }
     const ent={id:Date.now(),date:wizS.date,exId:wizS.exId,pct:wizS.pct,note:wizS.note,
                tags:[...wizS.tags],sets:valid.map(st=>({...st}))};
@@ -5481,14 +5609,25 @@ function wizSave(){
       if(pV>0&&pV<100){ const mw=Math.max(...valid.map(st=>+st.w||0)); imp=Math.max(imp,mw/(pV/100)); }
       if(ex&&(!ex.rm1||imp>ex.rm1*1.005)){
         const oldRM=ex.rm1||null; ex.rm1=Math.round(imp*10)/10;
-        setTimeout(()=>{ showPR(ex.name,oldRM,ex.rm1,wizS.date); haptic('success'); },400);
+        // Capture the values NOW. wizClose() nulls wizS 200ms from here, so
+        // reading wizS.date inside a 400ms timeout threw every single time a PR
+        // landed — which killed the celebration this app exists to show.
+        const prName=ex.name, prNew=ex.rm1, prDate=wizS.date;
+        setTimeout(()=>{ showPR(prName,oldRM,prNew,prDate); },400);
       }
     }
   }
   if(k==='wod'||k==='both'){
     const w=wizS.wod||{};
     const allMovs=wodAllMovements(w);
-    D.wEnt.push({id:Date.now()+1,date:wizS.date,name:w.name||w.type||'WoD',type:w.type||'For Time',
+    const wName=w.name||w.type||'WoD';
+    const wKey=wodKeyFor(wName, w.tplId);
+    const wScore=w.score&&w.score.kind?w.score:null;
+    // Is this a new best for THIS WoD? Compared before the entry is pushed.
+    const prevBest=wScore?bestWodScore(wKey):null;
+    const isWodPR=wScore&&wodScoreValue(wScore)!=null&&wodScoreBeats(wScore,prevBest);
+    D.wEnt.push({id:Date.now()+1,date:wizS.date,name:wName,type:w.type||'For Time',
+      wodKey:wKey, tplId:w.tplId||null, score:wScore,
       result:w.result||'',scale:w.scale||'Rx',
       wodData:{type:w.type||'For Time',
                struct:{...(w.struct||{})},
@@ -5499,6 +5638,13 @@ function wizSave(){
       // flattened index spans cash-in, body, stations and cash-out, or stats desync
       exercises:allMovs.map(m=>m.exId),
       note:w.note||'',tags:[]});
+    // A WoD PR gets the same moment a lifting PR does — that was the whole point
+    // of typing the score. Values captured now; wizS is null 200ms from here.
+    if(isWodPR){
+      const prevTxt=prevBest?wodScoreText(prevBest):null;
+      const nowTxt=wodScoreText(wScore), prName=wName, prDate=wizS.date;
+      setTimeout(()=>{ showWodPR(prName,prevTxt,nowTxt,prDate); },400);
+    }
   }
   // Started from Plantilles > Crear: also persist it as a reusable template
   if(wizS.saveAsTemplate){
@@ -5525,7 +5671,6 @@ function wizSave(){
   wizS.touched=false;
   wizClose();
   if(!wizS||!wizS.saveAsTemplate) toast('Registrat ✓');
-  haptic('success');
   renderEntrenarSuggestion();
   if(typeof renderTodaySummary==='function') renderTodaySummary();
   if(typeof renderRecentWods==='function') renderRecentWods();
@@ -5543,7 +5688,7 @@ function gotoCalc(){
   p.classList.toggle('on',opening);
   document.getElementById('bubCalc').classList.toggle('on',opening);
   syncEntrHist();
-  if(opening){ closeTplPanel(true); haptic('light'); }
+  if(opening){ closeTplPanel(true); }
 }
 // The historial button hides behind the calculator and comes back with it.
 function syncEntrHist(){
@@ -5582,7 +5727,6 @@ function calcPickCat(cat){
     + fams.map(f=>'<option value="'+esc(f)+'">'+esc(f)+'</option>').join('');
   famSel.value='__all';
   calcPickFam();
-  haptic('light');
 }
 function calcPickFam(){
   const sel=document.getElementById('calcPickEx');
@@ -5678,7 +5822,7 @@ function calcTogglePct(pc){
   const i=D.calcPcts.indexOf(pc);
   if(i>=0) D.calcPcts.splice(i,1); else D.calcPcts.push(pc);
   D.calcPcts.sort((a,b)=>a-b);
-  save(); haptic('light'); calcPickEx();
+  save(); calcPickEx();
 }
 // Register the whole session: this exercise, today, one set per ACTIVE percentage,
 // prefilled with the weight you can actually load, and still editable.
@@ -5850,7 +5994,6 @@ function toggleBarPop(ev){
   w.classList.toggle('open',open);
   const btn=document.getElementById('barPickBtn');
   if(btn) btn.setAttribute('aria-expanded',String(open));
-  haptic('light');
   if(open){
     // One-shot outside-tap close; capture so it fires before the row handlers.
     setTimeout(()=>document.addEventListener('click',closeBarPop,{once:true,capture:true}),0);
@@ -5870,7 +6013,6 @@ function pickCalcBar(b){
   invalidatePlateDP();
   closeBarPop();
   calcPickEx();                      // every weight on screen depends on the bar
-  haptic('success');
   toast('Barra de '+b+' kg');
 }
 
@@ -5890,12 +6032,12 @@ function renderAjGym(){
   }).join('');
   renderGymPreview();
 }
-function pickBar(b){ gymDraft.bar=b; renderAjGym(); haptic('light'); }
+function pickBar(b){ gymDraft.bar=b; renderAjGym(); }
 function toggleAjPlate(p){
   const i=gymDraft.denoms.indexOf(p);
   if(i>=0) gymDraft.denoms.splice(i,1); else gymDraft.denoms.push(p);
   gymDraft.denoms.sort((a,b)=>b-a);
-  renderAjGym(); haptic('light');
+  renderAjGym();
 }
 // Show the consequence, not the setting: the finest jump this kit can make.
 function renderGymPreview(){
@@ -5913,8 +6055,7 @@ function saveAjGym(){
   D.profile.plateSet={bar:gymDraft.bar,denoms:[...gymDraft.denoms].sort((a,b)=>b-a)};
   save();
   invalidatePlateDP();                       // the solver caches per plate set
-  if(document.getElementById('calcPickEx')&&document.getElementById('calcPickEx').value) calcPickEx();
-  haptic('success'); toast('Gimnàs actualitzat');
+  if(document.getElementById('calcPickEx')&&document.getElementById('calcPickEx').value) calcPickEx(); toast('Gimnàs actualitzat');
 }
 
 // ── Your own 100% ────────────────────────────────────────────────────
@@ -5943,12 +6084,12 @@ function saveBaseSheet(){
   if(!D.profile) D.profile={};
   if(!D.profile.calcBase) D.profile.calcBase={};
   D.profile.calcBase[baseSheetEx]=Math.round(v*10)/10;
-  save(); closeBaseSheet(); calcPickEx(); haptic('success');
+  save(); closeBaseSheet(); calcPickEx();
   toast('100% actualitzat');
 }
 function resetBaseSheet(){
   if(D.profile&&D.profile.calcBase) delete D.profile.calcBase[baseSheetEx];
-  save(); closeBaseSheet(); calcPickEx(); haptic('light');
+  save(); closeBaseSheet(); calcPickEx();
   toast('Tornem al càlcul automàtic');
 }
 
@@ -5964,7 +6105,6 @@ function gotoPlantilles(){
   syncEntrHist();
   tplGo('root');
   document.getElementById('tplOv').classList.add('on');
-  haptic('light');
 }
 // One question per screen: root -> (use|create) -> kind -> [wod source] -> list -> confirm
 function tplGo(step){
@@ -5974,14 +6114,13 @@ function tplGo(step){
   document.getElementById(id).classList.add('on');
   document.getElementById('tplCard').scrollTop=0;
   renderIcons(document.getElementById('tplCard'));
-  haptic('light');
 }
 // Creating a template reuses the wizard, then offers to save the result as one.
 function tplCreate(kind){
   closeTplPanel(true);
   openWizard();
+  wizS.saveAsTemplate=true;          // before wizPickKind: it decides the first step
   wizPickKind(kind==='wod'?'wod':'forca');
-  wizS.saveAsTemplate=true;
   toast(kind==='wod'?'Omple el WoD i el desarem com a plantilla':'Omple la sessió i la desarem com a plantilla');
 }
 function tplBackdrop(e){ if(e.target && e.target.id==='tplOv') closeTplPanel(); }
@@ -6081,7 +6220,7 @@ function tplApply(){
   });
   save(); refreshGoalCompletion();
   closeTplPanel();
-  toast('Plantilla aplicada ✓'); haptic('success');
+  toast('Plantilla aplicada ✓');
   renderEntrenarSuggestion();
 }
 
@@ -6094,7 +6233,6 @@ function openHistorial(){
   if(histY===null){ histY=t.getFullYear(); histM=t.getMonth(); histSel=localToday(); }
   renderHistCal(); renderHistDay();
   document.getElementById('histOv').classList.add('on');
-  haptic('light');
 }
 function closeHistorial(){ animClose(document.getElementById('histOv')); }
 function histMonth(d){
@@ -6209,13 +6347,13 @@ function histSaveH(id){
   delete histPending[id];
   recomputeRM1(e.exId);          // an edited-down PR must lower the ratchet too
   save(); refreshGoalCompletion(); renderHistCal(); renderHistDay();
-  toast('Desat ✓'); haptic('success');
+  toast('Desat ✓');
 }
 function histSaveW(id){
   const el=document.getElementById('histW'+id); if(!el) return;
   saveWodEntryEdit(id,{result:el.value.trim()});
   renderHistCal(); renderHistDay();
-  toast('Desat ✓'); haptic('success');
+  toast('Desat ✓');
 }
 function histDelH(id){
   showDeleteSheet('Eliminar registre','Aquest registre de força s\'eliminarà.',()=>{
@@ -6276,7 +6414,6 @@ function dismissSuggestion(){
   if(c){ c.style.transition='opacity 180ms ease,transform 180ms ease';
          c.style.opacity='0'; c.style.transform='scale(0.97)';
          setTimeout(()=>{ const h=document.getElementById('entrSuggest'); if(h) h.innerHTML=''; },190); }
-  haptic('light');
 }
 
 // ── Split mode (point 14) ─────────────────────────────────────────────
@@ -6291,7 +6428,6 @@ function setSplitMode(section, mode){
     tabs.dataset.mode=mode;
     [...tabs.querySelectorAll('.mode-tab')].forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   }
-  haptic('light');
   if(section==='obj') renderObjectiusTab();
   else renderMetriquesTab();
 }
@@ -6311,7 +6447,6 @@ function openGoalWiz(){
   // If we're on the WoD side, skip straight past the "what kind" question
   document.getElementById('goalOv').classList.add('on');
   renderIcons(document.getElementById('goalCard'));
-  haptic('light');
 }
 function goalBackdrop(e){ if(e.target&&e.target.id==='goalOv') closeGoalWiz(); }
 function closeGoalWiz(){
@@ -6353,7 +6488,7 @@ function gwRenderFams(){
         +(cfg.sub?'<span class="wiz-opt-s">'+cfg.sub+'</span>':'')+'</span></button>';
     }).join('');
 }
-function gwSetFam(f){ gwS.fam=f; gwS.i=1; gwShow(); haptic('light'); }
+function gwSetFam(f){ gwS.fam=f; gwS.i=1; gwShow(); }
 function gwRenderExs(){
   const list=D.hEx.filter(e=>(e.family||'Altres')===gwS.fam).sort((a,b)=>a.name.localeCompare(b.name));
   document.getElementById('gwExList').innerHTML=list.map(ex=>{
@@ -6363,7 +6498,7 @@ function gwRenderExs(){
       +'<span class="wiz-opt-s">'+(rm?('ara: '+(+rm).toFixed(1)+' kg'):'encara sense marca')+'</span></span></button>';
   }).join('');
 }
-function gwSetEx(id){ gwS.exId=id; gwS.i=2; gwShow(); haptic('light'); }
+function gwSetEx(id){ gwS.exId=id; gwS.i=2; gwShow(); }
 function gwRenderCurrent(){
   const ex=D.hEx.find(e=>e.id===gwS.exId);
   const rm=best1RM(gwS.exId);
@@ -6408,7 +6543,7 @@ function gwNext(){
 function gwDone(){
   refreshGoalCompletion();
   closeGoalWiz();
-  toast('Objectiu creat ✓'); haptic('success');
+  toast('Objectiu creat ✓');
   renderObjectiusTab();
   updateGoalsBadge && updateGoalsBadge();
 }
@@ -6487,7 +6622,7 @@ const MET_BUBS = {
   // Rècords, which lists unlogged exercises too and still opens showDetail()
   // (the quick-log and goal-creation route). Editing exercises lives in Més.
   h:[{sec:'pr',label:'Rècords',ico:'trophy'},{sec:'prog',label:'Progrés',ico:'bar-chart-2'}],
-  w:[{sec:'bench',label:'Benchmarks',ico:'flame'},{sec:'stats',label:'Stats',ico:'bar-chart-2'},{sec:'exs',label:'Exercicis',ico:'zap'}]
+  w:[{sec:'bench',label:'Benchmarks',ico:'flame'},{sec:'stats',label:'Rècords',ico:'trophy'},{sec:'exs',label:'Exercicis',ico:'zap'}]
 };
 const metSec = { h:null, w:null };
 function renderMetBubbles(){
@@ -6502,7 +6637,6 @@ function renderMetBubbles(){
 function metBubble(sec){
   const mode=splitMode.met;
   metSec[mode] = (metSec[mode]===sec) ? null : sec;   // tap again to go back
-  haptic('light');
   renderMetriquesTab();
 }
 function applyMetOcclusion(){
@@ -6710,7 +6844,6 @@ function renderAjGreeting() {
   if (typeof loadAjProfile === 'function') loadAjProfile();
   gymDraft = null;                      // re-read the saved set on every visit
   if (typeof renderAjGym === 'function') renderAjGym();
-  if (typeof syncHapticUI === 'function') syncHapticUI();
   if (typeof syncWeatherUI === 'function') syncWeatherUI();
   hideDangerZone();                     // never re-enter Més with the wipe armed
   // Greeting with name — and once a year, a small party.
@@ -7038,7 +7171,7 @@ function saveHEntry(){
       const oldRM=ex.rm1||null;
       ex.rm1=Math.round(imp*10)/10;
       // Trigger PR celebration
-      setTimeout(()=>{showPR(ex.name, oldRM, ex.rm1, date);haptic('success');}, 300);
+      setTimeout(()=>{showPR(ex.name, oldRM, ex.rm1, date);}, 300);
     }
   }
   save(); initSets(); selTags=[]; renderTagBtns();
@@ -7046,7 +7179,7 @@ function saveHEntry(){
   document.getElementById('logNote').value='';
   document.getElementById('logPct').value='';
   document.getElementById('rmPrev').classList.remove('on');
-  renderTodaySummary(); haptic('success'); toast('Entrada guardada ✓');
+  renderTodaySummary(); toast('Entrada guardada ✓');
 }
 
 // ══ TODAY ══
@@ -7152,7 +7285,6 @@ function openSheet(exId,pct,w){
 const recOpenFam = {};
 function toggleFam(fam){
   recOpenFam[fam]=!recOpenFam[fam];
-  haptic('light');
   renderRecords();
 }
 function recExValue(ex){
@@ -7180,7 +7312,6 @@ function toggleXpl(id){
     const seen=JSON.parse(localStorage.getItem('alerx_xpl')||'{}');
     seen[id]=open; localStorage.setItem('alerx_xpl',JSON.stringify(seen));
   }catch(e){}
-  haptic('light');
 }
 function restoreXpl(){
   try{
@@ -7513,7 +7644,6 @@ function quickLogEx() {
     if (!ex.rm1 || imp > ex.rm1 * 1.005) ex.rm1 = Math.round(imp*10)/10;
   }
   save();
-  haptic('success');
   toast('Registrat ✓');
   showDetail(exId);
   if (typeof renderInici === 'function') renderInici();
@@ -7783,7 +7913,6 @@ function saveWod(){
   const ent={id:Date.now(),date,name,type:wodType,result,scale:wodScale,wodData,exercises,note,tags:[]};
   D.wEnt.push(ent);
   save();renderRecentWods();
-  haptic('success');
   document.getElementById('wName').value='';document.getElementById('wNote').value='';
   renderWodTypeForm();
   toast('WoD guardat ✓');
@@ -7861,7 +7990,6 @@ function loadWodTpl(id){
     }
     const wl=document.getElementById('w-log'); if(wl) wl.scrollIntoView({behavior:'smooth',block:'start'});
   },120);
-  haptic('success');
   toast('Plantilla WoD carregada ✓');
 }
 
@@ -8276,6 +8404,81 @@ function saveNewWEx(){const nm=document.getElementById('newWExNm').value.trim();
 
 // ══ WOD STATS ══
 function populateWStatSel(){const el=document.getElementById('wStatEx');if(!el)return;const exs=D.wEx.filter(ex=>D.wEnt.some(w=>w.exercises&&w.exercises.some(e=>e.exId===ex.id)));el.innerHTML=exs.length?exs.map(e=>`<option value="${e.id}">${e.name}</option>`).join(''):'<option value="">— sense dades —</option>';}
+// One row per WoD you have actually scored: best result, how many times you have
+// done it, and the delta against your previous best. The WoD answer to Rècords.
+function renderWodBoard(){
+  const host=document.getElementById('wodBoard'); if(!host) return;
+  const keys=[...new Set((D.wEnt||[]).map(e=>wodEntryKey(e)).filter(Boolean))];
+  const rows=keys.map(k=>{
+    const hist=wodHistory(k);
+    if(!hist.length) return null;
+    const name=hist[hist.length-1].name||'WoD';
+    const best=bestWodScore(k);
+    const kind=best&&best.kind;
+    // previous best, i.e. the best excluding the most recent entry
+    const last=hist[hist.length-1];
+    let prev=null;
+    hist.slice(0,-1).forEach(e=>{ if(wodScoreBeats(e.score,prev)) prev=e.score; });
+    const improved = prev && wodScoreBeats(last.score,prev);
+    return {k,name,best,kind,n:hist.length,last,prev,improved};
+  }).filter(Boolean).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));
+
+  if(!rows.length){
+    host.innerHTML='<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55">'
+      +'Encara no hi ha cap WoD amb resultat. Registra&#39;n un i aquí veuràs la teva millor marca '
+      +'i si vas millorant.</div>';
+    return;
+  }
+  host.innerHTML=rows.map(r=>{
+    const times=r.n+' cop'+(r.n===1?'':'s');
+    // The count already sits in the meta line; the right column only speaks when
+    // there is something to say — how much you beat your own best by.
+    const trend = r.improved ? '<span class="wodb-up">↑ '+wodDeltaText(r.last.score,r.prev)+'</span>' : '';
+    return '<button class="wodb-row" onclick="openWodTrend(\''+esc(r.k)+'\')">'
+      +'<span class="wodb-main"><span class="wodb-nm">'+esc(r.name)+'</span>'
+      +'<span class="wodb-meta">'+times+' · '+esc(r.last.date)+'</span></span>'
+      +'<span class="wodb-right"><span class="wodb-val">'+wodScoreText(r.best)+'</span>'+trend+'</span>'
+    +'</button>';
+  }).join('');
+}
+// How much better the new score is, in the units that WoD is measured in.
+function wodDeltaText(now, prev){
+  if(!now||!prev||now.kind!==prev.kind) return 'millor marca';
+  if(now.kind==='time'){
+    const d=prev.sec-now.sec;
+    if(d<=0) return 'millor marca';
+    return d>=60 ? clockFromSec(d)+' més ràpid' : d+'s més ràpid';
+  }
+  if(now.kind==='rounds'){
+    const dr=(now.rounds||0)-(prev.rounds||0);
+    if(dr>0) return '+'+dr+(dr===1?' ronda':' rondes');
+    const dx=(now.reps||0)-(prev.reps||0);
+    return dx>0 ? '+'+dx+' reps' : 'millor marca';
+  }
+  if(now.kind==='reps'){
+    const d=(now.reps||0)-(prev.reps||0);
+    return d>0 ? '+'+d+' reps' : 'millor marca';
+  }
+  return 'millor marca';
+}
+// Tapping a WoD shows every attempt, oldest first, with the best one marked.
+function openWodTrend(key){
+  const hist=wodHistory(key);
+  if(!hist.length) return;
+  const best=bestWodScore(key);
+  const name=hist[hist.length-1].name||'WoD';
+  const rows=hist.slice().reverse().map(e=>{
+    const isBest=wodScoreValue(e.score)===wodScoreValue(best)&&e.score.kind===best.kind;
+    return '<div class="wodt-row'+(isBest?' best':'')+'">'
+      +'<span>'+esc(fmt(e.date))+(e.scale&&e.scale!=='Rx'?' · '+esc(e.scale):'')+'</span>'
+      +'<b>'+wodScoreText(e.score)+(isBest?' ★':'')+'</b></div>';
+  }).join('');
+  document.getElementById('wodTrendTitle').textContent=name;
+  document.getElementById('wodTrendBody').innerHTML=
+    '<div class="wodt-head">'+hist.length+' registre'+(hist.length===1?'':'s')+' · millor: <b>'+wodScoreText(best)+'</b></div>'+rows;
+  document.getElementById('wodTrendSheet').classList.add('on');
+}
+function closeWodTrend(){ animClose(document.getElementById('wodTrendSheet')); }
 function renderWStats(){const exId=document.getElementById('wStatEx').value;
   const allW=[...D.wEnt,...D.benchEnt.map(b=>{const bm=D.benchmarks.find(x=>x.id===b.benchId);return{...b,type:'Benchmark',name:bm?bm.name:'Benchmark'};})];
   const byType={};allW.forEach(w=>{byType[w.type||'—']=(byType[w.type||'—']||0)+1;});
@@ -8342,7 +8545,6 @@ function saveAjProfile(){
   save();
   renderAjGreeting();
   if(typeof renderInici==='function') renderInici();
-  haptic('success');
   toast('Perfil actualitzat ✓');
 }
 function closeAj(){animClose(document.getElementById('ajOv'));}
@@ -8614,7 +8816,6 @@ function saveTpl() {
     D.templates.push({ id: 'tpl_' + Date.now(), name, notes: document.getElementById('tplNotes').value.trim(), halBlocks: [...tplBlocks], wodBlock });
   }
   save();
-  haptic('success');
   toast((editId ? 'Plantilla actualitzada' : 'Plantilla guardada') + ' ✓');
   cancelHTplForm();
   renderHTplList();
@@ -8768,7 +8969,6 @@ function registerTplSession(id, edited) {
   const ld = document.getElementById('logDate'); if (ld) ld.value = today;
   renderTodaySummary();
   switchTab('entrenar'); setModePill('h'); showHSub('log', document.querySelector('#subnavH .entr-sub-btn'));
-  haptic('success');
   toast(`Sessió registrada: ${saved} entrada${saved !== 1 ? 's' : ''} ✓`);
 }
 
@@ -8855,7 +9055,10 @@ function goalProgress(g){
     return Math.min(100, Math.round(sessionCount(g.scope,g.per)/g.targetCount*100));
   }
   if(g.kind==='wodTime'){
-    const best=bestWodSeconds(g.wodName);
+    // Typed scores first (v8.21); the free-text parse remains for old entries.
+    const key=g.wodKey||wodKeyFor(g.wodName);
+    const sc=bestWodScore(key);
+    const best=(sc&&sc.kind==='time'&&sc.sec!=null)?sc.sec:bestWodSeconds(g.wodName);
     if(!best||!g.targetSec) return 0;
     return Math.min(100, Math.round(g.targetSec/best*100));
   }
@@ -8920,8 +9123,7 @@ function saveGoalFromForm() {
   saveGoal(detailGoalExId, kg, date, note);
   renderGoalDisplay(detailGoalExId);
   document.getElementById('detGoalForm').style.display = 'none';
-  document.getElementById('detGoalToggleBtn').textContent = '+ Afegir objectiu';
-  haptic('success'); updateGoalsBadge(); toast('Objectiu guardat ✓');
+  document.getElementById('detGoalToggleBtn').textContent = '+ Afegir objectiu'; updateGoalsBadge(); toast('Objectiu guardat ✓');
   // Re-render progress chart if visible
   if (document.getElementById('h-prog').classList.contains('on')) renderProg();
 }
@@ -8971,7 +9173,6 @@ function showHTplForm(editId) {
   if (card) card.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function toggleTplCreate(mode) {
-  haptic('light');
   const bodyId = mode === 'h' ? 'hTplCreateBody' : 'wodTplCreateBody';
   const body = document.getElementById(bodyId);
   const isOpen = body && body.style.display !== 'none';
@@ -9865,6 +10066,7 @@ function showPR(exName, oldRM, newRM, date) {
     : 'Primer registre d\'aquest exercici!';
   document.getElementById('prDate').textContent = fmt(date);
 
+  document.getElementById('prOv').classList.remove('wodpr');
   document.getElementById('prOv').classList.add('show');
   launchConfetti();
 }
@@ -10307,12 +10509,12 @@ function obRenderGym() {
   }).join('');
   obGymPreview();
 }
-function obPickBar(b) { gymDraft.bar = b; obRenderGym(); haptic('light'); }
+function obPickBar(b) { gymDraft.bar = b; obRenderGym(); }
 function obTogglePlate(p) {
   const i = gymDraft.denoms.indexOf(p);
   if (i >= 0) gymDraft.denoms.splice(i,1); else gymDraft.denoms.push(p);
   gymDraft.denoms.sort((a,b)=>b-a);
-  obRenderGym(); haptic('light');
+  obRenderGym();
 }
 function obGymPreview() {
   const el = document.getElementById('obGymPreview'); if (!el) return;
@@ -10357,7 +10559,6 @@ function revealDangerZone(){
   const z=document.getElementById('dangerZone');
   z.style.display='block';
   renderIcons(z);
-  haptic('light');
 }
 function hideDangerZone(){
   const z=document.getElementById('dangerZone'), b=document.getElementById('dangerOpenBtn');
@@ -10413,7 +10614,6 @@ function dismissBackupNudge(){
   const el=document.getElementById('backupNudge');
   if(el) el.style.display='none';
   updateTabBadges();
-  haptic('light');
 }
 // Tab attention signals: a dot means "this tab needs you".
 //  · Objectius — open-goal count (existing numeric badge)
@@ -10443,6 +10643,8 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.21':['Els WoDs ara tenen marca de veritat. En registrar-ne un et demanem el resultat en la forma que toca: temps per a For Time, rondes + reps per a l\'AMRAP, repeticions per a la Tabata.','Nova secció Rècords a Mètriques → WoD: la teva millor marca de cada WoD i quants cops l\'has fet. Toca\'l per veure tots els intents.','Si millores la teva marca, tens celebració i confeti, igual que amb un rècord de força.','L\'app ja sap que "Murph" i "murph" són el mateix WoD.','Els WoDs antics s\'han convertit sols: si el resultat es podia entendre, ja té marca.'],
+  '8.20':['Arreglat un error important: en fer un rècord nou, la celebració petava i no es veia mai. Ara sí.','En crear una plantilla ja no et demanem la data: una plantilla no té dia.','Hem tret la vibració. A l\'iPhone el navegador no la permet de debò, així que preferim no prometre-la; arribarà amb la versió nativa.'],
   '8.19':['Nou: el temps a Inici (opcional). Temperatura actual, màxima, mínima i una nota d\'entrenament. Cal la teva ubicació: l\'arrodonim a ~11 km i no s\'envia cap identificador. Ho actives o desactives a Més → El temps.','Cada disc té ara el seu color: abans el 5 era gairebé blanc i els petits repetien els colors dels grans.','Botons principals amb text clar sobre un fons més fosc, més fàcils de llegir.','Els botons de la part de WoD ara són de color verd-blau, com la resta de la secció.','El botó Tornar i el títol de les pantalles ja estan ben col·locats.','A Mètriques, si un exercici no té dades, ja no es mostra un gràfic buit.','"Discos" ara és "Discs".'],
   '8.18':['Arreglat: al mode fosc, les tres opcions de Registrar (Força, Força + WoD, WoD) es veien negre sobre negre. Ara es llegeixen.','Colors corregits al mode clar: la pestanya activa, el botó Tornar i el dia d\'avui no arribaven al mínim de contrast.','Tots els botons i camps són ara de 44px com a mínim, pensats per al dit entre sèries.','L\'app és més lleugera: hem esborrat la pantalla de registre antiga que ja no feia servir ningú.','Retocs visuals a l\'historial i als avisos.'],
   '8.17':['La calculadora de % ja no et proposa pesos impossibles: a Més → El teu gimnàs marques quins discos teniu al box i quina barra, i tots els càlculs s\'hi ajusten.','Cada percentatge et diu el pes que pots muntar de veritat, amb els discos exactes de cada banda.','A sota, el material que has de portar a la plataforma per a tota la sessió.','Toca la icona de la barra per canviar-la (10, 15 o 20 kg) sense sortir de la calculadora.','Toca «Base» per posar-hi el teu propi 100% d\'un exercici.','Els exercicis de la calculadora es trien per família, com a Inici.','Ara et demanem la data de naixement: l\'edat es calcula sola i el dia del teu aniversari l\'app t\'ho celebra.','Arreglat: a l\'iPhone algunes icones no es veien (Registrar, Plantilles i la resta de llistes).','Arreglat: el calendari de l\'historial se sortia de la targeta.','Arreglat: amb Rècords obert, canviar de secció no feia res i et quedaves encallat.','L\'avís de còpia de seguretat es pot tancar i només torna al cap d\'una setmana.','Inici respira més, i l\'avís de «zona de perill» només surt si demanes esborrar les dades.','La vibració ara funciona a l\'iPhone (abans no feia res). La pots activar o desactivar i provar-la a Més → Accessibilitat.'],
