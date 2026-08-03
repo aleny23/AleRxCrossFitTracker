@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.22</title>
+<title>PRsonal v8.23</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -501,7 +501,17 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 /* ─── BASE ─── */
 *{box-sizing:border-box;margin:0;padding:0;}html{overflow-x:clip;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;font-size:17px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-y:contain;padding-bottom:0;}
-.app{max-width:480px;margin:0 auto;padding:0 var(--safe-right) 48px var(--safe-left);padding-top:0;}
+/* v8.23: set while any overlay is open (syncScrollLock). Taking the body out of
+   flow is the only lock iOS honours — overflow:hidden alone does nothing there.
+   The inline top:-Ypx keeps the page visually still; scrollTo() restores it. */
+body.scroll-locked{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
+/* v8.23: the 48px tail was pure void — .tab-page already reserves the tab bar
+   plus 16px. Cut to 16px so the page ends shortly after its last card. The
+   background is load-bearing: it is what hides the colophon parked below the
+   scroll limit (see .cc-footer), and min-height guarantees it covers the
+   viewport even on a nearly empty tab. */
+.app{max-width:480px;margin:0 auto;padding:0 var(--safe-right) 16px var(--safe-left);padding-top:0;
+  background:var(--bg);min-height:100vh;}
 
 /* ─── ANIMATIONS ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -776,8 +786,31 @@ select option{background:var(--bg3);}
 /* The colophon sits BELOW the resting scroll limit: you only meet it if you
    deliberately pull past the end. At rest the logo used to peek above the fold,
    which read like a layout mistake rather than an easter egg. */
-.cc-footer{text-align:center;padding:64px 16px 6px;font-size:13px;color:var(--text3);
-  border-top:0.5px solid var(--border);margin-top:56px;}
+/* v8.23: the colophon lives BELOW the resting scroll limit, on every screen.
+   position:fixed is the only way to keep it out of the scroll extent —
+   measured: an absolutely positioned footer (top:100% on a relative parent)
+   and a negative-margin footer BOTH still extend documentElement.scrollHeight
+   by their own height, so both stay reachable by an ordinary scroll. Fixed
+   adds nothing. Painted at z-index:-1 so .app's opaque background covers it at
+   rest; it surfaces only while a drag past the end rubber-bands the content up.
+   Parked above the tab bar, which stays pinned during that bounce. */
+.cc-footer{
+  position:fixed;
+  left:0; right:0;
+  bottom:var(--tab-h);
+  z-index:-1;
+  max-width:480px;
+  margin:0 auto;
+  padding:8px 16px 10px;
+  text-align:center;
+  font-size:13px;
+  line-height:1.35;
+  color:var(--text3);
+  pointer-events:none;
+}
+/* Kept short on purpose: the whole block has to fit inside a plausible
+   rubber-band, and the strip opens from the tab bar upwards. */
+#footerLogo{border-radius:50%;opacity:0.55;width:26px;height:26px;margin-bottom:4px;}
 .cc-footer a{color:var(--text3);text-decoration:none;}
 
 .log-mode-btn{flex:1;padding:8px 4px;border-radius:var(--rs);background:var(--bg3);border:0.5px solid var(--border2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;transition:background var(--dur-fast) ease,color var(--dur-fast) ease,border-color var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out);text-align:center;}
@@ -1526,6 +1559,37 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
 .cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--h-acc); }
 .cal-dot.wod { background: var(--w-acc); }
 .cal-dot.pr { background: var(--green); }
+
+/* Day-activity cards (v8.23). Each logged session carries its own small ×
+   rather than a full-width delete button: the card is a read-out, and deleting
+   is the rare exception, so it gets the smallest control that still clears the
+   44px tap floor (the ::after in the tap-target rule does that). */
+.day-act-card {
+  position: relative;
+  background: var(--bg3);
+  border-radius: var(--r);
+  padding: 9px 40px 9px 11px;
+  margin-bottom: 7px;
+}
+.day-act-x {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  font-size:18px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--dur-fast) ease, transform var(--dur-fast) var(--ease-out);
+}
+.day-act-x:active { color: var(--red); transform: scale(0.9); }
 
 /* ─── ENTRENAR TAB ───────────────────────────────────────────── */
 .entrenar-page-title {
@@ -2701,7 +2765,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.22<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.23<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2911,8 +2975,9 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <!-- Trophy burst -->
     <div id="prTrophy" style="margin-bottom:12px;animation:trophyPop 0.6s var(--ease-spring) forwards"><i data-lucide="trophy" style="width:60px;height:60px;color:var(--h-ink)"></i></div>
 
-    <!-- Headline -->
-    <div style="font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--h-ink);margin-bottom:6px">Nou rècord personal</div>
+    <!-- Headline. v8.23: says WHICH record — a weight you actually lifted and an
+         estimated 1RM are two different things and must never share a label. -->
+    <div id="prKicker" style="font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--h-ink);margin-bottom:6px">Nou rècord personal</div>
 
     <!-- Exercise name -->
     <div id="prExName" style="font-size:24px;font-weight:800;color:var(--text);margin-bottom:20px;letter-spacing:-0.5px"></div>
@@ -2920,18 +2985,24 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <!-- Old → New -->
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:8px">
       <div style="text-align:center">
-        <div id="prOldVal" style="font-size:28px;font-weight:700;color:var(--text3)"></div>
+        <div id="prOldVal" style="font-size:28px;font-weight:700;color:var(--text3);white-space:nowrap"></div>
         <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px">Anterior</div>
       </div>
       <div style="font-size:28px;color:var(--h-ink)">→</div>
       <div style="text-align:center">
-        <div id="prNewVal" style="font-size:40px;font-weight:800;color:var(--h-ink);line-height:1"></div>
-        <div style="font-size:12px;color:var(--h-ink);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-weight:700">Nou màxim</div>
+        <div id="prNewVal" style="font-size:40px;font-weight:800;color:var(--h-ink);line-height:1;white-space:nowrap"></div>
+        <div id="prNewLbl" style="font-size:12px;color:var(--h-ink);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-weight:700">Nou màxim</div>
       </div>
     </div>
 
     <!-- Delta -->
-    <div id="prDelta" style="font-size:17px;font-weight:700;color:var(--green);margin-bottom:24px"></div>
+    <div id="prDelta" style="font-size:17px;font-weight:700;color:var(--green);margin-bottom:8px"></div>
+
+    <!-- The other record, when the same session set both. Also carries the
+         "this is a calculation, not a lift" line so the big number is never
+         mistaken for a weight that was actually on the bar. -->
+    <div id="prSecond" style="font-size:15px;color:var(--text2);margin-bottom:8px;line-height:1.45"></div>
+    <div id="prFoot" style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.45"></div>
 
     <!-- Action buttons -->
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
@@ -3191,9 +3262,11 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-kicker">Pas 2</div>
       <div class="wiz-q">Quin exercici?</div>
       <div class="fg"><label>Categoria</label>
-        <select id="wizCat" class="fb-field" onchange="wizFillEx()"></select></div>
+        <select id="wizCat" class="fb-field" onchange="wizFillFams()"></select></div>
+      <div class="fg" style="margin-top:12px"><label>Família</label>
+        <select id="wizFam" class="fb-field" onchange="wizFillEx()"></select></div>
       <div class="fg" style="margin-top:12px"><label>Exercici</label>
-        <select id="wizEx" class="fb-field"></select></div>
+        <select id="wizEx" class="fb-field" onchange="wizPickEx()"></select></div>
     </div>
 
     <!-- step 3: sets -->
@@ -3208,8 +3281,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="wiz-step" id="wizStepDet">
       <div class="wiz-kicker">Pas 4</div>
       <div class="wiz-q">Detalls</div>
-      <div class="fg"><label>% intentat (opcional)</label>
-        <input type="number" id="wizPct" class="fb-field" placeholder="p. ex. 80"></div>
+      <div class="fg"><label>% del teu màxim (opcional)</label>
+        <input type="number" id="wizPct" class="fb-field" min="1" max="100" placeholder="p. ex. 80">
+        <div style="font-size:13px;color:var(--text3);margin-top:6px;line-height:1.45">
+          Si la sessió anava a un percentatge del teu 1RM, posa&#39;l aquí. Dividirem
+          el pes més alt de la sessió per aquest % per estimar el teu màxim.
+        </div></div>
       <div class="fg" style="margin-top:14px"><label>Etiquetes</label>
         <div id="wizTags" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px"></div></div>
       <div class="fg" style="margin-top:14px"><label>Nota</label>
@@ -3351,8 +3428,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
-  <img id="footerLogo" src="" alt="" style="width:34px;height:34px;border-radius:50%;opacity:0.55;margin-bottom:6px">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.22</div>
+  <img id="footerLogo" src="" alt="">
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.23</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3961,7 +4038,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.22';
+const APP_VERSION='8.23';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4157,7 +4234,10 @@ function sessImpl(ent){
   if(!ent||!ent.sets)return null;
   let b=0;
   ent.sets.forEach(s=>{if(s.w>0&&s.r>0){const v=epley(s.w,s.r);if(v>b)b=v;}});
-  if(ent.pct&&+ent.pct>0&&+ent.pct<100){const mw=Math.max(...ent.sets.map(s=>s.w||0));const imp=mw/(+ent.pct/100);if(imp>b)b=imp;}
+  // <=100 (v8.23): "that was 100% of my max" is a real answer and was being
+  // thrown away. This must stay in step with the two save paths that ratchet
+  // ex.rm1, or a re-derivation would silently disagree with the celebration.
+  if(ent.pct&&+ent.pct>0&&+ent.pct<=100){const mw=Math.max(...ent.sets.map(s=>s.w||0));const imp=mw/(+ent.pct/100);if(imp>b)b=imp;}
   return b>0?Math.round(b*10)/10:null;
 }
 
@@ -4279,6 +4359,63 @@ function animClose(el){
   const done=()=>{if(fired)return;fired=true;el.classList.remove('on');el.classList.remove('closing');};
   el.addEventListener('animationend',done,{once:true});
   setTimeout(done,260);
+}
+
+// ── Modal scroll lock (v8.23) ──────────────────────────────────────
+// Every overlay left the page behind it scrollable: dragging on the dimmed
+// backdrop — or past the end of a short sheet — moved the tab underneath, so
+// closing the sheet dropped you somewhere else entirely. iOS ignores
+// overflow:hidden on the body, so the only reliable lock is to take the body
+// out of flow and put the scroll offset back on release.
+//
+// Driven by a MutationObserver instead of by each open/close function: there
+// are ~20 overlays with heterogeneous open paths (some toggle a class, three
+// set style.display) and several close paths (animClose, direct removal,
+// switchTab's closeTabOverlays). Any one missed would be a silent regression,
+// so the DOM itself is the source of truth for "is something open".
+const MODAL_SEL = '.sheet, .ov, .goals-ov, .wiz, #prOv, #gateOv, #setupOv, #installOv';
+let scrollLockY = 0, scrollLocked = false;
+function modalIsOpen(el){
+  if(!el) return false;
+  if(el.classList.contains('on')) return true;      // .sheet/.ov/.goals-ov/.wiz
+  // #prOv is the odd one out: it opens by adding .show, and `#prOv.show` beats
+  // its inline display:none with !important WITHOUT rewriting the attribute.
+  // Both branches below would miss it, so it needs its own test — and it is the
+  // overlay that most needs the lock, since it fires straight after a save from
+  // a scrolled Registrar and its backdrop is almost opaque.
+  if(el.classList.contains('show')) return true;
+  // The full-screen takeovers carry no class at all, only inline display.
+  return !!(el.style && el.style.display && el.style.display !== 'none');
+}
+function anyModalOpen(){
+  const els = document.querySelectorAll(MODAL_SEL);
+  for(let i=0;i<els.length;i++) if(modalIsOpen(els[i])) return true;
+  return false;
+}
+function syncScrollLock(){
+  const want = anyModalOpen();
+  if(want === scrollLocked) return;
+  const b = document.body;
+  if(want){
+    scrollLockY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    b.style.top = (-scrollLockY) + 'px';
+    b.classList.add('scroll-locked');
+    scrollLocked = true;
+  }else{
+    b.classList.remove('scroll-locked');
+    b.style.top = '';
+    scrollLocked = false;
+    // Put the reader back where they were. Without this the page snaps to the
+    // top the instant any sheet closes.
+    window.scrollTo(0, scrollLockY);
+  }
+}
+function watchModals(){
+  const mo = new MutationObserver(()=>syncScrollLock());
+  document.querySelectorAll(MODAL_SEL).forEach(el=>{
+    mo.observe(el,{attributes:true,attributeFilter:['class','style']});
+  });
+  syncScrollLock();   // the install/access gate may already be up at boot
 }
 // Canvas colors: Chart.js resolves at render time, so theme-aware helpers
 // (CSS variables don't reach canvas). Light theme uses the deep accent tiers.
@@ -4570,7 +4707,14 @@ function closeTabOverlays(){
   });
 }
 function switchTab(tab) {
-  if (typeof activeTab !== 'undefined' && activeTab && activeTab !== tab) closeTabOverlays();
+  if (typeof activeTab !== 'undefined' && activeTab && activeTab !== tab) {
+    closeTabOverlays();
+    // Release the lock NOW, synchronously. The MutationObserver would otherwise
+    // deliver it as a microtask AFTER the scrollTo(0) at the end of this
+    // function, and its scroll-restore would drop the new tab at the previous
+    // tab's offset instead of the top.
+    if (typeof syncScrollLock === 'function') syncScrollLock();
+  }
   // Hide all pages
   document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -4614,9 +4758,9 @@ function renderInici() {
   const logoEl = document.getElementById('logoImgInici');
   const mainLogo = document.getElementById('logoImg');
   if (logoEl && mainLogo && mainLogo.src) logoEl.src = mainLogo.src;
-  // The footer (logo, version, copyright) lives at the bottom of Més, not here.
-  // Inici is the daily screen and it should feel open, not sealed off by a
-  // colophon — especially for someone who has barely any data yet.
+  // The footer (logo, version, copyright) is parked below the scroll limit of
+  // every screen (v8.23), so no screen is sealed off by a colophon — you only
+  // meet it if you deliberately drag past the end.
   const fLogo = document.getElementById('footerLogo');
   if (fLogo && mainLogo && mainLogo.src) fLogo.src = mainLogo.src;
   
@@ -4699,45 +4843,90 @@ function dismissHint(key, btn) {
 }
 
 // ── Day activity detail (from Inici calendar) ──────────────────
+// Which day is on screen, so a delete can re-render the same sheet in place.
+let dayActDate = null;
 function showDayActivity(ds) {
+  dayActDate = ds;
   const title = document.getElementById('dayActTitle');
   const body = document.getElementById('dayActBody');
   if (title) title.textContent = fmt(ds);
   const hEnts = D.hEnt.filter(e => e.date === ds);
   const wEnts = D.wEnt.filter(e => e.date === ds);
+  // Each card gets a small × (v8.23). A full-width "Eliminar" would out-shout
+  // the log itself; deleting is the exception, so it gets the smallest control.
+  const xBtn = (fn, id, label) =>
+    `<button class="day-act-x" onclick="${fn}('${String(id).replace(/'/g,"\\'")}')" aria-label="Eliminar ${esc(label)}">×</button>`;
   let html = '';
   if (hEnts.length) {
     html += '<div style="font-size:14px;font-weight:700;color:var(--h-ink);text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px">Força</div>';
     hEnts.forEach(e => {
       const ex = D.hEx.find(x => x.id === e.exId);
+      const nm = ex ? ex.name : e.exId;
       const ss = (e.sets||[]).filter(s => s.r > 0).map(s => `${s.r}×${s.w}kg`).join(' · ');
       const impl = sessImpl(e);
-      html += `<div style="background:var(--bg3);border-radius:var(--r);padding:9px 11px;margin-bottom:7px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700;font-size:15px">${ex?ex.name:e.exId}</div>
-          ${impl && ex && ex.cat!=='gym' ? `<div style="font-size:13px;color:var(--blue)">~${impl.toFixed(1)} kg</div>` : ''}
-        </div>
-        <div style="font-size:14px;color:var(--text2);margin-top:3px">${ss}</div>
-        ${e.note ? `<div style="font-size:13px;color:var(--text3);margin-top:2px">${e.note}</div>` : ''}
+      html += `<div class="day-act-card">
+        ${xBtn('dayActDelH', e.id, nm)}
+        <div style="font-weight:700;font-size:15px">${esc(nm)}</div>
+        ${impl && ex && ex.cat!=='gym' ? `<div style="font-size:13px;color:var(--blue);margin-top:1px">~${impl.toFixed(1)} kg</div>` : ''}
+        <div style="font-size:14px;color:var(--text2);margin-top:3px">${esc(ss)}</div>
+        ${e.note ? `<div style="font-size:13px;color:var(--text3);margin-top:2px">${esc(e.note)}</div>` : ''}
       </div>`;
     });
   }
   if (wEnts.length) {
     html += `<div style="font-size:14px;font-weight:700;color:var(--w-ink);text-transform:uppercase;letter-spacing:.5px;margin:${hEnts.length?'14px':'0'} 0 8px">WoDs</div>`;
     wEnts.forEach(e => {
-      html += `<div style="background:var(--bg3);border-radius:var(--r);padding:9px 11px;margin-bottom:7px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700;font-size:15px">${e.name || e.type || 'WoD'}</div>
-          <div style="font-size:13px;color:var(--text3)">${e.type||''}${e.scale?' · '+e.scale:''}</div>
-        </div>
-        ${e.result ? `<div style="font-size:14px;color:var(--text2);margin-top:3px">Resultat: ${e.result}</div>` : ''}
-        ${e.note ? `<div style="font-size:13px;color:var(--text3);margin-top:2px">${e.note}</div>` : ''}
+      const nm = e.name || e.type || 'WoD';
+      // Typed scores (v8.21) live in e.score; e.result is only the legacy free
+      // text, and is empty for anything logged through the score fields.
+      const scoreTxt = (e.score && typeof wodScoreText==='function') ? wodScoreText(e.score) : '';
+      const shown = scoreTxt || e.result || '';
+      html += `<div class="day-act-card">
+        ${xBtn('dayActDelW', e.id, nm)}
+        <div style="font-weight:700;font-size:15px">${esc(nm)}</div>
+        <div style="font-size:13px;color:var(--text3);margin-top:1px">${esc(e.type||'')}${e.scale?' · '+esc(e.scale):''}</div>
+        ${shown ? `<div style="font-size:14px;color:var(--w-ink);font-weight:700;margin-top:3px">${esc(shown)}</div>` : ''}
+        ${e.note ? `<div style="font-size:13px;color:var(--text3);margin-top:2px">${esc(e.note)}</div>` : ''}
       </div>`;
     });
   }
   if (!html) html = '<div class="empty">Cap activitat aquest dia.</div>';
   body.innerHTML = html;
   document.getElementById('dayActSheet').classList.add('on');
+}
+// Deleting from the day sheet. Same confirm sheet the historial uses, then
+// re-render the day in place — and every Inici surface that counts entries.
+function dayActRefresh() {
+  save();
+  refreshGoalCompletion();
+  if (dayActDate) showDayActivity(dayActDate);
+  renderCalStrip();
+  if (typeof renderWeekBar==='function') renderWeekBar();
+  if (typeof renderTodaySummary==='function') renderTodaySummary();
+  if (typeof renderRecentWods==='function') renderRecentWods();
+  if (typeof initHomeChartInici==='function') initHomeChartInici();
+  if (typeof renderHistCal==='function') renderHistCal();
+  if (typeof renderHistDay==='function') renderHistDay();
+  toast('Eliminat');
+}
+function dayActDelH(id) {
+  const e = D.hEnt.find(x => String(x.id) === String(id));
+  if (!e) return;
+  const ex = D.hEx.find(x => x.id === e.exId);
+  showDeleteSheet('Eliminar registre', (ex?ex.name:'Aquest registre') + ' · ' + fmt(e.date), () => {
+    const exId = e.exId;
+    D.hEnt = D.hEnt.filter(x => String(x.id) !== String(id));
+    if (exId) recomputeRM1(exId);      // the 1RM ratchet must come back down
+    dayActRefresh();
+  });
+}
+function dayActDelW(id) {
+  const e = D.wEnt.find(x => String(x.id) === String(id));
+  if (!e) return;
+  showDeleteSheet('Eliminar WoD', (e.name||e.type||'WoD') + ' · ' + fmt(e.date), () => {
+    delWodEntry(id);
+    dayActRefresh();
+  });
 }
 function closeDayAct() { animClose(document.getElementById('dayActSheet')); }
 
@@ -5056,7 +5245,7 @@ function wizFlow(){
 }
 
 function openWizard(){
-  wizS = { kind:null, i:-1, date:localToday(), cat:'haltero', exId:'', sets:[{r:5,w:'',rpe:''}],
+  wizS = { kind:null, i:-1, date:localToday(), cat:'haltero', fam:'__all', exId:'', sets:[{r:5,w:'',rpe:''}],
            pct:'', tags:[], note:'', wod:{type:null,movements:[],cashIn:[],cashOut:[],stations:[[]],struct:{}}, touched:false };
   // Reset the DOM too, not just the state object: the inputs are reused across
   // sessions, so without this the previous WoD's name/result leak into the next
@@ -5158,6 +5347,9 @@ function wizNext(){
   if(wizS.i < flow.length-1){ wizS.i++; wizShow(); return; }
   wizSave();
 }
+// Categoria → Família → Exercici (v8.23). Category alone put 28 haltero
+// movements in one flat list; the family tier is the same split Inici and
+// %Calc already use, so the three pickers now agree.
 function wizFillCats(){
   const sel=document.getElementById('wizCat');
   if(sel.options.length===0){
@@ -5166,18 +5358,49 @@ function wizFillCats(){
     });
   }
   sel.value=wizS.cat||'haltero';
+  wizFillFams();
+}
+function wizFillFams(){
+  const cat=document.getElementById('wizCat').value;
+  wizS.cat=cat;
+  const sel=document.getElementById('wizFam');
+  if(!sel){ wizFillEx(); return; }
+  const inCat=D.hEx.filter(e=>e.cat===cat);
+  const fams=[...new Set(inCat.map(e=>e.family).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML='';
+  // "Totes" stays available: with one family (Complex) a forced choice is noise,
+  // and someone who knows the movement's name should not have to guess its family.
+  const all=document.createElement('option'); all.value='__all'; all.textContent='Totes les famílies';
+  sel.appendChild(all);
+  fams.forEach(f=>{ const o=document.createElement('option'); o.value=f; o.textContent=f; sel.appendChild(o); });
+  // Keep the family of the exercise already chosen (edit mode, or stepping back).
+  const cur=wizS.exId ? (D.hEx.find(e=>e.id===wizS.exId)||{}).family : null;
+  const want=(cur && fams.includes(cur)) ? cur : (wizS.fam||'__all');
+  sel.value=[...sel.options].some(o=>o.value===want) ? want : '__all';
+  wizS.fam=sel.value;
   wizFillEx();
 }
 function wizFillEx(){
   const cat=document.getElementById('wizCat').value;
   wizS.cat=cat;
+  const famSel=document.getElementById('wizFam');
+  const fam=famSel?famSel.value:'__all';
+  wizS.fam=fam;
   const sel=document.getElementById('wizEx');
   sel.innerHTML='';
-  D.hEx.filter(e=>e.cat===cat).sort((a,b)=>a.name.localeCompare(b.name)).forEach(e=>{
+  D.hEx.filter(e=>e.cat===cat && (fam==='__all' || e.family===fam))
+       .sort((a,b)=>a.name.localeCompare(b.name))
+       .forEach(e=>{
     const o=document.createElement('option'); o.value=e.id; o.textContent=e.name; sel.appendChild(o);
   });
-  if(wizS.exId) sel.value=wizS.exId;
+  if(wizS.exId && [...sel.options].some(o=>o.value===wizS.exId)) sel.value=wizS.exId;
   wizS.exId=sel.value||'';
+}
+// The exercise select used to be read only when leaving the step, so the family
+// box could drift out of sync with a hand-picked exercise under "Totes".
+function wizPickEx(){
+  const sel=document.getElementById('wizEx');
+  if(sel) wizS.exId=sel.value||'';
 }
 function wizAddSet(){ wizS.sets.push({r:5,w:'',rpe:''}); wizS.touched=true; wizRenderSets(); }
 function wizDelSet(i){ if(wizS.sets.length>1){ wizS.sets.splice(i,1); wizRenderSets(); } }
@@ -5622,19 +5845,32 @@ function wizSave(){
     }
     const ent={id:Date.now(),date:wizS.date,exId:wizS.exId,pct:wizS.pct,note:wizS.note,
                tags:[...wizS.tags],sets:valid.map(st=>({...st}))};
+    // Heaviest weight before this session — read BEFORE the push.
+    const prevMaxW=(wizS.cat!=='gym')?maxLiftedW(wizS.exId):0;
     D.hEnt.push(ent);
     if(wizS.cat!=='gym'){
       const ex=D.hEx.find(e=>e.id===wizS.exId);
       let imp=valid.reduce((b,st)=>Math.max(b,epley(st.w,st.r)),0);
       const pV=+wizS.pct;
-      if(pV>0&&pV<100){ const mw=Math.max(...valid.map(st=>+st.w||0)); imp=Math.max(imp,mw/(pV/100)); }
-      if(ex&&(!ex.rm1||imp>ex.rm1*1.005)){
-        const oldRM=ex.rm1||null; ex.rm1=Math.round(imp*10)/10;
+      // <=100, not <100: saying "this was 100% of my max" is a legitimate answer
+      // and used to be silently discarded.
+      if(pV>0&&pV<=100){ const mw=Math.max(...valid.map(st=>+st.w||0)); imp=Math.max(imp,mw/(pV/100)); }
+      const sessMaxW=Math.max(...valid.map(st=>+st.w||0), 0);
+      const isWeightPR=sessMaxW>0 && sessMaxW>prevMaxW+0.001;
+      const isRmPR=!!(ex&&(!ex.rm1||imp>ex.rm1*1.005));
+      const oldRM=ex?(ex.rm1||null):null;
+      if(isRmPR&&ex) ex.rm1=Math.round(imp*10)/10;
+      if(ex&&(isWeightPR||isRmPR)){
         // Capture the values NOW. wizClose() nulls wizS 200ms from here, so
         // reading wizS.date inside a 400ms timeout threw every single time a PR
         // landed — which killed the celebration this app exists to show.
-        const prName=ex.name, prNew=ex.rm1, prDate=wizS.date;
-        setTimeout(()=>{ showPR(prName,oldRM,prNew,prDate); },400);
+        const prName=ex.name, prDate=wizS.date, newRM=ex.rm1;
+        // The weight actually lifted leads when there is one; the estimate is
+        // the supporting line. Never the other way round.
+        const args=isWeightPR
+          ? [prName, prevMaxW||null, sessMaxW, prDate, {kind:'weight', otherNew:isRmPR?newRM:null}]
+          : [prName, oldRM, newRM, prDate, {kind:'rm'}];
+        setTimeout(()=>{ showPR(...args); },400);
       }
     }
   }
@@ -6851,14 +7087,9 @@ function renderAjGreeting() {
       dest.dataset.loaded = '1';
     }
   }
-  // Park the app footer at the very bottom of Més (moved off Inici).
-  const footer = document.getElementById('appFooter');
-  if (dest && footer && footer.parentElement !== dest) {
-    dest.appendChild(footer);
-    const mainLogo = document.getElementById('logoImg');
-    const fLogo = document.getElementById('footerLogo');
-    if (fLogo && mainLogo && mainLogo.src) fLogo.src = mainLogo.src;
-  }
+  // v8.23: the footer is no longer moved in here. It is fixed below the scroll
+  // limit of EVERY screen now (see .cc-footer), so re-parenting it into Més
+  // would drag it back into the flow and make it scrollable-to again.
   // Refresh editors each time the tab opens (catch newly added exercises)
   if (typeof populateAjEx === 'function') populateAjEx();
   if (typeof populateAjWEx === 'function') populateAjWEx();
@@ -6905,6 +7136,7 @@ function updateGoalsBadge(){
 document.addEventListener('DOMContentLoaded',()=>{
   renderIcons(document);
   watchFormLabels();
+  watchModals();
   registerSW();
   if(!passInstallGate()) return;   // iOS in a Safari tab & not installed → show install screen, stop
   checkAccessGate();
@@ -7186,7 +7418,7 @@ function saveHEntry(){
   D.hEnt.push(ent);
   if(cat!=='gym'){
     const pV=+pct; let imp=valid.reduce((b,s)=>Math.max(b,epley(s.w,s.r)),0);
-    if(pV>0&&pV<100){const mw=Math.max(...valid.map(s=>s.w));imp=Math.max(imp,mw/(pV/100));}
+    if(pV>0&&pV<=100){const mw=Math.max(...valid.map(s=>s.w));imp=Math.max(imp,mw/(pV/100));}
     const ex=D.hEx.find(e=>e.id===exId);
     if(ex&&(!ex.rm1||imp>ex.rm1*1.005)){
       const oldRM=ex.rm1||null;
@@ -8335,15 +8567,22 @@ function confirmSheet(){
   const t=localToday();
   const ent={id:Date.now()+Math.random(),date:t,exId:exId,
     sets:[{r:r,w:w,rpe:rpe}],pct:pct,note:note,tags:[]};
+  const prevMaxW=(ex.cat!=='gym')?maxLiftedW(exId):0;
   D.hEnt.push(ent);
   // Update 1RM if applicable
   if(ex.cat!=='gym'){
     let imp=epley(w,r);
-    if(pct&&+pct>0&&+pct<100)imp=Math.max(imp,w/(+pct/100));
-    if(!ex.rm1||imp>ex.rm1*1.005){
-      const oldRM=ex.rm1||null;
-      ex.rm1=Math.round(imp*10)/10;
-      setTimeout(()=>showPR(ex.name,oldRM,ex.rm1,t),300);
+    if(pct&&+pct>0&&+pct<=100)imp=Math.max(imp,w/(+pct/100));
+    const isWeightPR=w>prevMaxW+0.001;
+    const isRmPR=!ex.rm1||imp>ex.rm1*1.005;
+    const oldRM=ex.rm1||null;
+    if(isRmPR) ex.rm1=Math.round(imp*10)/10;
+    if(isWeightPR||isRmPR){
+      const nm=ex.name, newRM=ex.rm1;
+      const args=isWeightPR
+        ? [nm, prevMaxW||null, w, t, {kind:'weight', otherNew:isRmPR?newRM:null}]
+        : [nm, oldRM, newRM, t, {kind:'rm'}];
+      setTimeout(()=>showPR(...args),300);
     }
   }
   save();closeSheet();renderTodaySummary();toast('Guardat des de % Calc ✓');
@@ -10063,20 +10302,63 @@ function toggleProgInfo() {
 
 let prData = {}; // {exName, oldRM, newRM, delta, date}
 
-function showPR(exName, oldRM, newRM, date) {
-  prData = { exName, oldRM, newRM, delta: Math.round((newRM - oldRM) * 10) / 10, date };
+// v8.23. Two records, never conflated:
+//   'weight' — the heaviest weight you actually put on the bar. A real number.
+//   'rm'     — the estimated 1RM, derived from reps (Epley) or from the % you
+//              said the session was at. Nobody lifted it.
+// Showing a derived 61→77.3 kg under the headline "Nou rècord personal" read as
+// a claim that 77.3 kg had been lifted. Each now carries its own label, and when
+// one session sets both, the lifted weight is the hero and the estimate is the
+// supporting line.
+// opts: {kind:'weight'|'rm', otherOld, otherNew, reps}
+function showPR(exName, oldVal, newVal, date, opts) {
+  const o = opts || {};
+  const kind = o.kind === 'weight' ? 'weight' : 'rm';
+  const isW = kind === 'weight';
+  prData = { exName, oldRM: oldVal, newRM: newVal, kind,
+             delta: Math.round((newVal - (oldVal || 0)) * 10) / 10, date };
 
+  document.getElementById('prKicker').textContent =
+    isW ? 'Nou pes màxim aixecat' : 'Nou 1RM estimat';
+  document.getElementById('prNewLbl').textContent = isW ? 'Nou pes' : 'Nou 1RM';
   document.getElementById('prExName').textContent = exName;
-  document.getElementById('prOldVal').textContent = oldRM ? oldRM.toFixed(1) + ' kg' : '—';
-  document.getElementById('prNewVal').textContent = newRM.toFixed(1) + ' kg';
-  document.getElementById('prDelta').textContent = oldRM
-    ? '+' + prData.delta.toFixed(1) + ' kg sobre el teu anterior màxim'
-    : 'Primer registre d\'aquest exercici!';
-  document.getElementById('prDate').textContent = fmt(date);
+  document.getElementById('prOldVal').textContent = oldVal ? oldVal.toFixed(1) + ' kg' : '—';
+  document.getElementById('prNewVal').textContent = newVal.toFixed(1) + ' kg';
+  document.getElementById('prDelta').textContent = oldVal
+    ? '+' + prData.delta.toFixed(1) + ' kg sobre ' + (isW ? 'el teu anterior pes màxim' : 'el teu anterior 1RM estimat')
+    : (isW ? 'Primer pes registrat en aquest exercici!' : 'Primer 1RM estimat d\'aquest exercici!');
+
+  // The companion record, if the same session moved it too.
+  const sec = document.getElementById('prSecond');
+  if (o.otherNew) {
+    sec.textContent = isW
+      ? 'I el teu 1RM estimat puja a ' + o.otherNew.toFixed(1) + ' kg.'
+      : 'També és el teu pes màxim aixecat: ' + o.otherNew.toFixed(1) + ' kg.';
+    sec.style.display = '';
+  } else { sec.textContent = ''; sec.style.display = 'none'; }
+
+  // Say plainly what an estimate is.
+  const foot = document.getElementById('prFoot');
+  foot.textContent = isW
+    ? 'Pes real aixecat en aquesta sessió.'
+    : 'Càlcul a partir de les teves sèries; no és un pes que hagis aixecat.';
 
   document.getElementById('prOv').classList.remove('wodpr');
   document.getElementById('prOv').classList.add('show');
   launchConfetti();
+}
+// Heaviest weight actually lifted for an exercise, across every logged set.
+// Derived rather than stored, so it self-corrects when an entry is deleted and
+// needs no migration. `skipId` excludes the entry being saved right now.
+function maxLiftedW(exId, skipId){
+  let m = 0;
+  (D.hEnt||[]).forEach(e=>{
+    if(e.exId!==exId) return;
+    if(skipId!=null && String(e.id)===String(skipId)) return;
+    (e.sets||[]).forEach(s=>{ const w=+s.w||0; if(s.r>0 && w>m) m=w; });
+  });
+  (D.rmHist||[]).forEach(r=>{ if(r.exId===exId){ const w=+r.weight||0; if(w>m) m=w; } });
+  return m;
 }
 
 function closePR() {
@@ -10651,6 +10933,12 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.23':['Les celebracions ara distingeixen dues coses: el <b>pes màxim que has aixecat de veritat</b> i el <b>1RM estimat</b>, que és un càlcul. Abans es barrejaven i semblava que havies aixecat un pes que no havies tocat.',
+          'En registrar força ara tries <b>Categoria → Família → Exercici</b>, igual que a %Calc.',
+          'El camp «% intentat» ara es diu <b>% del teu màxim</b> i explica què fa. També accepta el 100.',
+          'A «Aquests dies», cada sessió té una <b>creu petita</b> per esborrar-la, amb confirmació.',
+          'Ja no es pot moure la pantalla del darrere quan tens una finestra oberta.',
+          'El logo i la versió han baixat per sota del límit de scroll: només els veuràs si estires la pantalla més enllà del final.'],
   '8.22':['Arreglat: fer servir una plantilla de WoD no feia absolutament res. Ara obre el registrar ja emplenat i només et demana el resultat.','La pantalla del resultat ara diu sempre què et demana: "Quant has trigat?" per a un For Time, "Quantes rondes?" per a un AMRAP, i així amb cada tipus.','El nom de l\'exercici ja no s\'amuntega amb el botó Tornar: va a la seva pròpia línia.'],
   '8.21':['Els WoDs ara tenen marca de veritat. En registrar-ne un et demanem el resultat en la forma que toca: temps per a For Time, rondes + reps per a l\'AMRAP, repeticions per a la Tabata.','Nova secció Rècords a Mètriques → WoD: la teva millor marca de cada WoD i quants cops l\'has fet. Toca\'l per veure tots els intents.','Si millores la teva marca, tens celebració i confeti, igual que amb un rècord de força.','L\'app ja sap que "Murph" i "murph" són el mateix WoD.','Els WoDs antics s\'han convertit sols: si el resultat es podia entendre, ja té marca.'],
   '8.20':['Arreglat un error important: en fer un rècord nou, la celebració petava i no es veia mai. Ara sí.','En crear una plantilla ja no et demanem la data: una plantilla no té dia.','Hem tret la vibració. A l\'iPhone el navegador no la permet de debò, així que preferim no prometre-la; arribarà amb la versió nativa.'],
