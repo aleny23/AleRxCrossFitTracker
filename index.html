@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.23</title>
+<title>PRsonal v8.25</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -388,6 +388,10 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 
 /* WoD movement builder rows */
 .mov-row{display:grid;grid-template-columns:1fr 62px 68px 40px;gap:8px;align-items:end;margin-bottom:8px;}
+/* v8.24: a run, a burpee or a rope climb carries no load, so the weight column
+   is dropped entirely rather than shown empty. Asking "Pes kg" for a 1600 m run
+   is not just noise — it invites a number that would then be stored. */
+.mov-row.noload{grid-template-columns:1fr 62px 40px;}
 .mov-row label{display:block;font-size:var(--fs-label);color:var(--text2);margin-bottom:3px;}
 .mov-row select,.mov-row input{width:100%;}
 .mov-empty{font-size:var(--fs-body-sm);color:var(--text3);padding:6px 0;}
@@ -505,6 +509,15 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
    flow is the only lock iOS honours — overflow:hidden alone does nothing there.
    The inline top:-Ypx keeps the page visually still; scrollTo() restores it. */
 body.scroll-locked{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
+/* v8.24, HYPOTHESIS — needs a check on Àlex's iPhone. He photographed a black
+   band exactly one tab-bar tall under an open wizard card. It does not
+   reproduce in any desktop browser: the card's bottom edge measures flush with
+   the viewport bottom (gap 0) and hit-testing the bottom edge returns the card.
+   The likeliest cause is the tab bar's backdrop-filter, which promotes it to its
+   own compositing layer; WebKit has a long history of such layers punching
+   through content painted above them. Dropping the filter while any overlay is
+   open removes the promotion, and costs nothing — the bar is covered anyway. */
+body.scroll-locked .tab-bar{backdrop-filter:none;-webkit-backdrop-filter:none;}
 /* v8.23: the 48px tail was pure void — .tab-page already reserves the tab bar
    plus 16px. Cut to 16px so the page ends shortly after its last card. The
    background is load-bearing: it is what hides the colophon parked below the
@@ -733,6 +746,34 @@ select option{background:var(--bg3);}
    overlay's kg typography wraps it badly, so it drops a step for WoD records. */
 #prOv.wodpr #prNewVal{font-size:28px;line-height:1.15;}
 #prOv.wodpr #prOldVal{font-size:19px;line-height:1.2;}
+/* v8.24: a WoD record is not a lifting record and should not wear the gold.
+   Verd Ràpita is the WoD accent everywhere else in the app; the celebration was
+   the one place still shouting Groc77 at a time. */
+/* !important is doing real work here: these nodes carry an inline
+   color:var(--h-ink), which no selector can outrank. */
+#prOv.wodpr #prKicker,
+#prOv.wodpr #prNewVal,
+#prOv.wodpr #prNewLbl,
+#prOv.wodpr #prTrophy{color:var(--w-ink)!important;}
+#prOv.wodpr #prTrophy svg{color:var(--w-ink)!important;}
+#prOv.wodpr .pr-arrow{color:var(--w-ink)!important;}
+#prOv.wodpr .pr-share{background:var(--w-acc)!important;}
+/* The second record of the same session, shown as a record in its own right
+   rather than as a footnote to the first one (Àlex: "I thought we had more
+   than a type of record"). */
+.pr-second{
+  display:none;
+  margin:0 auto 14px;max-width:300px;
+  padding:10px 14px;border-radius:var(--r);
+  background:rgba(255,255,255,0.06);border:0.5px solid var(--border2);
+}
+.pr-second-lbl{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:4px;}
+.pr-second-val{display:flex;align-items:baseline;justify-content:center;gap:8px;white-space:nowrap;}
+.pr-second-old{font-size:15px;font-weight:700;color:var(--text3);}
+.pr-second-arrow{font-size:15px;color:var(--text3);}
+.pr-second-new{font-size:22px;font-weight:800;color:var(--h-ink);}
+#prOv.wodpr .pr-second-new{color:var(--w-ink);}
 
 /* ─── WOD BOARD (v8.21) — the WoD answer to Rècords ─── */
 .wodb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
@@ -1168,7 +1209,15 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
 .status-scrim{
   position:fixed; top:0; left:0; right:0;
   height:calc(env(safe-area-inset-top, 0px) + 14px);
-  z-index:800; pointer-events:none;
+  /* v8.24: was 800, i.e. above every modal. It paints var(--bg) at full opacity,
+     so with a sheet or the wizard open it drew a BRIGHT BAR across the top of
+     the dimmed page — obvious in light mode, near-invisible in dark because the
+     scrim colour is already rgb(13,13,13).
+     260 puts it above the opaque full-screen overlays that scroll their own
+     content (.ov 200, .goals-ov 250), which is what it exists for, and below
+     everything that dims the page (.tab-bar 300, .sheet 400, .wiz 520, …) so
+     their backdrop covers it instead of the reverse. */
+  z-index:260; pointer-events:none;
   background:linear-gradient(to bottom,
     var(--bg) 0%,
     var(--bg) calc(100% - 14px),
@@ -2385,7 +2434,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   <div class="card" id="addBenchCard" style="display:none;margin-bottom:11px">
     <div class="ctitle">Nou benchmark WoD</div>
     <div class="fg"><label>Nom</label><input type="text" id="benchName" placeholder="ex: Grace"></div>
-    <div class="fg"><label>Descripció / moviments</label><textarea id="benchDesc" placeholder="ex: 30 Clean & Jerks for time @ 60kg"></textarea></div>
+    <div class="fg"><label>Descripció / moviments</label><textarea id="benchDesc" placeholder="ex: 30 Clean &amp; Jerks for time @ 61kg"></textarea></div>
     <div class="frow">
       <button class="btn btn-s" onclick="toggleAddBench()">Cancel·lar</button>
       <button class="btn btn-w" onclick="saveNewBench()">Afegir</button>
@@ -2693,7 +2742,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <div class="tip" style="border-color:var(--h-ink);margin-bottom:12px">La calculadora de % només et proposarà pesos que puguis muntar de veritat. Marca els discs que teniu al box (i el pes de la barra) i els càlculs s&#39;hi adaptaran.</div>
         <div class="fg"><label>Barra</label>
           <div class="bar-pick" id="ajBarPick"></div></div>
-        <div class="fg" style="margin-top:14px"><label>Discs disponibles (per parelles)</label>
+        <div class="fg" style="margin-top:14px"><label>Selecciona els discs que tens al gimnàs</label>
           <div class="plate-pick" id="ajPlatePick"></div></div>
         <div id="ajGymPreview" class="gym-preview"></div>
         <button class="btn btn-p" style="margin-top:12px" onclick="saveAjGym()">Guardar</button>
@@ -2765,7 +2814,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.23<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.25<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -2836,14 +2885,21 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 </div>
 
 <!-- ONBOARDING -->
-<div id="setupOv" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow:hidden;overscroll-behavior:none;touch-action:none">
-  <div style="max-width:420px;margin:0 auto;padding:0 16px 48px">
+<!-- v8.24: this was overflow:hidden + touch-action:none, so a slide taller than
+     the screen put its buttons out of reach and a new user could not finish
+     signing up at all. It scrolls now; the page behind stays put because the
+     modal scroll lock (v8.23) already holds it. -->
+<div id="setupOv" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y">
+  <!-- Its own safe-area padding (v8.24): the status scrim used to sit above this
+       overlay and no longer does, and now that the slides scroll their content
+       would otherwise run under the notch. -->
+  <div style="max-width:420px;margin:0 auto;padding:var(--safe-top) 16px calc(48px + env(safe-area-inset-bottom, 0px))">
 
     <!-- Slide indicator -->
     <div style="display:flex;justify-content:center;gap:6px;padding:16px 0" id="obDots"></div>
 
     <!-- Slides container -->
-    <div id="obSlides" style="overflow:hidden;position:relative">
+    <div id="obSlides" style="position:relative">
 
       <!-- SLIDE 0: Welcome -->
       <div class="ob-slide" id="ob0">
@@ -2886,10 +2942,13 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <div style="font-size:15px;color:var(--text2);line-height:1.5">Dades per a les mètriques de força.<br>Pots editar-les sempre a <strong style="color:var(--text)"><i data-lucide="more-horizontal" style="width:12px;height:12px;vertical-align:-1px"></i> Més → Perfil</strong></div>
         </div>
         <div class="card" style="margin-bottom:16px">
-          <div class="fg"><label>Nom (opcional)</label><input type="text" id="setupName" placeholder="ex: Àlex, Coach..."></div>
+          <!-- v8.24: all four are required now. Sex starts unchosen on purpose —
+               it was defaulting to Masculí without being asked, and it changes
+               every Wilks number the app shows. -->
+          <div class="fg"><label>Nom</label><input type="text" id="setupName" placeholder="ex: Àlex, Coach..."></div>
           <div class="fg"><label>Sexe</label>
             <div style="display:flex;gap:8px;margin-top:4px">
-              <button class="wtbtn active" id="setupMale" onclick="selSetupSex('male',this)" style="flex:1">Masculí</button>
+              <button class="wtbtn" id="setupMale" onclick="selSetupSex('male',this)" style="flex:1">Masculí</button>
               <button class="wtbtn" id="setupFemale" onclick="selSetupSex('female',this)" style="flex:1">Femení</button>
             </div>
           </div>
@@ -2920,12 +2979,27 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <div class="fg"><label>Barra habitual</label>
             <div class="bar-pick" id="obBarPick"></div>
             <div style="font-size:13px;color:var(--text3);margin-top:7px;line-height:1.45">No t'hi capfiquis ara: a la calculadora pots canviar-la en un toc, sessió a sessió.</div></div>
-          <div class="fg" style="margin-top:14px"><label>Discs que teniu al box (per parelles)</label>
+          <div class="fg" style="margin-top:14px"><label>Selecciona els discs que tens al gimnàs</label>
             <div class="plate-pick" id="obPlatePick"></div></div>
           <div id="obGymPreview" class="gym-preview"></div>
           <div style="font-size:13px;color:var(--text3);margin-top:10px">Ho pots canviar sempre a <strong style="color:var(--text)">Més → El teu gimnàs</strong>.</div>
         </div>
-        <!-- The one thing that leaves the device, offered plainly and off by default. -->
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-s" onclick="obBack()" style="flex:1">← Enrere</button>
+          <button class="btn btn-p" onclick="obNext()" style="flex:2">Continua →</button>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: the one thing that leaves the device, plus consent.
+           Split off the gym slide in v8.24: together they were far taller than a
+           phone screen, and the overlay could not scroll, so the button that
+           finishes signup was unreachable. -->
+      <div class="ob-slide" id="ob3" style="display:none">
+        <div style="text-align:center;padding:20px 0 18px">
+          <div style="margin-bottom:8px"><i data-lucide="sun" style="width:44px;height:44px;color:var(--h-ink)"></i></div>
+          <div style="font-size:21px;font-weight:800;margin-bottom:6px">Una última cosa</div>
+          <div style="font-size:15px;color:var(--text2);line-height:1.5">El temps és opcional. Després només cal acceptar les condicions i ja estàs dins.</div>
+        </div>
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;align-items:flex-start;gap:12px">
             <span class="ob-feat-ico h" style="width:38px;height:38px"><i data-lucide="sun"></i></span>
@@ -2944,11 +3018,13 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <input type="checkbox" id="setupAccept" style="margin-top:1px;width:18px;height:18px;accent-color:var(--w-ink);flex-shrink:0">
           <span style="font-size:14px;color:var(--text2);line-height:1.5">He llegit i accepto la <a onclick="event.preventDefault();openLegal('privacitat')" style="color:var(--w-ink);text-decoration:underline;cursor:pointer">Política de Privacitat</a> i les <a onclick="event.preventDefault();openLegal('termes')" style="color:var(--w-ink);text-decoration:underline;cursor:pointer">Condicions d'Ús</a>.</span>
         </label>
+        <!-- "Ometre per ara" removed in v8.24: it let someone into the app with
+             no profile at all, which then produced empty metrics and a Wilks
+             built on nothing — and it walked straight past the consent box. -->
         <div style="display:flex;gap:8px">
           <button class="btn btn-s" onclick="obBack()" style="flex:1">← Enrere</button>
           <button class="btn btn-p" onclick="saveSetup(false)" style="flex:2">Entrar a l'app →</button>
         </div>
-        <button onclick="saveSetup(true)" class="pressable" style="display:block;width:100%;margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:8px">Ometre per ara</button>
       </div>
 
     </div><!-- end slides -->
@@ -2988,7 +3064,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <div id="prOldVal" style="font-size:28px;font-weight:700;color:var(--text3);white-space:nowrap"></div>
         <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px">Anterior</div>
       </div>
-      <div style="font-size:28px;color:var(--h-ink)">→</div>
+      <div class="pr-arrow" style="font-size:28px;color:var(--h-ink)">→</div>
       <div style="text-align:center">
         <div id="prNewVal" style="font-size:40px;font-weight:800;color:var(--h-ink);line-height:1;white-space:nowrap"></div>
         <div id="prNewLbl" style="font-size:12px;color:var(--h-ink);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-weight:700">Nou màxim</div>
@@ -3001,12 +3077,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <!-- The other record, when the same session set both. Also carries the
          "this is a calculation, not a lift" line so the big number is never
          mistaken for a weight that was actually on the bar. -->
-    <div id="prSecond" style="font-size:15px;color:var(--text2);margin-bottom:8px;line-height:1.45"></div>
+    <div id="prSecond" class="pr-second"></div>
     <div id="prFoot" style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.45"></div>
 
     <!-- Action buttons -->
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button onclick="sharePR()" class="pressable" style="background:var(--h-acc);color:#000;border:none;padding:12px 24px;border-radius:var(--rs);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
+      <button onclick="sharePR()" class="pressable pr-share" style="background:var(--h-acc);color:#000;border:none;padding:12px 24px;border-radius:var(--rs);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
         <i data-lucide="share-2" style="width:15px;height:15px;vertical-align:-2px"></i> Compartir
       </button>
       <button onclick="closePR()" class="pressable" style="background:var(--bg3);color:var(--text);border:0.5px solid var(--border2);padding:12px 24px;border-radius:var(--rs);font-size:16px;font-weight:700;cursor:pointer">
@@ -3185,15 +3261,26 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-sum" id="tplConfirmBody"></div>
       <div class="fg"><label>Data</label>
         <input type="date" id="tplDate" class="fb-field" style="font-size:var(--fs-body)"></div>
-      <div id="tplWodFields">
-        <div class="fg" style="margin-top:12px"><label>Resultat</label>
-          <input type="text" id="tplResult" class="fb-field" placeholder="p. ex. 5:38"></div>
-        <div class="fg" style="margin-top:12px"><label>Escala</label>
-          <select id="tplScale" class="fb-field"><option>Rx</option><option>Scaled</option></select></div>
+      <!-- v8.24: the free-text Resultat and Escala moved to the registrar. This
+           screen used to write its own WoD entry with an untyped result and no
+           identity, which is why a WoD applied from here never became a record.
+           Kept in the DOM (hidden) because tplPick and older code read them. -->
+      <div id="tplWodFields" style="display:none">
+        <input type="hidden" id="tplResult" value="">
+        <select id="tplScale" style="display:none"><option>Rx</option><option>Intermedi</option><option>Scaled</option><option>Modificat</option></select>
       </div>
+      <div id="tplWodNote" style="display:none;font-size:13px;color:var(--text2);line-height:1.5;margin-top:12px">
+        En continuar obrirem el registrar amb tot omplert: només hauràs de posar el resultat.
+      </div>
+      <!-- v8.24: a classic can be forked into an editable copy, and your own
+           templates can be edited or deleted. Àlex: "adding a plantilla from the
+           classic wods means specifically that you want to alter an exercise". -->
+      <div id="tplForkHint" style="display:none;font-size:13px;color:var(--text2);line-height:1.5;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:var(--rs)"></div>
+      <button class="btn btn-s" id="tplModifyBtn" style="width:100%;margin-top:10px;display:none" onclick="tplModify()"></button>
+      <button class="btn btn-s" id="tplDeleteBtn" style="width:100%;margin-top:8px;display:none;color:var(--red)" onclick="tplDelete()">Eliminar plantilla</button>
       <div class="wiz-nav">
         <button class="btn btn-s" onclick="tplBackToList()">← Enrere</button>
-        <button class="btn btn-p next" onclick="tplApply()">Aplicar</button>
+        <button class="btn btn-p next" id="tplApplyBtn" onclick="tplApply()">Aplicar</button>
       </div>
     </div>
   </div>
@@ -3269,6 +3356,39 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <select id="wizEx" class="fb-field" onchange="wizPickEx()"></select></div>
     </div>
 
+    <!-- step 2a: is this a complex? (v8.25) A complex is several lifts chained
+         without dropping the bar — it needs its own component list, and its
+         parts have to earn credit individually. -->
+    <div class="wiz-step" id="wizStepCpxAsk">
+      <div class="wiz-kicker">Pas 2</div>
+      <div class="wiz-q">Un exercici o un complex?</div>
+      <button class="wiz-opt" onclick="wizPickComplex(false)">
+        <span class="wiz-opt-ico"><i data-lucide="dumbbell"></i></span>
+        <span><span class="wiz-opt-t">Un sol exercici</span><span class="wiz-opt-s">Back squat, snatch, pull-ups…</span></span>
+      </button>
+      <button class="wiz-opt" onclick="wizPickComplex(true)">
+        <span class="wiz-opt-ico"><i data-lucide="layers"></i></span>
+        <span><span class="wiz-opt-t">Un complex</span><span class="wiz-opt-s">Diversos moviments seguits, sense deixar la barra</span></span>
+      </button>
+    </div>
+
+    <!-- step 2b: build the complex -->
+    <div class="wiz-step" id="wizStepCpxBuild">
+      <div class="wiz-kicker">Complex</div>
+      <div class="wiz-q">De què està fet?</div>
+      <div class="fg"><label>Nom del complex</label>
+        <input type="text" id="cpxWizName" class="fb-field" placeholder="p. ex. 2 Power Clean + 1 Jerk"></div>
+      <div style="font-size:13px;color:var(--text3);margin:10px 0 6px;line-height:1.45">
+        Posa les repeticions de cada moviment dins d&#39;<b>una</b> ronda. Les sèries i el pes
+        els indicaràs al pas següent.
+      </div>
+      <div id="cpxWizRows"></div>
+      <button class="btn btn-s" style="margin-top:10px" onclick="cpxAddPart()">+ Afegir moviment</button>
+      <div style="font-size:13px;color:var(--text3);margin-top:12px;line-height:1.45">
+        Cada moviment del complex també comptarà per separat al seu propi històric.
+      </div>
+    </div>
+
     <!-- step 3: sets -->
     <div class="wiz-step" id="wizStepSets">
       <div class="wiz-kicker">Pas 3</div>
@@ -3305,7 +3425,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-q" id="wizWodStructQ">Com és?</div>
       <div class="wiz-sum" id="wizWodStructHint"></div>
       <div id="wizWodStructFields"></div>
-      <div class="fg" style="margin-top:14px"><label>Nom (opcional)</label>
+      <div class="fg" style="margin-top:14px"><label>Nom del WoD</label>
         <input type="text" id="wizWName" class="fb-field" placeholder="p. ex. Fran"></div>
     </div>
 
@@ -3327,7 +3447,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="fg" style="margin-top:12px"><label>Notes del resultat (opcional)</label>
         <input type="text" id="wizWResult" class="fb-field" placeholder="p. ex. amb goma, DNF…"></div>
       <div class="fg" style="margin-top:12px"><label>Escala</label>
-        <select id="wizWScale" class="fb-field"><option>Rx</option><option>Scaled</option></select></div>
+        <select id="wizWScale" class="fb-field"><option>Rx</option><option>Intermedi</option><option>Scaled</option><option>Modificat</option></select></div>
       <div class="fg" style="margin-top:12px"><label>Nota</label>
         <textarea id="wizWNote" class="fb-field" rows="2"></textarea></div>
     </div>
@@ -3429,7 +3549,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.23</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.25</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3669,7 +3789,11 @@ function wodScoreKind(type){ return WOD_SCORE_KIND[type] || 'time'; }
 
 // mm:ss (or h:mm:ss) → seconds
 function secFromClock(txt){
-  const m=String(txt||'').trim().match(/^(?:(\d+):)?(\d{1,3}):(\d{2})$/);
+  const t=String(txt||'').trim();
+  // v8.24: a bare number is minutes. The on-screen keypad has no colon, so
+  // "11" has to be readable as 11:00 rather than rejected.
+  if(/^\d{1,3}$/.test(t)) return +t*60;
+  const m=t.match(/^(?:(\d+):)?(\d{1,3}):(\d{2})$/);
   if(!m) return null;
   const h=+(m[1]||0), mm=+m[2], ss=+m[3];
   if(ss>59) return null;
@@ -3788,28 +3912,28 @@ const DEF_HEX=[
 ];
 const DEF_WEX=[
   {id:'w_thruster',name:'Thruster',family:'Barbell'},
-  {id:'w_deadlift',name:'Deadlift (WoD)',family:'Barbell'},
+  {id:'w_deadlift',name:'Deadlift',family:'Barbell'},
   {id:'w_kb_rus',name:'KB Swings (russian)',family:'KB / DB'},
   {id:'w_kb_am',name:'KB Swings (american)',family:'KB / DB'},
   {id:'w_db_snatch',name:'DB Snatch',family:'KB / DB'},
   {id:'w_db_hcj',name:'DB Alt. Hang Clean & Jerk',family:'KB / DB'},
   {id:'w_wall_balls',name:'Wall Balls',family:'KB / DB'},
-  {id:'w_box_jumps',name:'Box Jumps',family:'Gymnastics'},
-  {id:'w_burpees',name:'Burpees',family:'Gymnastics'},
-  {id:'w_pullup',name:'Pull-ups',family:'Gymnastics'},
-  {id:'w_ttb',name:'Toes-to-Bar',family:'Gymnastics'},
-  {id:'w_du',name:'Double-Unders',family:'Monostructural'},
-  {id:'w_row',name:'Row (calories)',family:'Monostructural'},
-  {id:'w_ski',name:'Ski Erg (calories)',family:'Monostructural'},
-  {id:'w_bike',name:'Bike Erg (calories)',family:'Monostructural'},
-  {id:'w_swim',name:'Swimming',family:'Monostructural'},
-  {id:'w_c2b',name:'Chest-to-Bar Pull-ups',family:'Gymnastics'},
-  {id:'w_bar_mu',name:'Bar Muscle-up',family:'Gymnastics'},
-  {id:'w_ring_mu',name:'Ring Muscle-up',family:'Gymnastics'},
-  {id:'w_rope',name:'Rope Climb',family:'Gymnastics'},
-  {id:'w_hspu_kip',name:'HSPU (kipping)',family:'Gymnastics'},
-  {id:'w_lsit',name:'L-sit Hold',family:'Gymnastics'},
-  {id:'w_ghd',name:'GHD Sit-up',family:'Gymnastics'},
+  {id:'w_box_jumps',name:'Box Jumps',family:'Gymnastics',noLoad:true},
+  {id:'w_burpees',name:'Burpees',family:'Gymnastics',noLoad:true},
+  {id:'w_pullup',name:'Pull-ups',family:'Gymnastics',noLoad:true},
+  {id:'w_ttb',name:'Toes-to-Bar',family:'Gymnastics',noLoad:true},
+  {id:'w_du',name:'Double-Unders',family:'Monostructural',noLoad:true},
+  {id:'w_row',name:'Row',family:'Monostructural',unit:'cal',noLoad:true},
+  {id:'w_ski',name:'Ski Erg',family:'Monostructural',unit:'cal',noLoad:true},
+  {id:'w_bike',name:'Bike Erg',family:'Monostructural',unit:'cal',noLoad:true},
+  {id:'w_swim',name:'Swimming',family:'Monostructural',unit:'m',noLoad:true},
+  {id:'w_c2b',name:'Chest-to-Bar Pull-ups',family:'Gymnastics',noLoad:true},
+  {id:'w_bar_mu',name:'Bar Muscle-up',family:'Gymnastics',noLoad:true},
+  {id:'w_ring_mu',name:'Ring Muscle-up',family:'Gymnastics',noLoad:true},
+  {id:'w_rope',name:'Rope Climb',family:'Gymnastics',noLoad:true},
+  {id:'w_hspu_kip',name:'HSPU (kipping)',family:'Gymnastics',noLoad:true},
+  {id:'w_lsit',name:'L-sit Hold',family:'Gymnastics',noLoad:true},
+  {id:'w_ghd',name:'GHD Sit-up',family:'Gymnastics',noLoad:true},
   {id:'w_clean_jerk',name:'Clean & Jerk',family:'Barbell'},
   {id:'w_snatch',name:'Snatch',family:'Barbell'},
   {id:'w_front_squat',name:'Front Squat',family:'Barbell'},
@@ -3819,61 +3943,105 @@ const DEF_WEX=[
   {id:'w_kb_clean',name:'KB Clean',family:'KB / DB'},
   {id:'w_kb_snatch',name:'KB Snatch',family:'KB / DB'},
   {id:'w_db_thruster',name:'DB Thruster',family:'KB / DB'},
-  {id:'w_run',name:'Run',family:'Monostructural'},
+  {id:'w_run',name:'Run',family:'Monostructural',unit:'m',noLoad:true},
   // v8.3: required by the shipped benchmark templates (Murph, Cindy, Annie, Barbara, DT)
-  {id:'w_pushup',name:'Push-ups',family:'Gymnastics'},
-  {id:'w_air_squat',name:'Air Squats',family:'Gymnastics'},
-  {id:'w_situp',name:'Sit-ups',family:'Gymnastics'},
+  {id:'w_pushup',name:'Push-ups',family:'Gymnastics',noLoad:true},
+  {id:'w_air_squat',name:'Air Squats',family:'Gymnastics',noLoad:true},
+  {id:'w_situp',name:'Sit-ups',family:'Gymnastics',noLoad:true},
   {id:'w_hang_pc',name:'Hang Power Clean',family:'Barbell'},
   {id:'w_push_jerk',name:'Push Jerk',family:'Barbell'},
+  // v8.24: the barbell movements a metcon actually uses. Àlex: "what if we had
+  // deadlift or clean, or snatch with a barbell as a part of the wod?"
+  {id:'w_power_clean',name:'Power Clean',family:'Barbell'},
+  {id:'w_squat_clean',name:'Squat Clean',family:'Barbell'},
+  {id:'w_hang_squat_clean',name:'Hang Squat Clean',family:'Barbell'},
+  {id:'w_power_snatch',name:'Power Snatch',family:'Barbell'},
+  {id:'w_squat_snatch',name:'Squat Snatch',family:'Barbell'},
+  {id:'w_hang_power_snatch',name:'Hang Power Snatch',family:'Barbell'},
+  {id:'w_split_jerk',name:'Split Jerk',family:'Barbell'},
+  {id:'w_shoulder_press',name:'Shoulder Press',family:'Barbell'},
+  {id:'w_sdhp',name:'Sumo Deadlift High Pull',family:'Barbell'},
+  {id:'w_bench_press',name:'Bench Press',family:'Barbell'},
+  {id:'w_front_lunge',name:'Front Rack Lunge',family:'Barbell'},
 ];
+// Renames of shipped WoD movements, applied by migrate step (d3). Must stay
+// ABOVE migrate(): migrate runs at load, and a const below it would be in the
+// temporal dead zone and kill the whole script silently (the v8.21 lesson).
+// A rename only applies when the stored name is still the exact old default.
+const WEX_RENAMES = [
+  // v8.24: the "(WoD)" suffix disambiguated it from the força Deadlift, but the
+  // two catalogues are separate — and once Power Clean, Squat Clean and the rest
+  // arrived unsuffixed it was simply inconsistent. Àlex: "we have power clean in
+  // a wod and we dont have power clean (wod). Right?"
+  {id:'w_deadlift', from:'Deadlift (WoD)', to:'Deadlift'},
+  // v8.23 shortened these three in the source and never delivered them.
+  {id:'w_row',  from:'Row (calories)',      to:'Row'},
+  {id:'w_ski',  from:'Ski Erg (calories)',  to:'Ski Erg'},
+  {id:'w_bike', from:'Bike Erg (calories)', to:'Bike Erg'},
+];
+
 // ══ SHIPPED WOD TEMPLATES (v8.3) ═════════════════════════════════
 // The 10 classic benchmarks as REAL structured templates (Àlex's ruling: absorb,
 // so there is exactly one Murph in the app). They were prose in DEF_BENCH; these
 // are hand-authored because a description cannot be converted mechanically.
 // `builtIn:true` marks them; users may edit or delete them, and a deleted id is
 // remembered in D.tplRemoved so the additive merge never resurrects it.
+// Movements: {exId, reps, weight}. `reps` is a count for most movements and a
+// DISTANCE for exercises whose catalogue entry declares a unit (Run, Swim), so
+// Murph's mile reads "1609 m Run" and not "1609x Run".
 const M=(exId,reps,weight)=>({exId,reps:reps||0,weight:weight||0});
+// DEF_TPL_V is stamped on every built-in and re-seeded on load when it rises
+// (see migrate step d). Editing these literals alone reaches nobody: migrate
+// carries the user's stored templates through verbatim and only ever ADDS
+// missing ids, so a correction to a shipped classic needs the version bump.
+const DEF_TPL_V = 2;
 const DEF_TPL=[
-  {id:'tpl_murph',name:'Murph',builtIn:true,wodOnly:true,halBlocks:[],
+  {id:'tpl_murph',name:'Murph',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
    notes:'Amb armilla de 9 kg si la fas Rx. Pots repartir les repeticions (20 rondes de 5-10-15).',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:1,
+   wodBlock:{type:'For Time',struct:{scheme:'',timeCap:0},
      movements:[M('w_run',1609),M('w_pullup',100),M('w_pushup',200),M('w_air_squat',300),M('w_run',1609)]}},
-  {id:'tpl_fran',name:'Fran',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'21-15-9. Thrusters 43 kg (H) / 29 kg (D).',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:1,
-     movements:[M('w_thruster',45,43),M('w_pullup',45)]}},
-  {id:'tpl_cindy',name:'Cindy',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'AMRAP 20 min: 5 pull-ups, 10 push-ups, 15 air squats.',
-   wodBlock:{type:'AMRAP',duration:20,timeCap:0,rounds:1,
+  // Fran and Annie are rep-SCHEMES, not totals. Storing 45 thrusters (21+15+9)
+  // made the card contradict its own notes; the scheme field renders the ladder
+  // and the movements carry no rep count of their own.
+  {id:'tpl_fran',name:'Fran',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'Thrusters 43 kg (H) / 29 kg (D).',
+   wodBlock:{type:'For Time',struct:{scheme:'21-15-9',timeCap:0},
+     movements:[M('w_thruster',0,43),M('w_pullup',0)]}},
+  {id:'tpl_cindy',name:'Cindy',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'AMRAP 20 min.',
+   wodBlock:{type:'AMRAP',struct:{duration:20},
      movements:[M('w_pullup',5),M('w_pushup',10),M('w_air_squat',15)]}},
-  {id:'tpl_helen',name:'Helen',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'3 rondes: 400 m run, 21 KB swings (24 kg), 12 pull-ups.',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:3,
+  // Helen, DT and Barbara are X rounds for time, which is RFT — the type that
+  // actually has a `rounds` field. As 'For Time' their round count had nowhere
+  // to live and never rendered. Both types score as a time, so nothing that
+  // reads a score changes.
+  {id:'tpl_helen',name:'Helen',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'KB swing americà de 24 kg (H) / 16 kg (D).',
+   wodBlock:{type:'RFT',struct:{rounds:3,timeCap:0},
      movements:[M('w_run',400),M('w_kb_am',21,24),M('w_pullup',12)]}},
-  {id:'tpl_grace',name:'Grace',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'30 clean & jerk, 61 kg (H) / 43 kg (D).',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:1,
+  {id:'tpl_grace',name:'Grace',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'30 clean & jerk. 61 kg (H) / 43 kg (D).',
+   wodBlock:{type:'For Time',struct:{scheme:'',timeCap:0},
      movements:[M('w_clean_jerk',30,61)]}},
-  {id:'tpl_isabel',name:'Isabel',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'30 snatch, 61 kg (H) / 43 kg (D).',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:1,
+  {id:'tpl_isabel',name:'Isabel',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'30 snatch. 61 kg (H) / 43 kg (D).',
+   wodBlock:{type:'For Time',struct:{scheme:'',timeCap:0},
      movements:[M('w_snatch',30,61)]}},
-  {id:'tpl_dt',name:'DT',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'5 rondes: 12 deadlift, 9 hang power clean, 6 push jerk. 70 kg (H) / 47 kg (D).',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:5,
+  {id:'tpl_dt',name:'DT',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'70 kg (H) / 47 kg (D).',
+   wodBlock:{type:'RFT',struct:{rounds:5,timeCap:0},
      movements:[M('w_deadlift',12,70),M('w_hang_pc',9,70),M('w_push_jerk',6,70)]}},
-  {id:'tpl_karen',name:'Karen',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'150 wall balls, 9 kg (H) / 6 kg (D).',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:1,
+  {id:'tpl_karen',name:'Karen',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'150 wall balls. Pilota de 9 kg (H) / 6 kg (D), a 3 m / 2,7 m.',
+   wodBlock:{type:'For Time',struct:{scheme:'',timeCap:0},
      movements:[M('w_wall_balls',150,9)]}},
-  {id:'tpl_annie',name:'Annie',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'50-40-30-20-10: double-unders i sit-ups.',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:1,
-     movements:[M('w_du',150),M('w_situp',150)]}},
-  {id:'tpl_barbara',name:'Barbara',builtIn:true,wodOnly:true,halBlocks:[],
-   notes:'5 rondes: 20 pull-ups, 30 push-ups, 40 sit-ups, 50 air squats. 3 min de descans entre rondes.',
-   wodBlock:{type:'For Time',duration:0,timeCap:0,rounds:5,
+  {id:'tpl_annie',name:'Annie',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'Double-unders i sit-ups.',
+   wodBlock:{type:'For Time',struct:{scheme:'50-40-30-20-10',timeCap:0},
+     movements:[M('w_du',0),M('w_situp',0)]}},
+  {id:'tpl_barbara',name:'Barbara',builtIn:true,wodOnly:true,halBlocks:[],defV:DEF_TPL_V,
+   notes:'3 min de descans entre rondes.',
+   wodBlock:{type:'RFT',struct:{rounds:5,timeCap:0},
      movements:[M('w_pullup',20),M('w_pushup',30),M('w_situp',40),M('w_air_squat',50)]}},
 ];
 
@@ -3882,8 +4050,8 @@ const DEF_BENCH=[
   {id:'b_fran',name:'Fran',desc:'21-15-9: Thrusters (43kg H / 29kg D) + Pull-ups. For Time.'},
   {id:'b_cindy',name:'Cindy',desc:'20 min AMRAP: 5 Pull-ups + 10 Push-ups + 15 Air Squats.'},
   {id:'b_helen',name:'Helen',desc:'3 rounds For Time: 400m Run + 21 KB Swings (24kg) + 12 Pull-ups.'},
-  {id:'b_grace',name:'Grace',desc:'30 Clean & Jerks (60kg H / 43kg D) For Time.'},
-  {id:'b_isabel',name:'Isabel',desc:'30 Snatches (60kg H / 43kg D) For Time.'},
+  {id:'b_grace',name:'Grace',desc:'30 Clean & Jerks (61kg H / 43kg D) For Time.'},
+  {id:'b_isabel',name:'Isabel',desc:'30 Snatches (61kg H / 43kg D) For Time.'},
   {id:'b_dt',name:'DT',desc:'5 rounds For Time: 12 Deadlifts + 9 Hang Power Cleans + 6 Push Jerks @ 70kg H / 47kg D.'},
   {id:'b_karen',name:'Karen',desc:'150 Wall Balls For Time (9kg / 6kg).'},
   {id:'b_annie',name:'Annie',desc:'50-40-30-20-10: Double-Unders + Sit-ups. For Time.'},
@@ -3986,11 +4154,44 @@ function migrate(parsed){
     kind:'strength', done:false, doneAt:null, targetReps:null, ...g,
     id: g.id || ('g_legacy_'+(g.exId||'x'))
   }));
-  // (d) built-in WoD templates merge additively, minus anything the user deleted.
+  // (d) built-in WoD templates merge additively, minus anything the user deleted
+  //     — AND stale copies are re-seeded. Additive-only was a trap: the stored
+  //     array is carried through verbatim above, so a correction to a shipped
+  //     classic (Cindy's missing 20-min cap, Fran's flattened 21-15-9, Grace's
+  //     weight) reached nobody who already had the app. Built-ins are read-only
+  //     by design — to change one you fork it, which produces a NEW id with
+  //     builtIn:false — so overwriting a stale built-in can never eat user work.
   if(typeof DEF_TPL!=='undefined'){
     DEF_TPL.forEach(t=>{
       if(out.tplRemoved.indexOf(t.id)>=0) return;
-      if(!out.templates.find(x=>x.id===t.id)) out.templates.push({...t});
+      const i=out.templates.findIndex(x=>x.id===t.id);
+      if(i<0){ out.templates.push({...t}); return; }
+      const cur=out.templates[i];
+      if(cur.builtIn && (cur.defV||0) < (t.defV||0)) out.templates[i]={...t};
+    });
+  }
+  // (d2) catalogue entries gain fields over time: `unit` on Run/Swim and the
+  //      ergs (v8.23, so a distance stops rendering as a rep count) and
+  //      `noLoad` (v8.24, so a burpee stops asking for kilos). Merge the new
+  //      keys into rows the user already has, without touching a name they may
+  //      have renamed. Brand-new ids arrive via the additive DEF_WEX merge at
+  //      boot, so nothing else is needed for them.
+  if(typeof DEF_WEX!=='undefined'){
+    DEF_WEX.forEach(d=>{
+      const cur=(out.wEx||[]).find(x=>x.id===d.id);
+      if(!cur) return;
+      if(d.unit && !cur.unit) cur.unit=d.unit;
+      if(d.noLoad && !cur.noLoad) cur.noLoad=true;
+    });
+    // (d3) Renames of shipped movements. Editing the DEF_WEX literal alone is
+    //      invisible to anyone who already has the row — which is exactly what
+    //      happened in v8.23: "Row (calories)" was shortened to "Row" in the
+    //      source and every existing install kept the old name.
+    //      Only rename when the stored name is still the untouched old default,
+    //      so a user who renamed it themselves keeps their own wording.
+    WEX_RENAMES.forEach(r=>{
+      const cur=(out.wEx||[]).find(x=>x.id===r.id);
+      if(cur && cur.name===r.from) cur.name=r.to;
     });
   }
   // (e) legacy benchmark RESULTS become normal WoD entries, so there is ONE
@@ -4038,7 +4239,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.23';
+const APP_VERSION='8.25';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4133,8 +4334,11 @@ function best1RM(exId){
   let b=0;
   D.hEnt.filter(e=>e.exId===exId).forEach(e=>{
     if(e.sets)e.sets.forEach(s=>{if(s.w>0&&s.r>0){const v=epley(s.w,s.r);if(v>b)b=v;}});
-    if(e.pct&&+e.pct>0&&+e.pct<100){const mw=Math.max(...(e.sets||[]).map(s=>s.w||0));const imp=mw/(+e.pct/100);if(imp>b)b=imp;}
+    if(e.pct&&+e.pct>0&&+e.pct<=100){const mw=Math.max(...(e.sets||[]).map(s=>s.w||0));const imp=mw/(+e.pct/100);if(imp>b)b=imp;}
   });
+  // A complex credits each of its parts (v8.25): the cleans in "3 clean + 1
+  // jerk" at 70 kg imply epley(70,3) for the clean.
+  cpxContributions(exId).forEach(c=>{const v=epley(c.w,c.r); if(v>b)b=v;});
   if(ex&&ex.rm1)b=Math.max(b,ex.rm1);
   D.rmHist.filter(r=>r.exId===exId).forEach(r=>{const v=epley(r.weight,r.reps);if(v>b)b=v;});
   return b>0?Math.round(b*10)/10:null;
@@ -4191,6 +4395,7 @@ function recomputeRM1(exId){
   if(!ex||isGymEx(ex)) return;
   let b=0;
   D.hEnt.filter(e=>e.exId===exId).forEach(e=>{ const v=sessImpl(e); if(v&&v>b)b=v; });
+  cpxContributions(exId).forEach(c=>{ const v=epley(c.w,c.r); if(v>b)b=v; });
   D.rmHist.filter(r=>r.exId===exId).forEach(r=>{ const v=epley(r.weight,r.reps); if(v>b)b=v; });
   if(ex.rm1Manual && ex.rm1Manual>b) b=ex.rm1Manual;
   ex.rm1 = b>0 ? Math.round(b*10)/10 : null;
@@ -4877,10 +5082,7 @@ function showDayActivity(ds) {
     html += `<div style="font-size:14px;font-weight:700;color:var(--w-ink);text-transform:uppercase;letter-spacing:.5px;margin:${hEnts.length?'14px':'0'} 0 8px">WoDs</div>`;
     wEnts.forEach(e => {
       const nm = e.name || e.type || 'WoD';
-      // Typed scores (v8.21) live in e.score; e.result is only the legacy free
-      // text, and is empty for anything logged through the score fields.
-      const scoreTxt = (e.score && typeof wodScoreText==='function') ? wodScoreText(e.score) : '';
-      const shown = scoreTxt || e.result || '';
+      const shown = entryScoreText(e);
       html += `<div class="day-act-card">
         ${xBtn('dayActDelW', e.id, nm)}
         <div style="font-weight:700;font-size:15px">${esc(nm)}</div>
@@ -5233,29 +5435,37 @@ function showWSub(sec, btn) {
 let wizS = null;
 const WOD_STEPS = ['wodType','wodStruct','wodMovs','wodResult'];
 
-const WIZ_FLOW = { forca:['date','ex','sets','det'],
-                   both:['date','ex','sets','det', ...WOD_STEPS],
+const WIZ_FLOW = { forca:['date','cpxAsk','ex','sets','det'],
+                   both:['date','cpxAsk','ex','sets','det', ...WOD_STEPS],
                    wod:['date', ...WOD_STEPS] };
 // The registrar doubles as the template builder. A template is a plan, not a
 // session — it has no date — so the "Quan?" step is dropped in that mode. Read
 // the flow through this, never WIZ_FLOW[kind] directly.
 function wizFlow(){
-  const f = WIZ_FLOW[wizS && wizS.kind] || [];
-  return (wizS && wizS.saveAsTemplate) ? f.filter(n => n !== 'date') : f;
+  let f = WIZ_FLOW[wizS && wizS.kind] || [];   // reassigned below for complexes
+  // Building a complex replaces the single-exercise picker with the component
+  // builder — same position in the flow, different question.
+  if(wizS && wizS.isComplex) f = f.map(n => n === 'ex' ? 'cpxBuild' : n);
+  if(!(wizS && wizS.saveAsTemplate)) return f;
+  // A template is a plan, not a session: it has no date and no result. v8.20
+  // dropped the date; the score screen stayed, so building a template still
+  // demanded a result for a workout that had not happened yet.
+  return f.filter(n => n !== 'date' && n !== 'wodResult');
 }
 
 function openWizard(){
-  wizS = { kind:null, i:-1, date:localToday(), cat:'haltero', fam:'__all', exId:'', sets:[{r:5,w:'',rpe:''}],
+  wizS = { kind:null, i:-1, date:localToday(), cat:'haltero', fam:'__all', exId:'',
+           isComplex:false, cpxName:'', cpxParts:[], sets:[{r:5,w:'',rpe:''}],
            pct:'', tags:[], note:'', wod:{type:null,movements:[],cashIn:[],cashOut:[],stations:[[]],struct:{}}, touched:false };
   // Reset the DOM too, not just the state object: the inputs are reused across
   // sessions, so without this the previous WoD's name/result leak into the next
   // entry (caught in testing — a second WoD inherited the first one's name).
-  ['wizPct','wizNote','wizWName','wizWResult','wizWNote'].forEach(id=>{
+  ['wizPct','wizNote','wizWName','wizWResult','wizWNote','cpxWizName'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
   const wt=document.getElementById('wizWType'); if(wt) wt.selectedIndex=0;
   const ws=document.getElementById('wizWScale'); if(ws) ws.selectedIndex=0;
-  ['wizStepMode','wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWodType',
+  ['wizStepMode','wizStepDate','wizStepEx','wizStepCpxAsk','wizStepCpxBuild','wizStepSets','wizStepDet','wizStepWodType',
    'wizStepWodStruct','wizStepWodMovs','wizStepWodResult']
     .forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('on');});
   document.getElementById('wizStepMode').classList.add('on');
@@ -5283,22 +5493,24 @@ function wizPickKind(kind){
 }
 function wizStepId(name){
   return {date:'wizStepDate',ex:'wizStepEx',sets:'wizStepSets',det:'wizStepDet',
+          cpxAsk:'wizStepCpxAsk',cpxBuild:'wizStepCpxBuild',
           wodType:'wizStepWodType',wodStruct:'wizStepWodStruct',
           wodMovs:'wizStepWodMovs',wodResult:'wizStepWodResult'}[name];
 }
 function wizShow(){
   const flow=wizFlow();
-  ['wizStepDate','wizStepEx','wizStepSets','wizStepDet','wizStepWodType',
+  ['wizStepDate','wizStepEx','wizStepCpxAsk','wizStepCpxBuild','wizStepSets','wizStepDet','wizStepWodType',
    'wizStepWodStruct','wizStepWodMovs','wizStepWodResult']
     .forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('on');});
   const name=flow[wizS.i];
   document.getElementById(wizStepId(name)).classList.add('on');
   if(name==='date') document.getElementById('wizDate').value=wizS.date;
   if(name==='ex') wizFillCats();
+  if(name==='cpxBuild') cpxRenderRows();
   if(name==='sets') wizRenderSets();
   if(name==='det') wizRenderTags();
   if(name==='wodType')   wizRenderWodTypes();
-  if(name==='wodStruct') wizRenderWodStruct();
+  if(name==='wodStruct'){ wizRenderWodStruct(); wizSeedWodName(); }
   if(name==='wodMovs')   wizRenderWodMovs();
   if(name==='wodResult'){ wizRenderWodRecap(); wizRenderScoreFields(); }
   const last = wizS.i===flow.length-1;
@@ -5311,6 +5523,10 @@ function wizPrev(){ if(wizS.i>0){ wizS.i--; wizShow(); } }
 function wizCollect(name){
   if(name==='date'){ wizS.date=document.getElementById('wizDate').value||localToday(); }
   if(name==='ex'){ wizS.cat=document.getElementById('wizCat').value; wizS.exId=document.getElementById('wizEx').value; }
+  if(name==='cpxBuild'){
+    const el=document.getElementById('cpxWizName');
+    wizS.cpxName=(el?el.value:'').trim() || (el?el.placeholder:'') || 'Complex';
+  }
   if(name==='det'){ wizS.pct=document.getElementById('wizPct').value; wizS.note=document.getElementById('wizNote').value.trim(); }
   if(name==='wodStruct'){
     wizS.wod.name=(document.getElementById('wizWName').value||'').trim();
@@ -5325,15 +5541,34 @@ function wizCollect(name){
 }
 function wizValidate(name){
   if(name==='ex' && !wizS.exId){ toast('Tria un exercici','error'); return false; }
+  if(name==='cpxBuild'){
+    const real=wizS.cpxParts.filter(p=>p.exId && +p.reps>0);
+    if(real.length<2){ toast('Un complex necessita almenys 2 moviments','error'); return false; }
+  }
   if(name==='sets'){
     const ok=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
     if(!ok.length){ toast(wizS.cat==='gym'?'Afegeix una sèrie amb repeticions':'Afegeix una sèrie amb pes i repeticions','error'); return false; }
   }
   if(name==='wodType' && !wizS.wod.type){ toast('Tria un tipus de WoD','error'); return false; }
+  if(name==='wodStruct' && !String(wizS.wod.name||'').trim()){
+    toast(wizS.saveAsTemplate?'Posa-li un nom a la plantilla':'Posa-li un nom al WoD','error');
+    return false;      // pre-filled for a session, so this only fires if cleared
+  }
+  // A fork must not shadow the classic it came from: two "Murph" entries in the
+  // list would be indistinguishable, and the shipped one stays available.
+  if(name==='wodStruct' && wizS.forkBaseName
+     && String(wizS.wod.name||'').trim().toLowerCase()===wizS.forkBaseName.trim().toLowerCase()){
+    toast('Posa-li un nom diferent de «'+wizS.forkBaseName+'»','error'); return false;
+  }
+  // v8.24: a WoD with no movements is not a WoD. It saved happily and then
+  // showed as an empty card in the historial with nothing to analyse.
+  if(name==='wodMovs'){
+    if(!wodAllMovements(wizS.wod||{}).length){
+      toast('Afegeix almenys un moviment','error'); return false;
+    }
+  }
   if(name==='wodResult'){
     const sc=wizS.wod.score;
-    const hasScore = sc && (wodScoreValue(sc)!=null || sc.kind==='done');
-    if(!wizS.wod.name && !hasScore && !wizS.wod.result){ toast('Posa el nom o el resultat del WoD','error'); return false; }
     if(sc && sc.kind==='time' && sc.raw && sc.sec==null){ toast('El temps ha de ser mm:ss','error'); return false; }
   }
   return true;
@@ -5347,6 +5582,104 @@ function wizNext(){
   if(wizS.i < flow.length-1){ wizS.i++; wizShow(); return; }
   wizSave();
 }
+// ══ COMPLEXES (v8.25) ═══════════════════════════════════════════════
+// A complex is several lifts chained without dropping the bar — "2 power clean
+// + 1 jerk". Àlex: "since complex exercices are composed of individual ones,
+// the results should also compute as individuals for those exercices, so we get
+// data as well."
+//
+// The component credit is DERIVED, never written as extra entries. Phantom rows
+// would double-count sessions on the calendar and in the weekly total, and a
+// delete would strand them. Instead best1RM/recomputeRM1/maxLiftedW look through
+// complexes that contain the exercise. That self-corrects on delete, exactly
+// like maxLiftedW (v8.23).
+//
+// Reps are PER ROUND of the complex, so a component's implied max for a set of
+// w kg is epley(w, repsInOneRound) — the 3 cleans in "3 clean + 1 jerk" at 70 kg
+// imply epley(70,3), and the single jerk implies 70.
+function cpxParts(ex){
+  if(!ex || ex.cat!=='complex') return [];
+  if(Array.isArray(ex.parts) && ex.parts.length) return ex.parts.filter(p=>p&&p.exId);
+  // The two shipped complexes predate `parts` and store bare ids; treat each as
+  // one rep so they still contribute rather than being skipped.
+  return (ex.components||[]).filter(Boolean).map(id=>({exId:id, reps:1}));
+}
+// Every {weight, reps} a complex credits to `exId`, across all logged entries.
+function cpxContributions(exId){
+  const out=[];
+  (D.hEx||[]).filter(e=>e.cat==='complex').forEach(cx=>{
+    const parts=cpxParts(cx).filter(p=>p.exId===exId);
+    if(!parts.length) return;
+    const repsPerRound=parts.reduce((n,p)=>n+(+p.reps||0),0);
+    if(!(repsPerRound>0)) return;
+    (D.hEnt||[]).filter(e=>e.exId===cx.id).forEach(e=>{
+      (e.sets||[]).forEach(st=>{ if(st.w>0&&st.r>0) out.push({w:+st.w, r:repsPerRound}); });
+    });
+  });
+  return out;
+}
+function wizPickComplex(isCpx){
+  wizS.isComplex=!!isCpx;
+  wizS.touched=true;
+  if(isCpx){
+    wizS.cat='complex';
+    if(!wizS.cpxParts.length) wizS.cpxParts=[{exId:'',reps:1},{exId:'',reps:1}];
+  }else{
+    if(wizS.cat==='complex') wizS.cat='haltero';
+    wizS.cpxParts=[];
+  }
+  wizS.i++; wizShow();
+}
+function cpxAddPart(){ wizS.cpxParts.push({exId:'',reps:1}); wizS.touched=true; cpxRenderRows(); }
+function cpxDelPart(i){ wizS.cpxParts.splice(i,1); wizS.touched=true; cpxRenderRows(); }
+function cpxSetPart(i,f,v){
+  if(!wizS.cpxParts[i]) return;
+  wizS.cpxParts[i][f] = f==='exId' ? v : (+v||0);
+  wizS.touched=true;
+  if(f==='exId') cpxSuggestName();
+}
+// Only real barbell/gymnastics movements can be parts — a complex of complexes
+// would recurse in cpxContributions.
+function cpxOpts(sel){
+  return (D.hEx||[]).filter(e=>e.cat!=='complex')
+    .sort((a,b)=>a.name.localeCompare(b.name))
+    .map(e=>'<option value="'+e.id+'"'+(e.id===sel?' selected':'')+'>'+esc(e.name)+'</option>').join('');
+}
+function cpxRenderRows(){
+  const host=document.getElementById('cpxWizRows'); if(!host) return;
+  host.innerHTML = wizS.cpxParts.map((p,i)=>
+    '<div class="mov-row" style="grid-template-columns:1fr 62px 40px">'
+    +'<div><label>Moviment</label><select class="fb-field" onchange="cpxSetPart('+i+',\'exId\',this.value)">'
+      +'<option value="">— Tria —</option>'+cpxOpts(p.exId)+'</select></div>'
+    +'<div><label>Reps</label><input type="number" min="1" class="fb-field" value="'+(p.reps||'')+'" onchange="cpxSetPart('+i+',\'reps\',this.value)"></div>'
+    +(wizS.cpxParts.length>2
+      ? '<button class="xbtn" onclick="cpxDelPart('+i+')" aria-label="Elimina">×</button>'
+      : '<div></div>')
+    +'</div>').join('');
+  cpxSuggestName();
+}
+// Offer the conventional shorthand as a placeholder, so naming is one tap.
+function cpxSuggestName(){
+  const el=document.getElementById('cpxWizName'); if(!el) return;
+  const txt=wizS.cpxParts.filter(p=>p.exId).map(p=>{
+    const e=(D.hEx||[]).find(x=>x.id===p.exId);
+    return (p.reps>1?p.reps+' ':'')+(e?e.name:'');
+  }).join(' + ');
+  el.placeholder = txt || 'p. ex. 2 Power Clean + 1 Jerk';
+}
+// Find an existing complex with the same parts in the same order, so logging the
+// same complex twice does not litter the catalogue with duplicates.
+function cpxFindOrCreate(name, parts){
+  const key=p=>p.map(x=>x.exId+'x'+x.reps).join('|');
+  const want=key(parts);
+  const hit=(D.hEx||[]).find(e=>e.cat==='complex' && key(cpxParts(e))===want);
+  if(hit) return hit;
+  const ex={id:'cx_'+Date.now(), name:name, cat:'complex', family:'Complex', rm1:null,
+            parts:parts.map(p=>({...p})), components:parts.map(p=>p.exId)};
+  D.hEx.push(ex);
+  return ex;
+}
+
 // Categoria → Família → Exercici (v8.23). Category alone put 28 haltero
 // movements in one flat list; the family tier is the same split Inici and
 // %Calc already use, so the three pickers now agree.
@@ -5408,10 +5741,12 @@ function wizSetVal(i,f,v){ wizS.sets[i][f]= (f==='r'? (+v||0) : v); wizS.touched
 function wizRenderSets(){
   const gym=wizS.cat==='gym';
   const wlbl=gym?'Lastre kg':'Pes kg';
+  // For a complex a "rep" is one round of the whole chain, so say so.
+  const rlbl=(wizS.cat==='complex')?'Rondes':'Reps';
   document.getElementById('wizSets').innerHTML = wizS.sets.map((st,i)=>
     '<div style="display:grid;grid-template-columns:30px 1fr 1fr 44px;gap:8px;align-items:end;margin-bottom:10px">'
     +'<div style="font-size:var(--fs-body-sm);color:var(--text3);font-weight:700;padding-bottom:12px">'+(i+1)+'</div>'
-    +'<div><label style="font-size:var(--fs-label);color:var(--text2)">Reps</label>'
+    +'<div><label style="font-size:var(--fs-label);color:var(--text2)">'+rlbl+'</label>'
     +'<input type="number" class="fb-field" value="'+(st.r||'')+'" onchange="wizSetVal('+i+',\'r\',this.value)"></div>'
     +'<div><label style="font-size:var(--fs-label);color:var(--text2)">'+wlbl+'</label>'
     +'<input type="number" class="fb-field" value="'+(st.w===''?'':st.w)+'" onchange="wizSetVal('+i+',\'w\',this.value)"></div>'
@@ -5436,7 +5771,9 @@ const WOD_TYPES = {
 };
 const WOD_FIELD_DEFS = {
   duration:{label:'Durada (min)', def:12, hint:'Quant dura l\'AMRAP'},
-  timeCap: {label:'Temps límit (min)', def:0, hint:'0 = sense límit'},
+  // v8.24: this is the cap the WoD had, NOT your time. They were both called
+  // "temps" one screen apart and got confused.
+  timeCap: {label:'Temps límit del WoD (min)', def:0, hint:'El màxim que teníeu. 0 = sense límit. El teu temps es demana al final.'},
   rounds:  {label:'Rondes', def:5, hint:''},
   scheme:  {label:'Esquema de reps', def:'21-15-9', hint:'Deixa-ho buit si totes les rondes són iguals', text:true},
   interval:{label:'Cada (min)', def:1, hint:'1 = EMOM, 2 = E2MOM…'},
@@ -5552,6 +5889,20 @@ function wizPickWodType(t){
   wizS.i++; wizShow();
 }
 
+// Every WoD needs a name — it is the identity a record is filed under. Asking
+// for one and calling it optional (and then refusing to save) was the worst of
+// both. It is pre-filled with the date, so continuing straight past it is a
+// valid answer; a second WoD the same day gets "(2)".
+function defaultWodName(date){
+  const ds = date || localToday();
+  let base = 'WoD';
+  try {
+    base = 'WoD ' + new Date(ds + 'T12:00:00').toLocaleDateString('ca-ES', {day:'numeric', month:'short'});
+  } catch(e) {}
+  const taken = (D.wEnt||[]).filter(e => e.date === ds && String(e.name||'').indexOf(base) === 0).length;
+  return taken ? base + ' (' + (taken + 1) + ')' : base;
+}
+
 // ── WoD step 2: the structure that defines this type ──────────────────
 function wizRenderWodStruct(){
   const t=wizS.wod.type||'For Time', cfg=WOD_TYPES[t];
@@ -5575,6 +5926,15 @@ function wizStructVal(f,v){
   const d=WOD_FIELD_DEFS[f];
   wizS.wod.struct[f]= d.text ? String(v).trim() : (+v||0);
   wizS.touched=true;
+}
+// Seed the name box on arrival. A template is a plan, not a session, so it never
+// gets a date-based name — the user has to name that one themselves.
+function wizSeedWodName(){
+  const el=document.getElementById('wizWName'); if(!el) return;
+  if(el.value.trim()) return;
+  if(wizS.wod && wizS.wod.name){ el.value=wizS.wod.name; return; }
+  if(wizS.saveAsTemplate){ el.placeholder='p. ex. El meu WoD dels dilluns'; return; }
+  el.value=defaultWodName(wizS.date);
 }
 
 // ── WoD step 3: movements, with cash-in/out and EMOM stations ─────────
@@ -5632,13 +5992,27 @@ function movRowsHtml(list,bucket){
     '<optgroup label="'+f+'">'+byFam[f].sort((a,b)=>a.name.localeCompare(b.name))
       .map(x=>'<option value="'+x.id+'"'+(x.id===exId?' selected':'')+'>'+x.name+'</option>').join('')
     +'</optgroup>').join('');
-  return list.map((m,i)=>
-    '<div class="mov-row">'
+  // The amount column is labelled by the exercise: metres for a run, calories
+  // for an erg, reps for everything else.
+  const amtLabel=exId=>{
+    const e=(D.wEx||[]).find(x=>x.id===exId);
+    return e&&e.unit ? (e.unit==='m' ? 'Metres' : 'Calories') : 'Reps';
+  };
+  return list.map((m,i)=>{
+    const noLoad=isNoLoadMov(m.exId);
+    return '<div class="mov-row'+(noLoad?' noload':'')+'">'
     +'<div><label>Moviment</label><select class="fb-field" onchange="wizMovSet(\''+bucket+'\','+i+',\'exId\',this.value)">'+opts(m.exId)+'</select></div>'
-    +'<div><label>Reps</label><input type="number" class="fb-field" value="'+(m.reps||'')+'" onchange="wizMovSet(\''+bucket+'\','+i+',\'reps\',this.value)"></div>'
-    +'<div><label>Pes kg</label><input type="number" class="fb-field" value="'+(m.weight||'')+'" placeholder="0" onchange="wizMovSet(\''+bucket+'\','+i+',\'weight\',this.value)"></div>'
-    +'<button class="xbtn" onclick="wizMovDel(\''+bucket+'\','+i+')" aria-label="Elimina">×</button></div>'
-  ).join('');
+    +'<div><label>'+amtLabel(m.exId)+'</label><input type="number" class="fb-field" value="'+(m.reps||'')+'" onchange="wizMovSet(\''+bucket+'\','+i+',\'reps\',this.value)"></div>'
+    +(noLoad?''
+      :'<div><label>Pes kg</label><input type="number" class="fb-field" value="'+(m.weight||'')+'" placeholder="0" onchange="wizMovSet(\''+bucket+'\','+i+',\'weight\',this.value)"></div>')
+    +'<button class="xbtn" onclick="wizMovDel(\''+bucket+'\','+i+')" aria-label="Elimina">×</button></div>';
+  }).join('');
+}
+// A movement that never carries a load. Flagged on the catalogue entry so a
+// user-added exercise can opt in the same way.
+function isNoLoadMov(exId){
+  const e=(D.wEx||[]).find(x=>x.id===exId);
+  return !!(e && e.noLoad);
 }
 function bucketList(bucket){
   if(bucket==='main')   return wizS.wod.movements;
@@ -5655,8 +6029,15 @@ function wizAddMovTo(bucket){
 }
 function wizMovSet(bucket,i,field,v){
   const l=bucketList(bucket); if(!l||!l[i]) return;
+  const prev=l[i][field];
   l[i][field]= field==='exId' ? v : (+v||0);
+  // Swapping a thruster for a run must not leave 43 kg behind on the run — the
+  // weight input is gone at that point, so nothing would ever clear it.
+  if(field==='exId' && isNoLoadMov(v)) l[i].weight=0;
   wizS.touched=true;
+  // Swapping the exercise can change the amount column's label (Reps ↔ Metres ↔
+  // Calories) and whether there is a weight column at all, so redraw the rows.
+  if(field==='exId' && prev!==v) wizRenderWodMovs();
 }
 function wizMovDel(bucket,i){
   const l=bucketList(bucket); if(!l) return;
@@ -5677,7 +6058,7 @@ function wizRenderScoreFields(){
   // things; a For Time is a clock and an AMRAP is a count, and the screen should
   // say which one it wants before you start typing.
   const ASK = {
-    time:   {kicker:'Temps',   q:'Quant has trigat?',        lbl:'Temps (mm:ss)'},
+    time:   {kicker:'Temps',   q:'Quant has trigat?',        lbl:'El teu temps (mm:ss)'},
     rounds: {kicker:'Rondes',  q:'Quantes rondes has fet?',  lbl:'Rondes completades'},
     reps:   {kicker:'Reps',    q:'Quantes repeticions?',     lbl:'Repeticions totals'},
     done:   {kicker:'Final',   q:'Has aguantat tot l\'EMOM?',lbl:'Com ha acabat'}
@@ -5687,8 +6068,10 @@ function wizRenderScoreFields(){
   if(qEl) qEl.textContent=ASK.q;
   document.getElementById('wizWScoreLbl').textContent=ASK.lbl;
   if(kind==='time'){
-    host.innerHTML='<input type="text" inputmode="numeric" id="wizScTime" class="fb-field" placeholder="8:42" value="'
-      +(sc.sec!=null?clockFromSec(sc.sec):(sc.raw||''))+'">';
+    host.innerHTML='<input type="text" inputmode="numeric" id="wizScTime" class="fb-field" placeholder="8:42"'
+      +' oninput="wizTimeMask(this)" onblur="wizTimeBlur(this)" value="'
+      +(sc.sec!=null?clockFromSec(sc.sec):(sc.raw||''))+'">'
+      +'<div style="font-size:13px;color:var(--text3);margin-top:6px">Escriu només xifres: els dos punts es posen sols.</div>';
   } else if(kind==='rounds'){
     host.innerHTML='<div class="frow" style="margin-bottom:0">'
       +'<div><label>Rondes</label><input type="number" inputmode="numeric" min="0" id="wizScRounds" class="fb-field" placeholder="7" value="'+(sc.rounds!=null?sc.rounds:'')+'"></div>'
@@ -5712,6 +6095,24 @@ function wizSetEmomDone(done){
   wizS.wod.score=Object.assign({},wizS.wod.score,{kind:'done',done:done});
   if(done) delete wizS.wod.score.failedAt;
   wizRenderScoreFields();
+}
+// iOS shows a bare number pad for inputmode="numeric" — there is no colon on it,
+// so "mm:ss" was being asked for with no way to type it. The mask inserts the
+// separator as you go, grouping from the RIGHT so both 842 → 8:42 and
+// 1100 → 11:00 work without ever typing a leading zero.
+function wizTimeMask(el){
+  const digits=String(el.value||'').replace(/\D/g,'').slice(0,6);
+  let out;
+  if(digits.length<=2)      out=digits;
+  else if(digits.length<=4) out=digits.slice(0,digits.length-2)+':'+digits.slice(-2);
+  else                      out=digits.slice(0,digits.length-4)+':'+digits.slice(-4,-2)+':'+digits.slice(-2);
+  el.value=out;
+}
+// One or two bare digits mean MINUTES ("11" = 11:00), which is what someone
+// typing a time cap expects. Seconds default to 00.
+function wizTimeBlur(el){
+  const v=String(el.value||'').trim();
+  if(/^\d{1,2}$/.test(v)) el.value=v+':00';
 }
 function wizCollectScore(){
   const kind=wodScoreKind(wizS.wod.type);
@@ -5741,6 +6142,14 @@ function showWodPR(name, prevTxt, nowTxt, date){
     set('prExName', name);
     set('prOldVal', prevTxt || '—');
     set('prNewVal', nowTxt);
+    // v8.23 gave showPR variable labels; this overlay shares the same nodes, so
+    // it MUST set every one of them or a WoD result inherits the last lifting
+    // PR's copy — "Nou pes màxim aixecat" printed over a time.
+    set('prKicker', 'Nou rècord en aquest WoD');
+    set('prNewLbl', 'Nou resultat');
+    set('prFoot', '');
+    const sec = document.getElementById('prSecond');
+    if (sec) { sec.innerHTML = ''; sec.style.display = 'none'; }   // block, must be hidden not just emptied
     set('prDelta', prevTxt ? 'Millor que el teu anterior resultat' : 'Primer cop que registres aquest WoD!');
     set('prDate', fmt(date));
     const ov=document.getElementById('prOv');
@@ -5757,9 +6166,24 @@ function wizRenderWodRecap(){
   if(el) el.placeholder='p. ex. amb goma, DNF, escalat…';
 }
 // shared summary used by the recap, the historial and the template confirm
+// A movement as one line. The amount is a rep count unless the exercise carries
+// a unit (Run/Swim in metres, the ergs in calories) — "1609× Run" was wrong.
+function movAmountText(m){
+  const e=(D.wEx||[]).find(y=>y.id===m.exId);
+  const u=e&&e.unit;
+  if(!m.reps) return '';
+  return u ? (m.reps+' '+u+' ') : (m.reps+'× ');
+}
+function movLineText(m){
+  const e=(D.wEx||[]).find(y=>y.id===m.exId);
+  // A no-load movement never prints a weight, even if an older entry carries a
+  // stray one from before the flag existed.
+  const showW = m.weight && !(e && e.noLoad);
+  return movAmountText(m)+(e?e.name:m.exId)+(showW?' @'+m.weight+'kg':'');
+}
 function wodSummaryHtml(w){
   if(!w||!w.type) return '';
-  const nm=x=>{const e=(D.wEx||[]).find(y=>y.id===x.exId); return (x.reps?x.reps+'× ':'')+(e?e.name:x.exId)+(x.weight?' @'+x.weight+'kg':'');};
+  const nm=x=>movLineText(x);
   const st=w.struct||{};
   const bits=[];
   if(st.duration) bits.push(st.duration+' min');
@@ -5835,6 +6259,23 @@ function wizSave(){
     if(document.getElementById('histOv').classList.contains('on')){ renderHistCal(); renderHistDay(); }
     return;
   }
+  // Building a template writes a template and NOTHING else. Until v8.24 the
+  // session branches below ran first and unconditionally, so "Crear-ne una de
+  // nova" silently logged a workout dated today — and could fire a PR
+  // celebration for a session that never happened. The user was only ever told
+  // "Plantilla desada ✓".
+  // A complex is logged against its own catalogue entry, created on the spot the
+  // first time and reused after (v8.25). Its parts get credit by derivation —
+  // see cpxContributions — so nothing extra is written here.
+  if((k==='forca'||k==='both') && wizS.isComplex){
+    const parts=wizS.cpxParts.filter(p=>p.exId && +p.reps>0).map(p=>({exId:p.exId, reps:+p.reps}));
+    if(parts.length>=2){
+      const cx=cpxFindOrCreate(wizS.cpxName||'Complex', parts);
+      wizS.exId=cx.id;
+      wizS.cat='complex';
+    }
+  }
+  if(wizS.saveAsTemplate){ wizSaveTemplate(k); return; }
   if(k==='forca'||k==='both'){
     const valid=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
     // A session with nothing in it still showed on the calendar, in the
@@ -5868,7 +6309,7 @@ function wizSave(){
         // The weight actually lifted leads when there is one; the estimate is
         // the supporting line. Never the other way round.
         const args=isWeightPR
-          ? [prName, prevMaxW||null, sessMaxW, prDate, {kind:'weight', otherNew:isRmPR?newRM:null}]
+          ? [prName, prevMaxW||null, sessMaxW, prDate, {kind:'weight', otherNew:isRmPR?newRM:null, otherOld:oldRM}]
           : [prName, oldRM, newRM, prDate, {kind:'rm'}];
         setTimeout(()=>{ showPR(...args); },400);
       }
@@ -5882,7 +6323,12 @@ function wizSave(){
     const wScore=w.score&&w.score.kind?w.score:null;
     // Is this a new best for THIS WoD? Compared before the entry is pushed.
     const prevBest=wScore?bestWodScore(wKey):null;
-    const isWodPR=wScore&&wodScoreValue(wScore)!=null&&wodScoreBeats(wScore,prevBest);
+    // v8.24: a PR needs something to beat. wodScoreBeats(x, null) is true by
+    // design (any score beats no score), so the first time a WoD name was used
+    // it always celebrated — and since most sessions are a new metcon with a new
+    // name, the trophy fired nearly every day and stopped meaning anything.
+    // Àlex: "we can be giving records just for logging a wod".
+    const isWodPR=wScore&&wodScoreValue(wScore)!=null&&prevBest&&wodScoreBeats(wScore,prevBest);
     D.wEnt.push({id:Date.now()+1,date:wizS.date,name:wName,type:w.type||'For Time',
       wodKey:wKey, tplId:w.tplId||null, score:wScore,
       result:w.result||'',scale:w.scale||'Rx',
@@ -5903,34 +6349,55 @@ function wizSave(){
       setTimeout(()=>{ showWodPR(prName,prevTxt,nowTxt,prDate); },400);
     }
   }
-  // Started from Plantilles > Crear: also persist it as a reusable template
-  if(wizS.saveAsTemplate){
-    const nm = (k==='wod'||k==='both')
-      ? (wizS.wod.name||wizS.wod.type||'WoD')
-      : ((D.hEx.find(e=>e.id===wizS.exId)||{}).name||'Sessió');
-    const tpl={id:'tpl_'+Date.now(),name:nm,notes:wizS.note||'',halBlocks:[],wodBlock:null};
-    if(k==='forca'||k==='both'){
-      tpl.halBlocks=[{exId:wizS.exId,sets:wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat)).map(st=>({...st}))}];
-    }
-    if(k==='wod'||k==='both'){
-      const w2=wizS.wod;
-      tpl.wodBlock={type:w2.type||'For Time', struct:{...(w2.struct||{})},
-        movements:(w2.movements||[]).filter(m=>m.exId).map(m=>({...m})),
-        stations:(w2.stations||[]).map(st=>st.filter(m=>m.exId).map(m=>({...m}))),
-        cashIn:(w2.cashIn||[]).filter(m=>m.exId).map(m=>({...m})),
-        cashOut:(w2.cashOut||[]).filter(m=>m.exId).map(m=>({...m}))};
-    }
-    D.templates.push(tpl);
-    toast('Plantilla desada ✓');
-  }
   save();
   refreshGoalCompletion();
   wizS.touched=false;
   wizClose();
-  if(!wizS||!wizS.saveAsTemplate) toast('Registrat ✓');
+  toast('Registrat ✓');
   renderEntrenarSuggestion();
   if(typeof renderTodaySummary==='function') renderTodaySummary();
   if(typeof renderRecentWods==='function') renderRecentWods();
+}
+
+// Writes ONLY a template — no session, no PR check, no goal recompute.
+// wizS.tplEditId set → update that template in place instead of adding one.
+function wizSaveTemplate(k){
+  const prior = wizS.tplEditId && (D.templates||[]).find(t=>t.id===wizS.tplEditId);
+  // A Força template has no name field — it is named after its exercise. When
+  // EDITING one that must not overwrite the name the user gave it, or "Dia de
+  // cames" silently becomes "Back Squat" on every save.
+  const nm = (k==='wod'||k==='both')
+    ? (String(wizS.wod.name||'').trim() || wizS.wod.type || 'WoD')
+    : ((prior && prior.name) || (D.hEx.find(e=>e.id===wizS.exId)||{}).name || 'Sessió');
+  const tpl = {name:nm, notes:wizS.note||'', halBlocks:[], wodBlock:null};
+  if(k==='forca'||k==='both'){
+    tpl.halBlocks=[{exId:wizS.exId,sets:wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat)).map(st=>({...st}))}];
+  }
+  if(k==='wod'||k==='both'){
+    const w2=wizS.wod;
+    tpl.wodBlock={type:w2.type||'For Time', struct:{...(w2.struct||{})},
+      movements:(w2.movements||[]).filter(m=>m.exId).map(m=>({...m})),
+      stations:(w2.stations||[]).map(st=>st.filter(m=>m.exId).map(m=>({...m}))),
+      cashIn:(w2.cashIn||[]).filter(m=>m.exId).map(m=>({...m})),
+      cashOut:(w2.cashOut||[]).filter(m=>m.exId).map(m=>({...m}))};
+  }
+  const editing = wizS.tplEditId && (D.templates||[]).find(t=>t.id===wizS.tplEditId);
+  if(editing){
+    // Keep the id — anything already logged from it carries wodKey 'tpl:<id>',
+    // and a new id would orphan that history.
+    Object.assign(editing, tpl);
+    editing.builtIn = false;          // once you have edited it, it is yours
+    delete editing.defV;              //  and the re-seed must leave it alone
+    toast('Plantilla actualitzada ✓');
+  } else {
+    tpl.id = 'tpl_' + Date.now();
+    if(wizS.forkedFrom) tpl.forkedFrom = wizS.forkedFrom;   // provenance, for later
+    D.templates.push(tpl);
+    toast(wizS.forkedFrom ? 'Desada a «Les meves» ✓' : 'Plantilla desada ✓');
+  }
+  save();
+  wizS.touched=false;
+  wizClose();
 }
 
 // ══════════════════════════════════════════
@@ -6356,6 +6823,7 @@ function resetBaseSheet(){
 let tplSel=null;
 const TPL_STEPS=['tplStepRoot','tplStepUseKind','tplStepWodSource','tplStepCreateKind','tplStepList','tplStepConfirm'];
 let tplBackTarget='useKind';
+let tplLastFilter='wodMine';
 function gotoPlantilles(){
   document.getElementById('calcPanel').classList.remove('on');
   document.getElementById('bubCalc').classList.remove('on');
@@ -6390,6 +6858,7 @@ function closeTplPanel(silent){
 }
 // filter: 'forca' | 'wodMine' | 'wodSpecial'
 function tplShowList(filter){
+  tplLastFilter = filter;          // so a delete can redraw the list it came from
   tplBackTarget = filter==='forca' ? 'useKind' : 'wodSource';
   const K={forca:['Força','Quina plantilla de força?'],
            wodMine:['Les meves','Quin WoD teu?'],
@@ -6449,36 +6918,141 @@ function tplPick(id){
   }
   document.getElementById('tplConfirmBody').innerHTML=body;
   document.getElementById('tplDate').value=localToday();
-  document.getElementById('tplWodFields').style.display=isW?'block':'none';
   document.getElementById('tplResult').value='';
+  const wodNote=document.getElementById('tplWodNote');
+  if(wodNote) wodNote.style.display=isW?'block':'none';
+  // "Aplicar" opens the registrar for a WoD and writes directly for Força, so
+  // the button should say which.
+  const applyBtn=document.getElementById('tplApplyBtn');
+  if(applyBtn) applyBtn.textContent = isW ? 'Continuar →' : 'Aplicar';
+  // Fork (a shipped classic) vs edit (your own). A classic is the reference
+  // copy, so it is never edited in place — changing one means you want YOUR
+  // version of it, which lands in "Les meves" under its own name.
+  const hint=document.getElementById('tplForkHint');
+  const modBtn=document.getElementById('tplModifyBtn');
+  const delBtn=document.getElementById('tplDeleteBtn');
+  if(isW && t.builtIn){
+    hint.textContent='Vols canviar-hi algun exercici o els pesos? En fer-ho es desarà com una plantilla teva a «Les meves», amb un nom nou. El clàssic original es queda intacte.';
+    hint.style.display='block';
+    modBtn.textContent='Modificar-la i desar-la com a meva →';
+    modBtn.style.display='block';
+    delBtn.style.display='none';
+  } else if(isW){
+    hint.style.display='none';
+    modBtn.textContent='Editar aquesta plantilla';
+    modBtn.style.display='block';
+    delBtn.style.display='block';
+  } else {
+    // Força templates are editable too — "alterar una plantilla" was never
+    // meant to be a WoD-only capability.
+    hint.style.display='none';
+    modBtn.textContent='Editar aquesta plantilla';
+    modBtn.style.display=t.builtIn?'none':'block';
+    delBtn.style.display=t.builtIn?'none':'block';
+  }
   tplGo('confirm');
+}
+// One button, two meanings, decided by whether the template is shipped.
+function tplModify(){
+  const t=tplSel; if(!t) return;
+  if(!t.wodBlock) return tplModifyForca(t);
+  const fork=!!t.builtIn;
+  closeTplPanel(true);
+  switchTab('entrenar');
+  openWizard();
+  wizS.saveAsTemplate=true;                 // before wizPickKind: it picks the flow
+  if(fork) wizS.forkedFrom=t.id; else wizS.tplEditId=t.id;
+  wizPickKind('wod');
+  const wb=t.wodBlock;
+  wizS.wod={
+    name: fork ? '' : (t.name||''),         // a fork must be renamed; an edit keeps its name
+    type: wb.type||'For Time',
+    struct:{...(wb.struct||{})},
+    movements:(wb.movements||[]).map(m=>({...m})),
+    stations:(wb.stations||[]).map(st=>(st||[]).map(m=>({...m}))),
+    cashIn:(wb.cashIn||[]).map(m=>({...m})),
+    cashOut:(wb.cashOut||[]).map(m=>({...m})),
+    result:'', scale:'Rx', note:'', score:null
+  };
+  wizS.note=t.notes||'';
+  wizS.forkBaseName=fork?(t.name||''):'';
+  // The type is already known, so start on the structure/name screen.
+  wizS.i=Math.max(0, wizFlow().indexOf('wodStruct'));
+  wizShow();
+  const el=document.getElementById('wizWName');
+  if(el){
+    el.value = fork ? '' : (t.name||'');
+    el.placeholder = fork ? ((t.name||'WoD')+' modificat') : 'Nom de la plantilla';
+  }
+  toast(fork ? 'Canvia el que vulguis i posa-li un nom' : 'Edita la plantilla');
+}
+// Editing a Força template. wizSaveTemplate only ever writes one halBlock, so
+// there is exactly one exercise to load back in.
+function tplModifyForca(t){
+  const b=(t.halBlocks||[])[0];
+  if(!b){ toast('Aquesta plantilla no té exercicis','error'); return; }
+  const ex=D.hEx.find(e=>e.id===b.exId);
+  closeTplPanel(true);
+  switchTab('entrenar');
+  openWizard();
+  wizS.saveAsTemplate=true;         // before wizPickKind: it decides the flow
+  wizS.tplEditId=t.id;
+  wizPickKind('forca');
+  wizS.cat=(ex&&ex.cat)||'haltero';
+  wizS.fam=(ex&&ex.family)||'__all';
+  wizS.exId=b.exId;
+  wizS.sets=(b.sets||[]).map(st=>({...st}));
+  if(!wizS.sets.length) wizS.sets=[{r:5,w:'',rpe:''}];
+  wizS.note=t.notes||'';
+  // The Detalls step reads its inputs from the DOM, and openWizard() just
+  // cleared them — so the note has to be put back on the element, not only in
+  // state, or wizCollect('det') would overwrite it with ''.
+  const noteEl=document.getElementById('wizNote');
+  if(noteEl) noteEl.value=t.notes||'';
+  wizS.i=0; wizShow();
+  toast('Edita la plantilla');
+}
+function tplDelete(){
+  const t=tplSel; if(!t||t.builtIn) return;
+  showDeleteSheet('Eliminar plantilla', '"'+t.name+'" s\'eliminarà. Els entrenaments ja registrats no es toquen.', ()=>{
+    D.templates=(D.templates||[]).filter(x=>x.id!==t.id);
+    save();
+    tplSel=null;
+    tplRenderList(tplLastFilter);
+    tplGo('list');
+    toast('Plantilla eliminada');
+  });
 }
 function tplBackToList(){ tplGo('list'); }
 function tplApply(){
   if(!tplSel) return;
+  const t=tplSel;
   const date=document.getElementById('tplDate').value||localToday();
-  const isW=!!tplSel.wodBlock;
-  if(isW){
-    D.wEnt.push({id:Date.now(),date,name:tplSel.name,type:tplSel.wodBlock.type,
-      result:document.getElementById('tplResult').value.trim(),
-      scale:document.getElementById('tplScale').value,
-      wodData:{type:tplSel.wodBlock.type, struct:{...(tplSel.wodBlock.struct||{})},
-               movements:(tplSel.wodBlock.movements||[]).map(m=>({...m})),
-               stations:(tplSel.wodBlock.stations||[]).map(st=>st.map(m=>({...m}))),
-               cashIn:(tplSel.wodBlock.cashIn||[]).map(m=>({...m})),
-               cashOut:(tplSel.wodBlock.cashOut||[]).map(m=>({...m}))},
-      exercises:wodAllMovements(tplSel.wodBlock).map(m=>m.exId),
-      note:tplSel.notes||'',tags:[]});
-  }
-  (tplSel.halBlocks||[]).forEach(b=>{
+  const isW=!!t.wodBlock;
+  // The Força half is a plan with nothing to measure, so it is written straight
+  // out. Sets of 0 kg are dropped rather than logged as phantoms.
+  (t.halBlocks||[]).forEach(b=>{
     const valid=(b.sets||[]).filter(st=>isMeaningfulSet(st,(D.hEx.find(e=>e.id===b.exId)||{}).cat||'haltero'));
-    if(!valid.length) return;   // never write a session of phantom 0 kg sets
+    if(!valid.length) return;
     D.hEnt.push({id:Date.now()+Math.floor(performance.now()%1000),date,exId:b.exId,pct:'',note:'',tags:[],sets:valid.map(st=>({...st}))});
   });
   save(); refreshGoalCompletion();
+  // The WoD half goes through the REGISTRAR instead of being written here
+  // (v8.24). This path used to push its own entry with a free-text result and
+  // no wodKey, no tplId and no typed score — so applying Cindy from Plantilles
+  // produced a WoD that counted towards nothing: it never reached the WoD
+  // board, never triggered a record, and could not even become the previous
+  // best that a future record is measured against. The registrar asks for the
+  // score in the right shape for the WoD's type and does all of that properly.
+  if(isW){
+    closeTplPanel(true);
+    loadWodTpl(t.id, date);
+    return;
+  }
   closeTplPanel();
   toast('Plantilla aplicada ✓');
   renderEntrenarSuggestion();
+  if(typeof renderTodaySummary==='function') renderTodaySummary();
 }
 
 // ══════════════════════════════════════════
@@ -6554,6 +7128,7 @@ function renderHistDay(){
       +'<div style="flex:1;min-width:0"><div class="hist-box-t">'+(ex?ex.name:e.exId)+'</div>'
       +'<div class="hist-line">'+ss+(e.pct?' · al '+e.pct+'%':'')+'</div></div>'
       +'<div class="hist-acts-mini">'
+      +'<button class="icon-btn" onclick="histRepeatH('+e.id+')" aria-label="Repetir">'+icSVG('repeat',17)+'</button>'
       +'<button class="icon-btn" onclick="openWizardEditForca('+e.id+')" aria-label="Edita">'+icSVG('pencil',17)+'</button>'
       +'<button class="icon-btn danger" onclick="histDelH('+e.id+')" aria-label="Elimina">'+icSVG('trash',17)+'</button>'
       +'</div></div>'
@@ -6565,8 +7140,9 @@ function renderHistDay(){
     html+='<div class="hist-box w">'
       +'<div class="hist-box-top">'
       +'<div style="flex:1;min-width:0"><div class="hist-box-t" style="color:var(--w-ink)">'+(e.name||e.type||'WoD')+'</div>'
-      +'<div class="hist-line">'+(e.result||'sense resultat')+(e.scale?' · '+e.scale:'')+'</div></div>'
+      +'<div class="hist-line">'+(entryScoreText(e)||'sense resultat')+(e.scale?' · '+e.scale:'')+'</div></div>'
       +'<div class="hist-acts-mini">'
+      +'<button class="icon-btn" onclick="histRepeatW('+e.id+')" aria-label="Repetir">'+icSVG('repeat',17)+'</button>'
       +'<button class="icon-btn" onclick="openWizardEditWod('+e.id+')" aria-label="Edita">'+icSVG('pencil',17)+'</button>'
       +'<button class="icon-btn danger" onclick="histDelW('+e.id+')" aria-label="Elimina">'+icSVG('trash',17)+'</button>'
       +'</div></div>'
@@ -6612,6 +7188,72 @@ function histSaveW(id){
   renderHistCal(); renderHistDay();
   toast('Desat ✓');
 }
+// What a WoD entry actually scored. Typed scores (v8.21) live in e.score; the
+// free-text e.result is only the legacy field and is empty for anything logged
+// since — so reading it alone printed "sense resultat" over a real time.
+function entryScoreText(e){
+  const t = (e && e.score && typeof wodScoreText==='function') ? wodScoreText(e.score) : '';
+  return t || (e && e.result) || '';
+}
+
+// ── Repeat a past session (v8.24) ────────────────────────────────────
+// Àlex: "if I wanted to log that wod/haltero session again… open the pop-up
+// window already filled, but obviously letting you modify everything anyway,
+// date and everything." So: confirm, then open the registrar prefilled and
+// dated today, as a NEW entry — wizS.editId stays unset, which is what keeps
+// this from overwriting the session being copied.
+function histRepeatH(id){
+  const e=D.hEnt.find(x=>String(x.id)===String(id)); if(!e) return;
+  const ex=D.hEx.find(x=>x.id===e.exId);
+  showDeleteSheet(
+    'Repetir aquest entrenament?',
+    (ex?ex.name:'Aquesta sessió')+' — obrirem el registrar ja omplert, amb la data d\'avui. Ho pots canviar tot.',
+    ()=>{
+      openWizard();
+      wizPickKind('forca');
+      wizS.date=localToday();
+      wizS.cat=(ex&&ex.cat)||'haltero';
+      wizS.exId=e.exId;
+      wizS.fam=(ex&&ex.family)||'__all';
+      wizS.sets=(e.sets||[]).map(st=>({...st}));
+      wizS.pct=e.pct||'';
+      wizS.note=e.note||'';
+      wizS.tags=[...(e.tags||[])];
+      wizS.i=0; wizShow();
+      toast('Repassa-ho i desa');
+    },
+    {confirmText:'Sí, omple\'l', danger:false}
+  );
+}
+function histRepeatW(id){
+  const e=D.wEnt.find(x=>String(x.id)===String(id)); if(!e) return;
+  showDeleteSheet(
+    'Repetir aquest WoD?',
+    (e.name||e.type||'Aquest WoD')+' — obrirem el registrar ja omplert, amb la data d\'avui. Ho pots canviar tot.',
+    ()=>{
+      const wd=e.wodData||{};
+      openWizard();
+      wizPickKind('wod');
+      wizS.date=localToday();
+      wizS.wod={
+        tplId:e.tplId||null,
+        name:e.name||wd.type||'WoD',
+        type:wd.type||e.type||'For Time',
+        struct:{...(wd.struct||{})},
+        movements:(wd.movements||[]).map(m=>({...m})),
+        stations:(wd.stations||[]).map(st=>(st||[]).map(m=>({...m}))),
+        cashIn:(wd.cashIn||[]).map(m=>({...m})),
+        cashOut:(wd.cashOut||[]).map(m=>({...m})),
+        // The plan is copied; the result is not — that is the whole point.
+        result:'', scale:e.scale||'Rx', note:'', score:null
+      };
+      wizS.i=0; wizShow();
+      toast('Repassa-ho i posa el resultat');
+    },
+    {confirmText:'Sí, omple\'l', danger:false}
+  );
+}
+
 function histDelH(id){
   showDeleteSheet('Eliminar registre','Aquest registre de força s\'eliminarà.',()=>{
     const e=D.hEnt.find(x=>x.id===id); const exId=e?e.exId:null;
@@ -8204,7 +8846,10 @@ function renderWodTemplates(){
 // markup was deleted in v8.18 the guard turned the whole thing into a silent
 // no-op: "Registrar aquest WoD" did nothing at all, and no score could be typed,
 // which is why a template WoD never produced a record.
-function loadWodTpl(id){
+// `date` (v8.24): tplApply passes the date chosen on the confirm screen, so
+// applying a template to a past session keeps that date instead of silently
+// resetting to today.
+function loadWodTpl(id, date){
   const t=(D.templates||[]).find(t=>t.id===id);
   if(!t||!t.wodBlock) return;
   const wb=t.wodBlock;
@@ -8213,6 +8858,7 @@ function loadWodTpl(id){
   switchTab('entrenar');
   openWizard();
   wizPickKind('wod');
+  if(date) wizS.date=date;
   // Carry the template's structure in, and remember WHICH template it was so the
   // entry gets a stable wodKey (tpl:<id>) instead of relying on the name string.
   wizS.wod = {
@@ -8580,7 +9226,7 @@ function confirmSheet(){
     if(isWeightPR||isRmPR){
       const nm=ex.name, newRM=ex.rm1;
       const args=isWeightPR
-        ? [nm, prevMaxW||null, w, t, {kind:'weight', otherNew:isRmPR?newRM:null}]
+        ? [nm, prevMaxW||null, w, t, {kind:'weight', otherNew:isRmPR?newRM:null, otherOld:oldRM}]
         : [nm, oldRM, newRM, t, {kind:'rm'}];
       setTimeout(()=>showPR(...args),300);
     }
@@ -9568,7 +10214,9 @@ function renderGoalsOverlay(){
 // ══════════════════════════════════════════
 // SETUP WIZARD
 // ══════════════════════════════════════════
-let setupSex = 'male';
+// Empty until asked (v8.24). It used to default to 'male' with the button
+// already lit, so the answer was never actually given.
+let setupSex = '';
 function selSetupSex(sex, btn) {
   setupSex = sex;
   document.getElementById('setupMale').classList.toggle('active', sex==='male');
@@ -9592,10 +10240,19 @@ function saveSetup(skip) {
   if (acc && !acc.checked) {
     const row = document.getElementById('acceptRow');
     if (row) { row.classList.remove('accept-shake'); void row.offsetWidth; row.classList.add('accept-shake'); }
-    try { if (navigator.vibrate) navigator.vibrate([20, 10, 20]); } catch(e) {}
+    // The navigator.vibrate call that used to live here was missed by the v8.20
+    // sweep. iOS has no Vibration API at all, and Chrome logs an error for it
+    // before the first tap — so it only ever produced noise. The shake is the
+    // feedback.
+    toast('Cal acceptar les condicions per continuar', 'error');
     return;
   }
   if (!skip) {
+    // Last line of defence (v8.24): obNext() gates each slide, but this is the
+    // only place that actually writes the profile, so it re-checks and walks the
+    // user back to the slide that is short rather than saving a half-profile.
+    if (!obValidate('ob1')) { obShowSlide(OB_SLIDES.indexOf('ob1')); return; }
+    if (!obValidate('ob2')) { obShowSlide(OB_SLIDES.indexOf('ob2')); obRenderGym(); return; }
     const name = document.getElementById('setupName').value.trim();
     const w = +document.getElementById('setupWeight').value || 0;
     const h = +document.getElementById('setupHeight').value || 0;
@@ -9650,7 +10307,6 @@ function confirmLegalAccept() {
   if (!chk || !chk.checked) {
     const b = document.getElementById('legalAcceptBtn');
     if (b) { b.classList.remove('accept-shake'); void b.offsetWidth; b.classList.add('accept-shake'); }
-    try { if (navigator.vibrate) navigator.vibrate([20, 10, 20]); } catch(e) {}
     return;
   }
   recordLegalAcceptance();
@@ -9701,7 +10357,6 @@ async function sendFeedback() {
   const text = ((ta && ta.value) || '').trim();
   if (!text) {
     if (ta) { ta.classList.remove('accept-shake'); void ta.offsetWidth; ta.classList.add('accept-shake'); }
-    try { if (navigator.vibrate) navigator.vibrate([20, 10, 20]); } catch(e) {}
     return;
   }
   const ph = document.getElementById('fbPhoto');
@@ -10328,14 +10983,20 @@ function showPR(exName, oldVal, newVal, date, opts) {
     ? '+' + prData.delta.toFixed(1) + ' kg sobre ' + (isW ? 'el teu anterior pes màxim' : 'el teu anterior 1RM estimat')
     : (isW ? 'Primer pes registrat en aquest exercici!' : 'Primer 1RM estimat d\'aquest exercici!');
 
-  // The companion record, if the same session moved it too.
+  // The companion record, shown as a record — its own label and its own
+  // old→new — not as a sentence tacked on the end.
   const sec = document.getElementById('prSecond');
   if (o.otherNew) {
-    sec.textContent = isW
-      ? 'I el teu 1RM estimat puja a ' + o.otherNew.toFixed(1) + ' kg.'
-      : 'També és el teu pes màxim aixecat: ' + o.otherNew.toFixed(1) + ' kg.';
-    sec.style.display = '';
-  } else { sec.textContent = ''; sec.style.display = 'none'; }
+    document.getElementById('prKicker').textContent = 'Dos rècords alhora';
+    sec.innerHTML =
+      '<div class="pr-second-lbl">' + (isW ? 'Nou 1RM estimat' : 'Nou pes màxim aixecat') + '</div>'
+      + '<div class="pr-second-val">'
+      +   '<span class="pr-second-old">' + (o.otherOld ? o.otherOld.toFixed(1) + ' kg' : '—') + '</span>'
+      +   '<span class="pr-second-arrow">→</span>'
+      +   '<span class="pr-second-new">' + o.otherNew.toFixed(1) + ' kg</span>'
+      + '</div>';
+    sec.style.display = 'block';
+  } else { sec.innerHTML = ''; sec.style.display = 'none'; }
 
   // Say plainly what an estimate is.
   const foot = document.getElementById('prFoot');
@@ -10358,6 +11019,7 @@ function maxLiftedW(exId, skipId){
     (e.sets||[]).forEach(s=>{ const w=+s.w||0; if(s.r>0 && w>m) m=w; });
   });
   (D.rmHist||[]).forEach(r=>{ if(r.exId===exId){ const w=+r.weight||0; if(w>m) m=w; } });
+  cpxContributions(exId).forEach(c=>{ if(c.w>m) m=c.w; });   // you did lift it, inside the complex
   return m;
 }
 
@@ -10737,11 +11399,20 @@ function renderWeeklySummary(s) {
 
 // ── Delete confirmation sheet (replaces confirm() for sandbox compat) ──
 let deleteCallback = null;
-function showDeleteSheet(title, sub, onConfirm) {
+// opts (v8.24): {confirmText, danger:false} — the same sheet now also asks
+// non-destructive questions ("repeat this session?"), which must not arrive
+// wearing a red Eliminar button.
+function showDeleteSheet(title, sub, onConfirm, opts) {
+  const o = opts || {};
+  const danger = o.danger !== false;
   document.getElementById('deleteSheetTitle').textContent = title;
   document.getElementById('deleteSheetSub').textContent = sub;
+  const btn = document.getElementById('deleteSheetConfirmBtn');
+  btn.textContent = o.confirmText || 'Eliminar';
+  btn.style.background = danger ? 'var(--red)' : 'var(--btn-h)';
+  btn.style.color = danger ? '#fff' : 'var(--btn-ink)';
   deleteCallback = onConfirm;
-  document.getElementById('deleteSheetConfirmBtn').onclick = () => {
+  btn.onclick = () => {
     const cb = deleteCallback; // capture before closeDeleteSheet nulls it
     closeDeleteSheet();
     if (cb) cb();
@@ -10758,7 +11429,7 @@ function closeDeleteSheet() {
 // ONBOARDING
 // ══════════════════════════════════════════
 // Three slides, three jobs: what this is · who you are · what you lift with.
-const OB_SLIDES = ['ob0','ob1','ob2'];
+const OB_SLIDES = ['ob0','ob1','ob2','ob3'];
 let obCurrent = 0;
 
 function obShowSlide(n) {
@@ -10775,11 +11446,45 @@ function obShowSlide(n) {
     `<div style="width:${i===obCurrent?24:8}px;height:8px;border-radius:20px;background:${i===obCurrent?'var(--h-acc)':'var(--bg4)'};transition:width .25s var(--ease-out),background .25s ease"></div>`
   ).join('');
 }
+// v8.24: nothing advances until the slide is actually answered. The profile
+// fields drive Wilks, relative strength and the whole Mètriques tab, so letting
+// someone through with blanks produced an app full of dashes.
+function obValidate(slideId) {
+  const bad = (msg, focusId) => {
+    toast(msg, 'error');
+    const el = focusId && document.getElementById(focusId);
+    if (el) { try { el.focus({preventScroll:false}); } catch(e) { el.focus(); } }
+    return false;
+  };
+  if (slideId === 'ob1') {
+    if (!document.getElementById('setupName').value.trim()) return bad('Com et dius?', 'setupName');
+    if (!setupSex) return bad('Tria el sexe: canvia els càlculs de Wilks');
+    if (!document.getElementById('setupDob').value)          return bad('Posa la teva data de naixement', 'setupDob');
+    const w = +document.getElementById('setupWeight').value || 0;
+    if (!(w >= 30 && w <= 250))  return bad('Posa el teu pes corporal', 'setupWeight');
+    const h = +document.getElementById('setupHeight').value || 0;
+    if (!(h >= 100 && h <= 230)) return bad('Posa la teva alçada', 'setupHeight');
+  }
+  if (slideId === 'ob2') {
+    if (!gymDraft || !gymDraft.denoms || !gymDraft.denoms.length)
+      return bad('Tria com a mínim un disc');
+  }
+  return true;
+}
 function obNext() {
+  if (!obValidate(OB_SLIDES[obCurrent])) return;
   obShowSlide(obCurrent + 1);
   if (OB_SLIDES[obCurrent] === 'ob2') obRenderGym();
+  // Every slide starts at its own top, or slide 3 opens already scrolled down.
+  const ov = document.getElementById('setupOv');
+  if (ov) ov.scrollTop = 0;
 }
-function obBack() { obShowSlide(obCurrent - 1); }
+function obBack() {
+  obShowSlide(obCurrent - 1);
+  if (OB_SLIDES[obCurrent] === 'ob2') obRenderGym();
+  const ov = document.getElementById('setupOv');
+  if (ov) ov.scrollTop = 0;
+}
 
 // Echo the derived age back, so the date entered is visibly the right one.
 function setupDobEcho() {
@@ -10789,7 +11494,10 @@ function setupDobEcho() {
 }
 // The onboarding gym picker shares gymDraft with Més → El teu gimnàs.
 function obRenderGym() {
-  if (!gymDraft) { const s = plateSet(); gymDraft = {bar:s.bar, denoms:[...s.denoms]}; }
+  // Start with NOTHING selected (v8.24). Pre-ticking a full IWF set meant the
+  // chips arrived already coloured, so "select the plates you have" read as
+  // decoration and most people left a set their box does not own.
+  if (!gymDraft) { const s = plateSet(); gymDraft = {bar:s.bar, denoms:[]}; }
   document.getElementById('obBarPick').innerHTML = ALL_BARS.map(b =>
     '<button type="button" class="'+(gymDraft.bar===b?'on':'')+'" onclick="obPickBar('+b+')">'+b+' kg</button>').join('');
   document.getElementById('obPlatePick').innerHTML = ALL_PLATE_DENOMS.map(p => {
@@ -10808,9 +11516,11 @@ function obTogglePlate(p) {
 }
 function obGymPreview() {
   const el = document.getElementById('obGymPreview'); if (!el) return;
-  if (!gymDraft.denoms.length) { el.innerHTML = '<span style="color:var(--red)">Tria com a mínim un disc.</span>'; return; }
-  const min = Math.min(...gymDraft.denoms);
-  el.innerHTML = 'Podràs pujar de <b>'+fmtKg(min*2)+' kg en '+fmtKg(min*2)+' kg</b>, des de <b>'+gymDraft.bar+' kg</b>.';
+  // "Podràs pujar de X en X, des de Y" was jargon nobody could parse. Just say
+  // how many are picked; the consequence shows up in %Calc where it matters.
+  if (!gymDraft.denoms.length) { el.innerHTML = '<span style="color:var(--red)">Toca els discs que teniu al gimnàs.</span>'; return; }
+  const n = gymDraft.denoms.length;
+  el.innerHTML = n + (n === 1 ? ' disc seleccionat.' : ' discs seleccionats.');
 }
 
 function checkShowSetup() {
@@ -10933,6 +11643,24 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.25':['<b>Ja pots registrar complexos.</b> En triar un exercici de força ara et preguntem si és un sol moviment o un complex; si ho és, en muntes la combinació (moviment + repeticions per ronda) i el pes el poses després, com sempre.',
+          '<b>I cada moviment del complex compta pel seu compte.</b> Si fas 3 power clean + 1 jerk a 70 kg, el power clean suma com a 3 reps a 70 i el jerk com a 1 rep a 70, al seu propi històric i als seus rècords.',
+          'Aplicar una plantilla de WoD ara obre el registrar: així el resultat queda ben tipat i <b>compta com a rècord</b>. Abans es desava com a text lliure i no comptava per a res.',
+          'Pots <b>modificar un clàssic</b> (es desa com a plantilla teva, amb nom nou) i <b>editar o esborrar</b> les teves plantilles, també les de força.',
+          'A l\'historial, cada entrenament té un botó per <b>repetir-lo</b>: t\'obre el registrar ja omplert amb la data d\'avui.'],
+  '8.24':['<b>La barra fosca de dalt ja no surt.</b> En obrir qualsevol finestra, la franja del notch es quedava del color original sobre el fons enfosquit i cantava molt (sobretot amb el tema clar).',
+          '<b>Ara pots posar barra als WoDs.</b> Power Clean, Squat Clean, Power Snatch, Split Jerk, Bench Press, Sumo Deadlift High Pull i més: el catàleg de WoD passa de 10 moviments de barra a 21.',
+          'Els moviments que no porten pes (córrer, burpees, dobles, rem…) <b>ja no et demanen kg</b>, i els que van per distància et demanen metres.',
+          '<b>Els rècords de WoD ja no salten cada dia.</b> Abans, estrenar un nom comptava com a rècord — i gairebé sempre estrenes nom. Ara cal batre una marca teva anterior, i la pantalla va en <b>verd</b>, no en daurat: un temps no és un pes.',
+          'Quan una sessió et fa <b>dos rècords</b> (pes aixecat i 1RM estimat), ara els veus tots dos.',
+          'El WoD ja ve amb <b>nom posat</b> (la data). El canvies si vols, o continues.',
+          'El temps s\'escriu <b>només amb xifres</b>: els dos punts es posen sols. 842 → 8:42, 1100 → 11:00, i «11» són 11 minuts.',
+          'L\'escala ja no és només Rx o Scaled: hi ha <b>Intermedi</b> i <b>Modificat</b>.',
+          'Un WoD sense moviments ja no es pot desar, i el temps límit del WoD i el teu temps ja no es confonen.',
+          '<b>L\'alta d\'usuari ja es pot acabar.</b> La pantalla del gimnàs era més alta que el mòbil i no es podia moure, així que el botó de continuar quedava fora de l\'abast.',
+          'Ara demanem <b>totes</b> les dades del perfil, i el sexe s\'ha de triar: abans es donava per fet «masculí» i això canvia tots els càlculs de Wilks.',
+          'Els discs del gimnàs surten <b>tots apagats</b> i els encens tu. Abans venien preseleccionats i molta gent es quedava amb discs que el seu box no té.',
+          'Els clàssics ja es veuen bé: Cindy diu els seus 20 min, Fran i Annie mostren l\'esquema real (21-15-9 i 50-40-30-20-10), Helen/DT/Barbara les seves rondes, i el mile de Murph són metres, no repeticions.'],
   '8.23':['Les celebracions ara distingeixen dues coses: el <b>pes màxim que has aixecat de veritat</b> i el <b>1RM estimat</b>, que és un càlcul. Abans es barrejaven i semblava que havies aixecat un pes que no havies tocat.',
           'En registrar força ara tries <b>Categoria → Família → Exercici</b>, igual que a %Calc.',
           'El camp «% intentat» ara es diu <b>% del teu màxim</b> i explica què fa. També accepta el 100.',
