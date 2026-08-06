@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.29</title>
+<title>PRsonal v8.32</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -510,7 +510,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
 }
 /* ─── BASE ─── */
 *{box-sizing:border-box;margin:0;padding:0;}html{overflow-x:clip;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;font-size:17px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-y:contain;padding-bottom:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:17px;line-height:1.5;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-y:contain;padding-bottom:0;}
 /* v8.23: set while any overlay is open (syncScrollLock). Taking the body out of
    flow is the only lock iOS honours — overflow:hidden alone does nothing there.
    The inline top:-Ypx keeps the page visually still; scrollTo() restores it. */
@@ -551,7 +551,7 @@ body.scroll-locked .tab-bar{backdrop-filter:none;-webkit-backdrop-filter:none;}
   margin-bottom:0;
 }
 .hsub{
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif!important;
+  font-family:var(--font-ui)!important;
   font-size:14px;color:var(--text2);
   letter-spacing:0.1px;margin-top:5px;
   font-style:italic!important;text-transform:none;
@@ -615,7 +615,7 @@ select option{background:var(--bg3);}
 .btn-s{background:var(--bg3);color:var(--text);border:1px solid var(--border2);}
 @media(hover:hover){.btn-s:hover{background:var(--bg4);}}
 .btn-sm{display:inline-flex;width:auto;min-height:var(--tap);padding:11px 18px;font-size:var(--fs-body-sm);border-radius:var(--r-btn);}
-.ghost{display:inline-flex;align-items:center;justify-content:center;background:var(--dim);color:var(--ink);border:1px solid var(--acc);font-size:var(--fs-body-sm);min-height:var(--tap);padding:10px 18px;border-radius:var(--r-btn);cursor:pointer;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;}
+.ghost{display:inline-flex;align-items:center;justify-content:center;background:var(--dim);color:var(--ink);border:1px solid var(--acc);font-size:var(--fs-body-sm);min-height:var(--tap);padding:10px 18px;border-radius:var(--r-btn);cursor:pointer;font-weight:700;font-family:var(--font-ui);}
 .dangr{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,85,85,0.10);color:var(--red);border:1px solid rgba(255,85,85,0.45);font-size:var(--fs-body-sm);min-height:var(--tap);padding:10px 18px;border-radius:var(--r-btn);cursor:pointer;font-weight:700;}
 
 /* ─── 1RM PREVIEW ─── */
@@ -711,7 +711,7 @@ select option{background:var(--bg3);}
   margin-bottom:16px;padding-bottom:11px;border-bottom:0.5px solid var(--border);}
 .ov-hd > div{min-width:0;max-width:100%;}
 .ov-hd #detNm{font-size:23px;font-weight:800;letter-spacing:-0.4px;line-height:1.2;}
-.backbtn{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:15px;font-weight:600;padding:8px 14px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;}
+.backbtn{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:15px;font-weight:600;padding:8px 14px;cursor:pointer;font-family:var(--font-ui);}
 
 /* ─── ZONES TABLE ─── */
 .zt{width:100%;border-collapse:collapse;font-size:14px;}
@@ -736,7 +736,7 @@ select option{background:var(--bg3);}
    denomination now has its own hue; every one clears 4.5:1 against its ink. */
 .p25 {background:#D32F2F;color:#fff;}      /* red     */
 .p20 {background:#1565C0;color:#fff;}      /* blue    */
-.p15 {background:#F9C21B;color:#1a1a1a;}   /* yellow  */
+.p15 {background:#8D6708;color:#fff;}      /* amber   */
 .p10 {background:#2E7D32;color:#fff;}      /* green   */
 .p5  {background:#6A3DBF;color:#fff;}      /* purple  */
 .p2_5{background:#C75100;color:#fff;}      /* orange — darkened so white ink clears AA */
@@ -1246,7 +1246,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   font-weight: 700;
   letter-spacing: -0.3px;
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1259,7 +1259,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-top: 1px;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
 }
 .app-back-btn {
   display: flex;
@@ -1274,7 +1274,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   font-weight: 600;
   cursor: pointer;
   padding: 6px 4px 6px 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
   flex-shrink: 0;
   white-space: nowrap;
   min-width: 60px;
@@ -1290,7 +1290,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
 .app-navbar-action {
   flex-shrink: 0;
   white-space: nowrap;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size:17px;
   font-weight: 600;
   color: var(--h-ink);
@@ -1396,6 +1396,13 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   --tab-pad-b:max(calc(var(--safe-bottom) - 10px), 0px);
   --tab-h: calc(var(--tab-content) + var(--tab-pad-b));
   --safe-top: max(52px, calc(env(safe-area-inset-top, 0px) + 12px));
+  /* v8.32: every UI font goes through this one variable so the typeface can be
+     swapped live from the font lab. The default IS San Francisco — -apple-system
+     resolves to the system font Apple ships and promotes, so the app was already
+     on it. Only stacks already present on the device are offered: a downloaded
+     webfont would break offline use and would be the app's second third-party
+     request, which the privacy policy currently says does not exist. */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
 }
 .tab-bar {
   position: fixed;
@@ -1433,7 +1440,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   letter-spacing: 0;
   padding: 5px 1px 5px;
   min-width: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
   transition: color var(--dur-fast) ease;
   position: relative;
 }
@@ -1683,7 +1690,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   align-items: center;
   justify-content: center;
   gap: 7px;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
 }
 .mode-pill-btn svg { width: 18px; height: 18px; }
 .mode-pill-btn.active {
@@ -1731,7 +1738,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   cursor: pointer;
   transition: background var(--dur-fast) ease, color var(--dur-fast) ease, box-shadow var(--dur-fast) ease, transform var(--dur-fast) var(--ease-out);
   white-space: nowrap;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
 }
 .entr-sub-btn.active { background: var(--h-acc); color: #000; box-shadow: 0 2px 8px var(--h-glow); }
 .entr-sub-btn.active.w { background: var(--w-acc); color: #000; box-shadow: 0 2px 8px var(--w-glow); }
@@ -1781,7 +1788,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   border-right: none;
   border-top: none;
   text-align: left;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
   transition: background 0.12s;
 }
 .aj-row:active { background: var(--bg2); }
@@ -1825,7 +1832,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   color: #000;
   box-shadow: 0 4px 16px rgba(242,174,62,0.4);
   z-index: 100;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
 }
 .calc-fab.show { display: flex; }
 
@@ -1853,7 +1860,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   border-radius: 12px;
   cursor: pointer;
   padding: 14px 15px;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-family: var(--font-ui);
   color: var(--text);
   font-size:17px; font-weight: 700;
 }
@@ -2837,10 +2844,58 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
     </div>
 
+    <!-- v8.31: where the numbers come from. Users deserve to know which figures
+         are measurements, which are estimates, and how far each can be trusted. -->
+    <div class="card anim-fadeup anim-delay-2">
+      <div class="ctitle">D'on surten els números</div>
+      <p style="font-size:14px;color:var(--text2);line-height:1.6;margin:0 0 4px">
+        Cada xifra que veus surt d'algun lloc. Aquí tens quin, i fins on t'hi pots refiar.
+      </p>
+
+      <div class="xpl" id="xplSci1">
+        <button class="xpl-btn" onclick="toggleXpl('xplSci1')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>1RM estimat</button>
+        <div class="xpl-body">
+          Fem servir l'equació d'<strong>Epley (1985)</strong>: <code>1RM ≈ pes × (1 + reps/30)</code>.
+          Amb 1 repetició no estimem res — una sola repetició <em>ja és</em> un màxim.<br><br>
+          <strong>Fins on és fiable:</strong> LeSuer i col·laboradors (1997) van comparar set equacions
+          amb màxims reals de 67 persones. Totes correlacionaven molt bé (r &gt; 0,95), i entre
+          <strong>2 i 10 repeticions</strong> l'error mitjà era d'un ~3%. Però l'error creix amb les
+          repeticions, al <strong>squat</strong> Epley no va sortir prou fiable, i <strong>totes set
+          infravaloraven el deadlift</strong> — el teu màxim real de deadlift probablement és més alt del que et mostrem.
+        </div>
+      </div>
+
+      <div class="xpl" id="xplSci2">
+        <button class="xpl-btn" onclick="toggleXpl('xplSci2')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Per què un dia suau no et baixa el 1RM</button>
+        <div class="xpl-body">
+          Totes aquestes equacions donen per fet que la sèrie va <strong>a prop del fallo</strong>.
+          Si et sobraven repeticions, infravaloren sempre: «8 reps» no vol dir el mateix al límit que a mig gas.
+          Per això la pràctica actual es basa en les <strong>repeticions en reserva (RIR)</strong>
+          — Zourdos i col·laboradors (2016) van validar una escala on <strong>RPE 10 = 0 repeticions en reserva</strong>.<br><br>
+          Així que <strong>només</strong> compten per al teu 1RM estimat les sessions on: hi has posat un
+          <strong>%</strong>, o la sèrie forta té <strong>RPE ≥ 8</strong>, o (sense RPE) és de
+          <strong>6 repeticions o menys</strong>. La resta es guarden i es veuen, però no dibuixen cap estimació.
+          Sense això, 3×8 al 50% et pintava una caiguda del 37% que no havia passat.
+        </div>
+      </div>
+
+      <div class="xpl" id="xplSci3">
+        <button class="xpl-btn" onclick="toggleXpl('xplSci3')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Què és exacte i què és una estimació</button>
+        <div class="xpl-body">
+          <strong>Exacte:</strong> el pes que has aixecat de veritat, i els discs del %Calc
+          (garantim <code>barra + 2×Σdiscs = total</code>).<br>
+          <strong>Estimació:</strong> el 1RM i, per tant, el Wilks, que en depèn.<br>
+          <strong>Només orientatiu:</strong> la classificació de força — són múltiples del pes corporal
+          triats a mà, no cap norma validada.<br><br>
+          Tens el detall complet, amb les referències, a <code>SCIENCE.md</code> del projecte.
+        </div>
+      </div>
+    </div>
+
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.29<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.32<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3470,6 +3525,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
            the shape cannot hold ("DNF", "amb goma"). -->
       <div class="fg"><label id="wizWScoreLbl">Resultat</label>
         <div id="wizWScoreFields"></div></div>
+      <!-- v8.30: what a ladder actually added up to, once the rounds are known. -->
+      <div id="wizLadderTotals" style="display:none;margin-top:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--rs)"></div>
       <div class="fg" style="margin-top:12px"><label>Notes del resultat (opcional)</label>
         <input type="text" id="wizWResult" class="fb-field" placeholder="p. ex. amb goma, DNF…"></div>
       <div class="fg" style="margin-top:12px"><label>Escala</label>
@@ -3495,8 +3552,45 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 .dbg-bubble:active{transform:scale(0.92);}
 .fb-field{width:100%;box-sizing:border-box;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;color:var(--text);resize:vertical;}
 </style>
-<div class="dbg-bubble pressable" id="dbgBubble" onclick="openFeedback()" title="Enviar comentari o error" aria-label="Enviar comentari o error">
+<div class="dbg-bubble pressable" id="dbgBubble" onclick="openDbgMenu()" title="Enviar comentari o error" aria-label="Enviar comentari o error">
   <i data-lucide="bug" style="width:19px;height:19px"></i>
+</div>
+
+<!-- FONT LAB (v8.32) — a temporary experiment, like the vibration diagnostic.
+     Every option is already installed on the device: switching costs nothing to
+     download, keeps the app usable offline, and adds no third-party request. -->
+<div class="sheet" id="fontLabSheet">
+  <div class="sheet-in" style="max-height:86vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div class="stitle">Provar tipografies</div>
+    <div class="ssub" style="margin-bottom:14px;line-height:1.5">
+      Totes ja són al teu iPhone: no es baixa res i l&#39;app segueix funcionant sense connexió.
+      Tria&#39;n una i mira&#39;t l&#39;app; es manté fins que la canviïs.
+    </div>
+    <div id="fontLabList"></div>
+    <label class="toggle-row" style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border)">
+      <span class="toggle-txt"><span class="toggle-t">Xifres d&#39;amplada fixa</span>
+        <span class="toggle-s">Alinea els números en columna (sèries, pesos, temps)</span></span>
+      <input type="checkbox" switch id="fontLabTnum" onchange="setTabularNums(this.checked)">
+    </label>
+    <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:var(--rs)">
+      <div style="font-size:var(--fs-label);color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Mostra</div>
+      <div style="font-size:22px;font-weight:800">Back Squat · 3×8 @ 102,5 kg</div>
+      <div style="font-size:15px;color:var(--text2);margin-top:2px">Fran · 5:48 Rx · 1RM estimat 137,5 kg</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:2px">0123456789 · AMRAP 12 · 21-15-9</div>
+    </div>
+    <button class="btn btn-s" style="width:100%;margin-top:14px" onclick="closeFontLab()">Tancar</button>
+  </div>
+</div>
+
+<!-- Debug bubble now offers both tools rather than going straight to feedback. -->
+<div class="sheet" id="dbgMenuSheet">
+  <div class="sheet-in">
+    <div class="stitle">Proves</div>
+    <div class="ssub" style="margin-bottom:14px">Eines temporals de desenvolupament.</div>
+    <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openFeedback()">Enviar comentari o error</button>
+    <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openFontLab()">Provar tipografies</button>
+    <button class="btn btn-s" style="width:100%" onclick="closeDbgMenu()">Cancel·lar</button>
+  </div>
 </div>
 
 <div class="sheet" id="feedbackSheet">
@@ -3575,7 +3669,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.29</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.32</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -4298,7 +4392,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.29';
+const APP_VERSION='8.32';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4503,6 +4597,42 @@ function sessImpl(ent){
   // ex.rm1, or a re-derivation would silently disagree with the celebration.
   if(ent.pct&&+ent.pct>0&&+ent.pct<=100){const mw=Math.max(...ent.sets.map(s=>s.w||0));const imp=mw/(+ent.pct/100);if(imp>b)b=imp;}
   return b>0?Math.round(b*10)/10:null;
+}
+
+// Does this session tell you anything about your 1RM? (v8.30)
+//
+// Àlex logged 3x8 at ~50% and watched his "1RM estimat" fall off a cliff. The
+// stored record never moved — recomputeRM1 takes a max — but the Inici chart and
+// the "està baixant" suggestion plot sessImpl PER SESSION, and Epley on a
+// submaximal 3x8 gives roughly 0.63x his real max. The app was presenting that
+// as an estimate of his maximum.
+//
+// What the literature actually supports: rep-max equations (Epley, Brzycki,
+// Lombardi…) are validated at LOW rep ranges — most accurate at 1-5 reps, with
+// error growing substantially past ~10 (Brzycki degenerates entirely, its
+// denominator reaching zero around 37 reps). And every one of them assumes the
+// set was taken to or near FAILURE; a set with reps in reserve underestimates
+// systematically. "8 reps" on its own is ambiguous, which is why modern practice
+// anchors on RIR/RPE.
+//
+// So a session informs the 1RM only when one of these holds:
+//   1. it declares a % — that is a direct statement about the max (max = w / %),
+//      independent of reps, and as good as the user's own knowledge;
+//   2. its top set carries RPE >= 8 — near failure, so Epley means something;
+//   3. no RPE was given and the top set is <= 6 reps — the classic window.
+// Everything else is a training day. It is still logged, still shown, still
+// counts as volume; it just does not get plotted as an estimate of your maximum.
+function sessInforms1RM(ent){
+  if(!ent) return false;
+  const pv=+ent.pct;
+  if(pv>0 && pv<=100) return true;
+  const sets=(ent.sets||[]).filter(s=>s.w>0 && s.r>0);
+  if(!sets.length) return false;
+  const top=sets.reduce((b,s)=>epley(s.w,s.r)>epley(b.w,b.r)?s:b, sets[0]);
+  const rpe=+top.rpe;
+  if(rpe>=8) return true;
+  if(top.rpe!=='' && top.rpe!=null && rpe>0) return false;   // RPE given and low
+  return top.r<=6;
 }
 
 // ══ PLATES ══
@@ -5067,6 +5197,8 @@ function renderInici() {
 
 // ── First-time section hints ───────────────────────────────────
 const HINTS = {
+  rmcycle: 'El 1RM estimat és tocable: toca\'l i et mostrarà el teu <b>2RM</b> i <b>3RM</b> estimats. Torna a tocar per anar canviant.',
+  calcrm: 'El pes base és el teu 1RM estimat. Toca la xifra del RM per veure\'l com a 2RM o 3RM.',
   inici: 'Aquí veus el teu progrés recent, l\'activitat dels últims dies (toca un dia per veure què vas fer) i un suggeriment d\'entrenament.',
   objectius: 'Defineix objectius de pes amb data límit i segueix el progrés. Pots afegir-ne des d\'Exercicis.',
   metriques: 'Wilks, força relativa i classificació, calculats automàticament a partir del teu perfil i marques.',
@@ -5278,7 +5410,8 @@ function renderHomeSuggestion() {
     const last = ents[ents.length-1];
     const daysSince = last ? Math.floor((today - new Date(last.date)) / 86400000) : 999;
     // trend
-    const rm = ents.map(e => sessImpl(e)).filter(Boolean);
+    // A deliberate light day is not a regression (v8.30).
+    const rm = ents.filter(sessInforms1RM).map(e => sessImpl(e)).filter(Boolean);
     let drop = 0;
     if (rm.length >= 4) {
       const recent = rm.slice(-3), older = rm.slice(-6,-3);
@@ -5352,7 +5485,9 @@ function renderHomeChartInici() {
   const exNameEl = document.getElementById('homeChartExNameInici');
   if (exNameEl) exNameEl.textContent = ex ? ex.name : '';
   const labels = ents.map(e => e.date.slice(5));
-  const rm1Data = ents.map(e => { const v = sessImpl(e); return v || null; });
+  // Only sessions that actually inform a 1RM contribute to the estimate line
+  // (v8.30). A light 3x8 leaves a gap rather than a cliff.
+  const rm1Data = ents.map(e => sessInforms1RM(e) ? (sessImpl(e) || null) : null);
   const maxW = ents.map(e => Math.max(...(e.sets||[{w:0}]).map(s=>s.w||0)));
   const latestMax = maxW.slice(-1)[0];
   const rm1 = best1RM(exId);
@@ -5830,11 +5965,11 @@ function wizRenderSets(){
 // A Tabata is not an AMRAP. Each type asks only for the fields that define it.
 const WOD_TYPES = {
   'AMRAP':   {ico:'repeat',  sub:'Tantes rondes com puguis en un temps fix',
-              fields:['duration'], resultHint:'p. ex. 7 rondes + 12 reps'},
+              fields:['duration','progression','step'], resultHint:'p. ex. 7 rondes + 12 reps'},
   'For Time':{ico:'flame',   sub:'Completa la feina el més ràpid possible',
               fields:['scheme','timeCap'], resultHint:'p. ex. 8:42'},
   'RFT':     {ico:'layers',  sub:'X rondes completes, per temps',
-              fields:['rounds','timeCap'], resultHint:'p. ex. 12:30'},
+              fields:['rounds','timeCap','progression','step'], resultHint:'p. ex. 12:30'},
   'EMOM':    {ico:'clock',   sub:'Cada X minuts, una feina. Pots alternar estacions',
               fields:['interval','totalMin'], stations:true, resultHint:'p. ex. completat, o on has fallat'},
   'Tabata':  {ico:'zap',     sub:'Intervals curts de feina i descans',
@@ -5851,6 +5986,20 @@ const WOD_FIELD_DEFS = {
   scheme:  {label:'Esquema de reps', def:'21-15-9', hint:'Deixa-ho buit si totes les rondes són iguals', text:true},
   interval:{label:'Cada (min)', def:1, hint:'1 = EMOM, 2 = E2MOM…'},
   totalMin:{label:'Minuts totals', def:12, hint:''},
+  // v8.30: rep ladders. Àlex: "AMRAP: 1st round 1 ex1 2 ex2 3 ex3, second
+  // round: 2 ex1, 4 ex2, 6 ex3… incrementally without end (within the time
+  // limit)" — and the descending equivalent. `scheme` only ever described a
+  // FIXED ladder like 21-15-9; an open-ended one has no list to write down.
+  //
+  // The movement's own reps are round 1. `progression` says what happens after:
+  //   fixed  — every round identical (the default, unchanged behaviour)
+  //   mult   — round N does N x the round-1 reps  (1-2-3 / 2-4-6 / 3-6-9…)
+  //   add    — round N adds `step` each round     (5, 7, 9, 11…)
+  //   sub    — round N subtracts `step`, stopping at 0 (10, 8, 6, 4, 2)
+  progression:{label:'Progressió de reps', def:'fixed', hint:'Com canvien les reps a cada ronda', choice:[
+    ['fixed','Iguals cada ronda'],['mult','Multiplicant (1-2-3, 2-4-6…)'],
+    ['add','Sumant cada ronda'],['sub','Restant cada ronda']]},
+  step:    {label:'Quant sumes/restes', def:2, hint:'Només per a sumant/restant'},
   work:    {label:'Feina (s)', def:20, hint:''},
   rest:    {label:'Descans (s)', def:10, hint:''},
 };
@@ -5993,6 +6142,19 @@ function wizRenderWodStruct(){
   document.getElementById('wizWodStructFields').innerHTML =
     '<div class="frow">'+cfg.fields.map(f=>{
       const d=WOD_FIELD_DEFS[f], v=wizS.wod.struct[f];
+      // `step` only matters for the additive/subtractive ladders (v8.30).
+      if(f==='step'){
+        const pr=wizS.wod.struct.progression||'fixed';
+        if(pr!=='add' && pr!=='sub') return '';
+      }
+      if(d.choice){
+        return '<div><label>'+d.label+'</label>'
+          +'<select class="fb-field" onchange="wizStructVal(\''+f+'\',this.value);wizRenderWodStruct()">'
+          +d.choice.map(function(o){return '<option value="'+o[0]+'"'+((v||d.def)===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')
+          +'</select>'
+          +(d.hint?'<div style="font-size:var(--fs-label);color:var(--text3);margin-top:4px">'+d.hint+'</div>':'')
+          +'</div>';
+      }
       return '<div><label>'+d.label+'</label>'
         +'<input type="'+(d.text?'text':'number')+'" class="fb-field" value="'+(v==null?'':v)+'" '
         +'onchange="wizStructVal(\''+f+'\',this.value)">'
@@ -6002,7 +6164,7 @@ function wizRenderWodStruct(){
 }
 function wizStructVal(f,v){
   const d=WOD_FIELD_DEFS[f];
-  wizS.wod.struct[f]= d.text ? String(v).trim() : (+v||0);
+  wizS.wod.struct[f]= (d.text||d.choice) ? String(v).trim() : (+v||0);
   wizS.touched=true;
 }
 // Seed the name box on arrival. A template is a plan, not a session, so it never
@@ -6152,7 +6314,7 @@ function wizRenderScoreFields(){
       +'<div style="font-size:13px;color:var(--text3);margin-top:6px">Escriu només xifres: els dos punts es posen sols.</div>';
   } else if(kind==='rounds'){
     host.innerHTML='<div class="frow" style="margin-bottom:0">'
-      +'<div><label>Rondes</label><input type="number" inputmode="numeric" min="0" id="wizScRounds" class="fb-field" placeholder="7" value="'+(sc.rounds!=null?sc.rounds:'')+'"></div>'
+      +'<div><label>Rondes</label><input type="number" inputmode="numeric" min="0" id="wizScRounds" class="fb-field" placeholder="7" value="'+(sc.rounds!=null?sc.rounds:'')+'" oninput="renderLadderTotals()"></div>'
       +'<div><label>+ reps</label><input type="number" inputmode="numeric" min="0" id="wizScReps" class="fb-field" placeholder="12" value="'+(sc.reps!=null?sc.reps:'')+'"></div>'
       +'</div>';
   } else if(kind==='reps'){
@@ -6244,6 +6406,28 @@ function wizRenderWodRecap(){
   // telling you to type "8:42" into the notes.
   const el=document.getElementById('wizWResult');
   if(el) el.placeholder='p. ex. amb goma, DNF, escalat…';
+  renderLadderTotals();
+}
+// Once you say how many rounds you got, a ladder can tell you how much work that
+// actually was — the reason for recording the progression at all (v8.30).
+// Live: it updates as the rounds field changes.
+function renderLadderTotals(){
+  const host=document.getElementById('wizLadderTotals');
+  if(!host) return;
+  const w=wizS&&wizS.wod;
+  if(!w||!wodIsLadder(w)){ host.style.display='none'; host.innerHTML=''; return; }
+  const el=document.getElementById('wizScRounds');
+  const rounds = el ? (+el.value||0) : ((w.score&&w.score.rounds)||0);
+  if(!(rounds>0)){ host.style.display='none'; host.innerHTML=''; return; }
+  const rows=ladderTotals(w, rounds).filter(r=>r.total>0);
+  if(!rows.length){ host.style.display='none'; host.innerHTML=''; return; }
+  const grand=rows.reduce((s2,r)=>s2+r.total,0);
+  host.style.display='block';
+  host.innerHTML='<div style="font-size:var(--fs-label);color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Feina total en '+rounds+' rondes</div>'
+    + rows.map(r=>'<div style="display:flex;justify-content:space-between;font-size:var(--fs-body-sm);padding:2px 0">'
+        +'<span>'+esc(r.name)+'</span><span style="font-weight:700">'+r.total+' reps</span></div>').join('')
+    + '<div style="display:flex;justify-content:space-between;font-size:var(--fs-body-sm);padding:4px 0 0;margin-top:4px;border-top:0.5px solid var(--border)">'
+    + '<span style="color:var(--text2)">Total</span><span style="font-weight:800;color:var(--w-ink)">'+grand+' reps</span></div>';
 }
 // shared summary used by the recap, the historial and the template confirm
 // A movement as one line. The amount is a rep count unless the exercise carries
@@ -6261,6 +6445,43 @@ function movLineText(m){
   const showW = m.weight && !(e && e.noLoad);
   return movAmountText(m)+(e?e.name:m.exId)+(showW?' @'+m.weight+'kg':'');
 }
+// ── Rep ladders (v8.30) ──────────────────────────────────────────────
+// Reps a movement does in round N, given the round-1 baseline.
+function ladderReps(base, round, prog, step){
+  const b=+base||0, n=Math.max(1, +round||1);
+  switch(prog){
+    case 'mult': return b*n;
+    case 'add':  return b + (+step||0)*(n-1);
+    case 'sub':  return Math.max(0, b - (+step||0)*(n-1));
+    default:     return b;
+  }
+}
+function wodProgression(w){ return (w&&w.struct&&w.struct.progression)||'fixed'; }
+function wodIsLadder(w){ const p=wodProgression(w); return p==='mult'||p==='add'||p==='sub'; }
+// "1-2-3 · 2-4-6 · 3-6-9 …" — shows the shape rather than describing it.
+function ladderPreviewText(w, rounds){
+  const movs=(w.movements||[]).filter(m=>m.exId && +m.reps>0);
+  if(!movs.length) return '';
+  const prog=wodProgression(w), step=(w.struct&&w.struct.step)||0;
+  const n=Math.min(rounds||3, 3);
+  const out=[];
+  for(let r=1;r<=n;r++) out.push(movs.map(m=>ladderReps(m.reps,r,prog,step)).join('-'));
+  return out.join(' · ') + (prog==='sub' ? '' : ' …');
+}
+// Total reps per movement once you know how many rounds were completed. This is
+// what makes a ladder worth recording: "7 rounds of an ascending AMRAP" is a
+// very different amount of work from 7 fixed rounds.
+function ladderTotals(w, roundsDone){
+  const movs=(w.movements||[]).filter(m=>m.exId && +m.reps>0);
+  const prog=wodProgression(w), step=(w.struct&&w.struct.step)||0;
+  const R=Math.max(0, Math.floor(+roundsDone||0));
+  return movs.map(m=>{
+    let total=0;
+    for(let r=1;r<=R;r++) total+=ladderReps(m.reps,r,prog,step);
+    const e=(D.wEx||[]).find(x=>x.id===m.exId);
+    return {exId:m.exId, name:e?e.name:m.exId, total};
+  });
+}
 function wodSummaryHtml(w){
   if(!w||!w.type) return '';
   const nm=x=>movLineText(x);
@@ -6269,6 +6490,11 @@ function wodSummaryHtml(w){
   if(st.duration) bits.push(st.duration+' min');
   if(st.rounds)   bits.push(st.rounds+' rondes');
   if(st.scheme)   bits.push(st.scheme);
+  if(wodIsLadder(w)){
+    const lp=ladderPreviewText(w, st.rounds);
+    bits.push(st.progression==='sub' ? 'descendent' : 'ascendent');
+    if(lp) bits.push(lp);
+  }
   if(st.interval&&st.totalMin) bits.push('cada '+st.interval+' min × '+st.totalMin+' min');
   if(st.work&&st.rest) bits.push(st.work+'s/'+st.rest+'s');
   if(st.timeCap)  bits.push('cap '+st.timeCap+' min');
@@ -6504,7 +6730,12 @@ function gotoCalc(){
   p.classList.toggle('on',opening);
   document.getElementById('bubCalc').classList.toggle('on',opening);
   syncEntrHist();
-  if(opening){ closeTplPanel(true); }
+  if(opening){
+    closeTplPanel(true);
+    // Same hidden gesture, same fix: %Calc is built on the RM, so say it is
+    // tappable here too (v8.30).
+    setTimeout(()=>maybeHint(p,'calcrm'),80);
+  }
 }
 // The historial button hides behind the calculator and comes back with it.
 function syncEntrHist(){
@@ -8377,7 +8608,7 @@ function renderProg(){
   const rmStatVal = rm1?nRM(rm1,rmCycleState):null;
   document.getElementById('st1RM').innerHTML=rm1?
     '<span class="rm-val-display" data-rm1="'+rm1+'" style="cursor:pointer" onclick="cycleRM()" title="1RM/2RM/3RM">'+rmStatVal.toFixed(1)+' kg</span>':'—';
-  document.getElementById('st1RMLbl').innerHTML='<span class="rm-lbl-display">'+rmLabel(rmCycleState)+' estimat</span>';
+  document.getElementById('st1RMLbl').innerHTML='<span class="rm-lbl-display">'+rmLabel(rmCycleState)+' estimat</span>'+'<span style="display:block;font-size:11px;color:var(--text3);margin-top:1px">toca per 1/2/3RM</span>';
   document.getElementById('stSess').textContent=ents.length;
   document.getElementById('stTrend').textContent=trend;
   const lbls=ents.map(e=>fmtS(e.date));
@@ -8620,6 +8851,9 @@ function showDetail(exId){
   detailGoalExId=exId;
   const ex=D.hEx.find(e=>e.id===exId);if(!ex)return;
   renderKnownRm(exId);
+  // The 1/2/3RM cycle was a hidden gesture: nothing on screen said the number
+  // was tappable, so nobody found it (v8.30).
+  if(!isGymEx(ex)) setTimeout(()=>maybeHint(document.getElementById('detStats'),'rmcycle'),80);
   document.getElementById('detNm').textContent=ex.name;
   const bc=ex.cat==='gym'?'bg':ex.cat==='complex'?'bc':'bh';
   const bl=ex.cat==='gym'?'Gymnastics':ex.cat==='complex'?'Complex':'Halterofília';
@@ -8638,7 +8872,7 @@ function showDetail(exId){
       (detMeta?'<div class="det-hero-meta">'+detMeta+'</div>':'')+
     '</div>';
   if(detCI){detCI.destroy();detCI=null;}
-  if(ents.length){const aD=ents.map(e=>Math.max(...(e.sets||[{w:0}]).map(s=>s.w||0)));const iD=ents.map(e=>{const v=sessImpl(e);return v||null;});const ds=[{label:'Pes',data:aD,borderColor:chartAcc(),backgroundColor:accRGBA(0.07),pointBackgroundColor:chartAcc(),tension:0.3,fill:true,pointRadius:4}];if(ex.cat!=='gym')ds.push({label:'1RM',data:iD,borderColor:chartBlue(),backgroundColor:'transparent',borderDash:[5,3],pointBackgroundColor:chartBlue(),tension:0.3,fill:false,pointRadius:3,spanGaps:true});detCI=new Chart(document.getElementById('detChart'),{type:'line',data:{labels:ents.map(e=>fmtS(e.date)),datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:chartInk(),maxRotation:45},grid:{color:'rgba(128,128,128,0.07)'}},y:{ticks:{color:chartInk()},grid:{color:'rgba(128,128,128,0.07)'}}}}});}
+  if(ents.length){const aD=ents.map(e=>Math.max(...(e.sets||[{w:0}]).map(s=>s.w||0)));const iD=ents.map(e=>sessInforms1RM(e)?(sessImpl(e)||null):null);const ds=[{label:'Pes',data:aD,borderColor:chartAcc(),backgroundColor:accRGBA(0.07),pointBackgroundColor:chartAcc(),tension:0.3,fill:true,pointRadius:4}];if(ex.cat!=='gym')ds.push({label:'1RM',data:iD,borderColor:chartBlue(),backgroundColor:'transparent',borderDash:[5,3],pointBackgroundColor:chartBlue(),tension:0.3,fill:false,pointRadius:3,spanGaps:true});detCI=new Chart(document.getElementById('detChart'),{type:'line',data:{labels:ents.map(e=>fmtS(e.date)),datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:chartInk(),maxRotation:45},grid:{color:'rgba(128,128,128,0.07)'}},y:{ticks:{color:chartInk()},grid:{color:'rgba(128,128,128,0.07)'}}}}});}
   if(rm1&&ex.cat!=='gym'){document.getElementById('detZonesCard').style.display='block';document.getElementById('detZonesBody').innerHTML=D.calcPcts.map(p=>`<tr class="${p>=80?'hi':''}"><td class="zpct">${p}%</td><td>${(rm1*p/100).toFixed(1)} kg</td><td style="font-size:12px;color:var(--text2)">${zlbl(p)}</td></tr>`).join('');}
   else document.getElementById('detZonesCard').style.display='none';
   const recent=[...ents].reverse().slice(0,8);
@@ -10248,6 +10482,71 @@ function updateDbgBubble() {
   const b = document.getElementById('dbgBubble');
   if (b) b.style.display = (typeof activeTab !== 'undefined' && activeTab && activeTab !== 'inici') ? 'flex' : 'none';
 }
+// ══ FONT LAB (v8.32) ═══════════════════════════════════════════════
+// Àlex noticed AI-built apps sharing one look. Worth saying plainly: the default
+// below IS San Francisco — `-apple-system` resolves to the system font Apple
+// ships and promotes for its platforms, so PRsonal was already on it. The
+// sameness he is seeing elsewhere is more likely Inter, which this app does not
+// use.
+//
+// Only fonts ALREADY on the device are offered. A downloaded webfont would break
+// offline use in the gym and would become the app's second third-party request,
+// which the privacy policy says does not exist — one font is not worth
+// re-opening the legal pack for.
+const FONT_OPTIONS = [
+  {id:'system',  name:'San Francisco',    note:'La d\'Apple. El que fem servir ara.',
+   css:"-apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif"},
+  {id:'rounded', name:'SF Pro Rounded',   note:'La que Apple fa servir a Fitness i Activitat.',
+   css:"ui-rounded, 'SF Pro Rounded', -apple-system, system-ui, sans-serif"},
+  {id:'serif',   name:'New York',         note:'La serif d\'Apple. Més editorial.',
+   css:"ui-serif, 'New York', Georgia, serif"},
+  {id:'avenir',  name:'Avenir Next',      note:'Geomètrica, esportiva.',
+   css:"'Avenir Next', Avenir, -apple-system, system-ui, sans-serif"},
+  {id:'helv',    name:'Helvetica Neue',   note:'Neutra clàssica.',
+   css:"'Helvetica Neue', Helvetica, Arial, sans-serif"},
+];
+const FONT_KEY='alerx_font', TNUM_KEY='alerx_tnum';   // alerx_ prefix: wipeAllLocalData enumerates by it
+
+function applyFontChoice(id){
+  const o=FONT_OPTIONS.find(f=>f.id===id)||FONT_OPTIONS[0];
+  document.documentElement.style.setProperty('--font-ui', o.css);
+  try{ localStorage.setItem(FONT_KEY,o.id); }catch(e){}
+  return o;
+}
+function setTabularNums(on){
+  // Numbers in a tracker live in columns: sets, weights, times, plate chips.
+  // Proportional digits make those columns ragged.
+  document.documentElement.style.fontVariantNumeric = on ? 'tabular-nums' : '';
+  try{ localStorage.setItem(TNUM_KEY, on?'1':'0'); }catch(e){}
+}
+function currentFontId(){
+  try{ return localStorage.getItem(FONT_KEY)||'system'; }catch(e){ return 'system'; }
+}
+function renderFontLab(){
+  const host=document.getElementById('fontLabList'); if(!host) return;
+  const cur=currentFontId();
+  host.innerHTML=FONT_OPTIONS.map(o=>
+    '<button class="wiz-opt'+(o.id===cur?' on':'')+'" style="font-family:'+o.css+'" onclick="pickFont(\''+o.id+'\')">'
+    +'<span><span class="wiz-opt-t">'+o.name+(o.id===cur?' ✓':'')+'</span>'
+    +'<span class="wiz-opt-s">'+o.note+'</span>'
+    +'<span style="display:block;font-size:15px;margin-top:4px;color:var(--text2)">3×8 @ 102,5 kg · 5:48</span></span></button>'
+  ).join('');
+  const t=document.getElementById('fontLabTnum');
+  if(t){ try{ t.checked = localStorage.getItem(TNUM_KEY)==='1'; }catch(e){} }
+}
+function pickFont(id){ const o=applyFontChoice(id); renderFontLab(); toast(o.name); }
+function openFontLab(){ renderFontLab(); document.getElementById('fontLabSheet').classList.add('on'); }
+function closeFontLab(){ animClose(document.getElementById('fontLabSheet')); }
+function openDbgMenu(){ document.getElementById('dbgMenuSheet').classList.add('on'); }
+function closeDbgMenu(){ animClose(document.getElementById('dbgMenuSheet')); }
+// Restore the choice before first paint so the app never flashes a second face.
+(function restoreFontChoice(){
+  try{
+    const f=localStorage.getItem(FONT_KEY); if(f) applyFontChoice(f);
+    if(localStorage.getItem(TNUM_KEY)==='1') document.documentElement.style.fontVariantNumeric='tabular-nums';
+  }catch(e){}
+})();
+
 function openFeedback() {
   const sh = document.getElementById('feedbackSheet');
   if (sh) sh.classList.add('on');
@@ -10387,7 +10686,14 @@ const LEGAL_DOCS = {
 // STRENGTH METRICS ENGINE
 // ══════════════════════════════════════════
 
-// Wilks 2020 IPF coefficients
+// Wilks coefficients — the ORIGINAL formula (Robert Wilks, Powerlifting
+// Australia, 1994), used by the IPF until 2019 and still the most widely
+// recognised strength-normalising score. NOT the 2020 "Wilks-2" revision and NOT
+// IPF GL Points, both of which use different coefficients; the comment here said
+// "Wilks 2020 IPF" for a long time and was wrong on both counts.
+//   coefficient = 500 / (a + bx + cx² + dx³ + ex⁴ + fx⁵),  x = bodyweight (kg)
+//   score       = total lifted × coefficient
+// See SCIENCE.md.
 const WILKS = {
   male:   [-216.0475144, 16.2606339, -0.002388645, -0.00113732, 7.01863e-6, -1.291e-8],
   female: [594.31747775582, -27.23842536447, 0.82112226871, -0.00930733913, 4.731582e-5, -9.054e-8]
@@ -10402,9 +10708,13 @@ function calcWilks(liftKg, bwKg, sex) {
   return Math.round(liftKg * 500 / denom * 10) / 10;
 }
 
-// Symmetric Strength standards (kg) by bodyweight 70kg male reference
+// Strength-classification thresholds.
 // Format: [Principiant, Novell, Intermedi, Avançat, Elit]
-// These are multipliers × bodyweight, sex-adjusted
+// Bodyweight multipliers, sex-adjusted. HAND-AUTHORED practical guidance in the
+// range commonly used in gyms — they are NOT Symmetric Strength's percentile
+// model (which fits a large dataset and adjusts for age too), and the UI claimed
+// they were until v8.31. Treat them as orientation, not as a validated norm.
+// The Wilks score above is the part with a real published formula behind it.
 const SS_STANDARDS = {
   // [male_multipliers, female_multipliers] at each level
   back_squat:     { m: [0.50, 0.75, 1.00, 1.25, 1.60], f: [0.35, 0.55, 0.75, 1.00, 1.25] },
@@ -10525,13 +10835,14 @@ function renderMetricsOverlay() {
         <div style="height:6px;border-radius:20px;background:var(--h-acc);width:${Math.min(100, Math.round(wilksData.wilks/5))}%;transition:width .7s var(--ease-out)" data-w="${Math.min(100, Math.round(wilksData.wilks/5))}"></div>
       </div>
       <div style="position:relative;height:12px;font-size:12px;color:var(--text3);margin-bottom:2px">
-        <span style="position:absolute;left:0">0</span><span style="position:absolute;left:40%;transform:translateX(-50%)">200</span><span style="position:absolute;left:60%;transform:translateX(-50%)">300</span><span style="position:absolute;left:76%;transform:translateX(-50%)">380</span><span style="position:absolute;left:90%;transform:translateX(-50%)">450</span><span style="position:absolute;right:0">500+</span>
+        <span style="position:absolute;left:0">0</span><span style="position:absolute;left:40%;transform:translateX(-50%)">200</span><span style="position:absolute;left:60%;transform:translateX(-50%)">300</span><span style="position:absolute;left:76%;transform:translateX(-50%)">380</span><span style="position:absolute;right:0">500+</span>
       </div>
       <div class="xpl" id="xplWilks">
         <button class="xpl-btn" onclick="toggleXpl('xplWilks')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Què és el Wilks?</button>
         <div class="xpl-body">
         El coeficient Wilks normalitza el pes aixecat respecte al teu pes corporal i sexe, permetent comparar la força entre persones de diferent constitució. Va ser creat per Robert Wilks per a competicions de powerlifting. Un puntuació de <strong>300</strong> és sòlida per a un atleta recreatiu, <strong>380+</strong> és avançat, i <strong>450+</strong> és de nivell competitiu seriós.<br><br>
-        <em>Nota: Utilitza els teus millors estimats de 1RM en Back Squat + Deadlift + Bench Press.</em>
+        <em>Fórmula original de Wilks (1994), oficial a l'IPF fins al 2019. No és la revisió del 2020 ni els IPF GL Points.</em><br>
+        <em>Nota: Utilitza els teus millors <strong>estimats</strong> de 1RM en Back Squat + Deadlift + Bench Press, així que hereta la incertesa d'aquests.</em>
         </div>
       </div>
     </div>` : `
@@ -10545,7 +10856,7 @@ function renderMetricsOverlay() {
       <div class="metric-card-title">Classificació de força</div>
       <div class="xpl" id="xplCls" style="border-top:none;margin-top:0;margin-bottom:10px">
         <button class="xpl-btn" style="padding-top:0" onclick="toggleXpl('xplCls')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Com es calcula?</button>
-        <div class="xpl-body">Basada en els estàndards de Symmetric Strength, ajustada al teu pes corporal (${bw} kg) i sexe.</div>
+        <div class="xpl-body">Llindars orientatius com a <strong>múltiples del teu pes corporal</strong> (${bw} kg), ajustats per sexe. Són una guia pràctica d'ús comú al gimnàs, <strong>no una norma validada</strong>: serveixen per situar-te, no per classificar-te oficialment. La puntuació Wilks, en canvi, sí que és una fórmula establerta.</div>
       </div>
       ${relStrengthRows.map(({ex,rm,ratio,lvlData}) => {
         const lvlClass = lvlData ? LEVEL_CLASSES[Math.min(lvlData.level, 4)] : 'level-0';
@@ -11541,67 +11852,46 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
-  '8.27':['<b>Un sol editor.</b> Editar una sessió des de la fitxa d\'un exercici obria una finestra diferent, que no deixava tocar ni les etiquetes ni l\'exercici. Ara tot passa pel registrar de sempre.',
-          'Arreglat: si canvies l\'exercici d\'una sessió, el màxim de l\'exercici <b>antic</b> també es recalcula. Abans es quedava alt amb una sèrie que ja no era seva.'],
-  '8.26':['<b>Els rècords de WoD ara respecten l\'escala.</b> Abans un Fran Scaled a 4:30 batia un Fran Rx a 5:48 i comptava com a rècord. Ara cada escala té el seu propi rècord, i el trofeu diu quina és.',
-          'Els WoDs marcats com a <b>Modificat</b> es guarden i es veuen a l\'historial, però no fan rècord: si canvies l\'entrenament pel teu compte, no hi ha res fix per comparar.',
-          '<b>Ja pots posar l\'RPE</b> a cada sèrie (opcional, d\'1 a 10). Amb 5 sessions, Mètriques comença a dir-te si vas acumulant fatiga.',
-          '<b>Ja pots apuntar un màxim que ja sabies</b> — el que vas fer a una competició o un dia de test que no vas registrar sèrie a sèrie. El trobaràs a la fitxa de cada exercici.'],
-  '8.25':['<b>Ja pots registrar complexos.</b> En triar un exercici de força ara et preguntem si és un sol moviment o un complex; si ho és, en muntes la combinació (moviment + repeticions per ronda) i el pes el poses després, com sempre.',
-          '<b>I cada moviment del complex compta pel seu compte.</b> Si fas 3 power clean + 1 jerk a 70 kg, el power clean suma com a 3 reps a 70 i el jerk com a 1 rep a 70, al seu propi històric i als seus rècords.',
-          'Aplicar una plantilla de WoD ara obre el registrar: així el resultat queda ben tipat i <b>compta com a rècord</b>. Abans es desava com a text lliure i no comptava per a res.',
-          'Pots <b>modificar un clàssic</b> (es desa com a plantilla teva, amb nom nou) i <b>editar o esborrar</b> les teves plantilles, també les de força.',
-          'A l\'historial, cada entrenament té un botó per <b>repetir-lo</b>: t\'obre el registrar ja omplert amb la data d\'avui.'],
-  '8.24':['<b>La barra fosca de dalt ja no surt.</b> En obrir qualsevol finestra, la franja del notch es quedava del color original sobre el fons enfosquit i cantava molt (sobretot amb el tema clar).',
-          '<b>Ara pots posar barra als WoDs.</b> Power Clean, Squat Clean, Power Snatch, Split Jerk, Bench Press, Sumo Deadlift High Pull i més: el catàleg de WoD passa de 10 moviments de barra a 21.',
-          'Els moviments que no porten pes (córrer, burpees, dobles, rem…) <b>ja no et demanen kg</b>, i els que van per distància et demanen metres.',
-          '<b>Els rècords de WoD ja no salten cada dia.</b> Abans, estrenar un nom comptava com a rècord — i gairebé sempre estrenes nom. Ara cal batre una marca teva anterior, i la pantalla va en <b>verd</b>, no en daurat: un temps no és un pes.',
-          'Quan una sessió et fa <b>dos rècords</b> (pes aixecat i 1RM estimat), ara els veus tots dos.',
-          'El WoD ja ve amb <b>nom posat</b> (la data). El canvies si vols, o continues.',
-          'El temps s\'escriu <b>només amb xifres</b>: els dos punts es posen sols. 842 → 8:42, 1100 → 11:00, i «11» són 11 minuts.',
-          'L\'escala ja no és només Rx o Scaled: hi ha <b>Intermedi</b> i <b>Modificat</b>.',
-          'Un WoD sense moviments ja no es pot desar, i el temps límit del WoD i el teu temps ja no es confonen.',
-          '<b>L\'alta d\'usuari ja es pot acabar.</b> La pantalla del gimnàs era més alta que el mòbil i no es podia moure, així que el botó de continuar quedava fora de l\'abast.',
-          'Ara demanem <b>totes</b> les dades del perfil, i el sexe s\'ha de triar: abans es donava per fet «masculí» i això canvia tots els càlculs de Wilks.',
-          'Els discs del gimnàs surten <b>tots apagats</b> i els encens tu. Abans venien preseleccionats i molta gent es quedava amb discs que el seu box no té.',
-          'Els clàssics ja es veuen bé: Cindy diu els seus 20 min, Fran i Annie mostren l\'esquema real (21-15-9 i 50-40-30-20-10), Helen/DT/Barbara les seves rondes, i el mile de Murph són metres, no repeticions.'],
-  '8.23':['Les celebracions ara distingeixen dues coses: el <b>pes màxim que has aixecat de veritat</b> i el <b>1RM estimat</b>, que és un càlcul. Abans es barrejaven i semblava que havies aixecat un pes que no havies tocat.',
-          'En registrar força ara tries <b>Categoria → Família → Exercici</b>, igual que a %Calc.',
-          'El camp «% intentat» ara es diu <b>% del teu màxim</b> i explica què fa. També accepta el 100.',
-          'A «Aquests dies», cada sessió té una <b>creu petita</b> per esborrar-la, amb confirmació.',
-          'Ja no es pot moure la pantalla del darrere quan tens una finestra oberta.',
-          'El logo i la versió han baixat per sota del límit de scroll: només els veuràs si estires la pantalla més enllà del final.'],
-  '8.22':['Arreglat: fer servir una plantilla de WoD no feia absolutament res. Ara obre el registrar ja emplenat i només et demana el resultat.','La pantalla del resultat ara diu sempre què et demana: "Quant has trigat?" per a un For Time, "Quantes rondes?" per a un AMRAP, i així amb cada tipus.','El nom de l\'exercici ja no s\'amuntega amb el botó Tornar: va a la seva pròpia línia.'],
-  '8.21':['Els WoDs ara tenen marca de veritat. En registrar-ne un et demanem el resultat en la forma que toca: temps per a For Time, rondes + reps per a l\'AMRAP, repeticions per a la Tabata.','Nova secció Rècords a Mètriques → WoD: la teva millor marca de cada WoD i quants cops l\'has fet. Toca\'l per veure tots els intents.','Si millores la teva marca, tens celebració i confeti, igual que amb un rècord de força.','L\'app ja sap que "Murph" i "murph" són el mateix WoD.','Els WoDs antics s\'han convertit sols: si el resultat es podia entendre, ja té marca.'],
-  '8.20':['Arreglat un error important: en fer un rècord nou, la celebració petava i no es veia mai. Ara sí.','En crear una plantilla ja no et demanem la data: una plantilla no té dia.','Hem tret la vibració. A l\'iPhone el navegador no la permet de debò, així que preferim no prometre-la; arribarà amb la versió nativa.'],
-  '8.19':['Nou: el temps a Inici (opcional). Temperatura actual, màxima, mínima i una nota d\'entrenament. Cal la teva ubicació: l\'arrodonim a ~11 km i no s\'envia cap identificador. Ho actives o desactives a Més → El temps.','Cada disc té ara el seu color: abans el 5 era gairebé blanc i els petits repetien els colors dels grans.','Botons principals amb text clar sobre un fons més fosc, més fàcils de llegir.','Els botons de la part de WoD ara són de color verd-blau, com la resta de la secció.','El botó Tornar i el títol de les pantalles ja estan ben col·locats.','A Mètriques, si un exercici no té dades, ja no es mostra un gràfic buit.','"Discos" ara és "Discs".'],
-  '8.18':['Arreglat: al mode fosc, les tres opcions de Registrar (Força, Força + WoD, WoD) es veien negre sobre negre. Ara es llegeixen.','Colors corregits al mode clar: la pestanya activa, el botó Tornar i el dia d\'avui no arribaven al mínim de contrast.','Tots els botons i camps són ara de 44px com a mínim, pensats per al dit entre sèries.','L\'app és més lleugera: hem esborrat la pantalla de registre antiga que ja no feia servir ningú.','Retocs visuals a l\'historial i als avisos.'],
-  '8.17':['La calculadora de % ja no et proposa pesos impossibles: a Més → El teu gimnàs marques quins discos teniu al box i quina barra, i tots els càlculs s\'hi ajusten.','Cada percentatge et diu el pes que pots muntar de veritat, amb els discos exactes de cada banda.','A sota, el material que has de portar a la plataforma per a tota la sessió.','Toca la icona de la barra per canviar-la (10, 15 o 20 kg) sense sortir de la calculadora.','Toca «Base» per posar-hi el teu propi 100% d\'un exercici.','Els exercicis de la calculadora es trien per família, com a Inici.','Ara et demanem la data de naixement: l\'edat es calcula sola i el dia del teu aniversari l\'app t\'ho celebra.','Arreglat: a l\'iPhone algunes icones no es veien (Registrar, Plantilles i la resta de llistes).','Arreglat: el calendari de l\'historial se sortia de la targeta.','Arreglat: amb Rècords obert, canviar de secció no feia res i et quedaves encallat.','L\'avís de còpia de seguretat es pot tancar i només torna al cap d\'una setmana.','Inici respira més, i l\'avís de «zona de perill» només surt si demanes esborrar les dades.','La vibració ara funciona a l\'iPhone (abans no feia res). La pots activar o desactivar i provar-la a Més → Accessibilitat.'],
-  '8.16':['A l\'historial, cada sessió té un botó d\'editar: s\'obre el registrar ja emplenat i pots canviar-ho tot.','Calendari més compacte i els dies s\'acoloreixen segons què vas fer.','A la calculadora, toca un percentatge per activar-lo o desactivar-lo; els discs es recalculen.','Discos amb els colors oficials de competició, en una sola línia.','Nou botó per registrar tota la sessió amb els percentatges actius ja preparats.','Objectius també es pot lliscar entre Força i WoD.'],
-  '8.15':['Registrar un WoD ara és guiat pas a pas, igual que la força.','Cada tipus et pregunta el que toca: durada per a l\'AMRAP, esquema per a For Time, feina i descans per a la Tabata…','EMOM i E2MOM amb estacions que s\'alternen (senars i parells).','Cash-in i cash-out per a qualsevol WoD.','Tot això es desa, es pot repetir des d\'una plantilla i compta a les estadístiques.'],
-  '8.14':['Ara pots muntar el WoD moviment a moviment, amb repeticions i pes.','Desa\'l com a plantilla i repeteix-lo quan vulguis: els moviments i els pesos es mantenen.','Nova secció \"Per moviment\" a Mètriques → WoD: repeticions, volum i pes màxim de cada moviment.','L\'historial mostra de què estava fet cada WoD.'],
-  '8.13':['Restaurar una còpia ara comprova de debò que el fitxer sigui una còpia vàlida abans de substituir res.'],
-  '8.12':['Arreglat un error que petava en tocar un valor de RM amb Rècords obert.','L\'historial torna a mostrar les notes, les etiquetes i el % de cada sessió.','El botó Tornar és més gran i més fàcil de tocar.'],
-  '8.11':['\"Força\" és ara el nom de la secció; Haltero, Complex i Gymnastics són les categories de dins.','Última passada de textos després de la reconstrucció.'],
-  '8.10':['Els objectius es creen aquí mateix, pas a pas, sense saltar a cap altra pantalla.','Cada objectiu té barra de progrés, i si el tens a tocar t\'anima a intentar-ho.','Quan l\'assoleixes, passa a la llista d\'assolits.','Nova barra setmanal a Inici amb les sessions que portes.','A Inici, Activitat recent ara va abans de Progrés recent, amb els selectors ben etiquetats.'],
-  '8.9':['Mètriques va al gra: les explicacions llargues s\'obren només si les vols.','L\'app recorda si les tens obertes o tancades.','A l\'historial, cada dia et diu de quina setmana és i què hi has fet.'],
-  '8.8':['Rècords ara s\'agrupa per famílies: toca Snatch, Squat o Deadlift per obrir-les.','Cada família et diu quants exercicis hi tens registrats.','Hi surten TOTS els exercicis, també els que encara no has provat mai.','La gimnàstica mostra lastre i repeticions, no un 1RM inventat.'],
-  '8.7':['Arreglat: el missatge per descartar un registre quedava amagat darrere la finestra i no es podia tancar.','Entrenar ara respira: només els tres botons, un consell que pots tancar, i l\'historial al final.','Rècords, Progrés i Exercicis s\'han mogut a Mètriques, com a botons rodons.','Plantilles et pregunta pas a pas: fer-ne servir una o crear-ne, i els WoDs clàssics tenen secció pròpia.','A l\'historial pots editar i esborrar tant la força com els WoDs, amb colors per distingir-los.'],
-  '8.6':['La calculadora de % és molt més clara: tria categoria, exercici i veus els pesos grans amb els discos.','Des de la calculadora pots registrar la sèrie directament, ja emplenada.','Plantilles: ja hi trobaràs Murph, Fran, Cindy i 7 WoDs clàssics més, a punt per aplicar.','Nou historial amb calendari: toca un dia per veure i editar el que vas fer, WoDs inclosos.'],
-  '8.5':['Entrenar té tres botons grans a dalt: Registrar, Plantilles i % Calc.','Registrar ara et pregunta una cosa cada cop, amb la resta de la pantalla enfosquida perquè no et distreguis.','Pots registrar Força, Força + WoD o només WoD, i el WoD te\'l demana just després de la força.','Un suggeriment diari et diu quin exercici tens abandonat i per què val la pena tornar-hi.'],
-  '8.4':['Nou ordre de pestanyes: Inici, Objectius, Entrenar, Mètriques i Més.','Objectius i Mètriques ara es divideixen en Força i WoD, amb una línia de color que t\'indica on ets.','Ja pots veure objectius de WoD: temps per a un WoD concret o sessions per setmana.'],
-  '8.3':['Ja tens 10 WoDs clàssics com a plantilles llestes: Murph, Fran, Cindy, Helen, Grace, Isabel, DT, Karen, Annie i Barbara.','Els exercicis de gimnàstica ara guarden lastre i repeticions (i metres, per al handstand walk) en comptes d\'un 1RM que no volia dir res.','Pots tenir més d\'un objectiu per exercici, i si el poses amb repeticions (120×3) et calculem la marca equivalent.','Els WoDs ja es poden editar i esborrar.','Si esborres o corregeixes una sèrie, la teva marca es recalcula: abans es quedava enganxada a l\'antiga.','Canvis interns a les dades: fes una còpia de seguretat des de Més → Dades si encara no en tens cap.'],
-  '8.2':['Text més gran a tota l\'app: res per sota de 12px.','Botons més grans, arrodonits i amb color propi, tots amb àrea tàctil de 44px.','Les seccions ara es distingeixen del fons: adéu al text que surava enmig del no-res.','Mode de contrast alt (Més → Accessibilitat), que s\'activa sol si el telèfon ja el demana.','Colors corregits en mode clar: el verd i el groc ja es llegeixen bé.','Explicat què vol dir la força relativa i el \"BW\".'],
-  '8.1':['La targeta per compartir un rècord ara mostra la marca PRsonal i el logo, amb la data en català.','La barra superior ja no tapa el rellotge: el contingut es difumina en passar-hi per sota.','Botons de dades més clars: \"Desar una còpia\" i \"Restaurar una còpia\".','Ja no es pot registrar una sèrie buida o sense pes per error.','\"Eliminar totes les dades\" ara esborra també la còpia interna: ara sí que és definitiu.'],
-  '8.0':['Ara funciona sense connexió un cop instal·lada a la pantalla d\'inici.','Nou botó per enviar comentaris o errors: la icona a dalt a la dreta de cada pantalla.','Ara pots consultar la Política de Privacitat, les Condicions d\'Ús i la política de cookies des de "Més".','En crear el perfil demanem la teva acceptació, i registrem la versió acceptada.','La mètrica d\'ús és totalment anònima: ja no s\'envia cap nom.','Textos ajustats perquè descriguin amb precisió com es tracten les teves dades.'],
-  '7.9':['Barra inferior més ajustada i equilibrada a l\'iPhone.','"Ajustaments" ara és "Més", amb icona de tres punts.','Punts d\'avís als tabs quan alguna cosa necessita atenció.'],
-  '7.8':['Registrar ara és guiat: un pas cada cop, sense la paret de camps.','Funciona igual a Haltero i a WoD.'],
-  '7.7':['Les teves dades ara són més segures: còpia de seguretat interna i recuperació automàtica.','Avís per fer còpies periòdiques.','Aquesta pantalla: sabràs què canvia a cada actualització.'],
-  '7.6':['La barra inferior ja no queda tapada per la pantalla corba de l\'iPhone.'],
-  '7.5':['Redisseny complet: els números són els protagonistes, menys caixes i més ritme.']
+  '8.32':['Prova de tipografies: toca la icona d\'error (a dalt a la dreta) → <b>Provar tipografies</b>. Cap no es baixa, així que segueix funcionant sense connexió.',
+          'També pots provar les <b>xifres d\'amplada fixa</b>, que alineen els números en columna.'],
+  '8.31':['A <b>Més</b> hi trobaràs d\'on surt cada número: quines fórmules fem servir, d\'on venen i fins on t\'hi pots refiar.',
+          'Hem corregit dues atribucions equivocades: el Wilks és la fórmula original de 1994, i la classificació de força és una guia orientativa, no cap norma validada.'],
+  // Short. One line each, plain language, no version archaeology. Àlex's rule:
+  // "sometimes it can be simplified, no need to much text or overexplanations."
+  '8.30':['Els WoDs amb rondes que <b>pugen o baixen</b> (1-2-3, 2-4-6…) ja es poden registrar, i et diem quanta feina has fet en total.',
+          'El 1RM estimat ja no baixa per un dia suau: només compten les sèries que diuen alguna cosa del teu màxim.',
+          'Toca el 1RM per veure el 2RM i el 3RM. Ara t\'ho diem.',
+          'El disc de 15 kg ja es llegeix com la resta.'],
+  '8.29':['Hem completat la política de privacitat: hi faltava la data de naixement. No es comparteix res de nou.'],
+  '8.28':['Neteja interna: l\'app és una mica més lleugera.'],
+  '8.27':['Editar una sessió funciona igual des de tot arreu.',
+          'Arreglat: canviar l\'exercici d\'una sessió deixava el màxim antic massa alt.'],
+  '8.26':['Els rècords de WoD respecten l\'escala: un Scaled ja no bat un Rx.',
+          'Els WoDs <b>Modificats</b> es guarden però no fan rècord.',
+          'Ja pots posar l\'RPE a cada sèrie, i apuntar un màxim que ja sabies.'],
+  '8.25':['Ja pots registrar <b>complexos</b>, i cada moviment compta al seu propi històric.',
+          'Aplicar una plantilla de WoD ara compta com a rècord.',
+          'A l\'historial, un botó per repetir qualsevol entrenament.'],
+  '8.24':['Ja pots posar barra als WoDs: power clean, snatch, jerk i més.',
+          'Els moviments sense pes (córrer, burpees…) ja no demanen kg.',
+          'Els clàssics es veuen bé: Cindy amb els seus 20 min, Fran 21-15-9.',
+          'El temps s\'escriu només amb xifres: 842 → 8:42.'],
+  '8.23':['Cada sessió té una creu per esborrar-la.',
+          'Ara distingim el <b>pes que has aixecat</b> del <b>1RM estimat</b>.',
+          'En registrar força tries Categoria → Família → Exercici.'],
 };
 function isGateOpen(){
   try{const g=document.getElementById('gateOv');return !g||getComputedStyle(g).display==='none';}catch(e){return true;}
+}
+// '8.9' vs '8.23' cannot be compared as numbers — 8.9 > 8.23 as a float but
+// 8.23 is the later release. Compare part by part.
+function verCmp(a,b){
+  const pa=String(a||'0').split('.').map(Number), pb=String(b||'0').split('.').map(Number);
+  for(let i=0;i<Math.max(pa.length,pb.length);i++){
+    const x=pa[i]||0, y=pb[i]||0;
+    if(x!==y) return x<y?-1:1;
+  }
+  return 0;
 }
 function maybeShowWhatsNew(){
   if(!isGateOpen()) return;                        // don't burn the flag unseen
@@ -11609,10 +11899,18 @@ function maybeShowWhatsNew(){
   try{seen=localStorage.getItem(SEEN_VER);}catch(e){}
   try{localStorage.setItem(SEEN_VER,APP_VERSION);}catch(e){}
   if(!seen || seen===APP_VERSION){ maybeProfileTopUp(); return; }   // first run, or unchanged
-  const items=WHATS_NEW[APP_VERSION]; if(!items){ maybeProfileTopUp(); return; }
+  // Show EVERY version the user skipped, not just the newest (v8.30). Someone
+  // who was on 8.23 and installs 8.30 used to see 8.30's notes only and never
+  // learn about the seven releases in between.
+  const vers=Object.keys(WHATS_NEW)
+    .filter(v => verCmp(v, seen) > 0 && verCmp(v, APP_VERSION) <= 0)
+    .sort((a,b) => verCmp(b,a));
+  if(!vers.length){ maybeProfileTopUp(); return; }
   const body=document.getElementById('whatsNewBody'); if(!body) return;
-  body.innerHTML='<div class="wn-ver">v'+APP_VERSION+'</div>'+
-    '<ul class="wn-list">'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  body.innerHTML = vers.map(v =>
+    '<div class="wn-ver">v'+v+'</div>'+
+    '<ul class="wn-list">'+WHATS_NEW[v].map(i=>'<li>'+i+'</li>').join('')+'</ul>'
+  ).join('');
   document.getElementById('whatsNewSheet').classList.add('on');
 }
 function closeWhatsNew(){
