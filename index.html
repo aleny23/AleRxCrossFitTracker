@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.25</title>
+<title>PRsonal v8.29</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -282,14 +282,20 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   transition:background var(--dur-fast) ease,border-color var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out);}
 .bar-pick button:active{transform:scale(0.96);}
 .bar-pick button.on{background:var(--h-dim);border-color:var(--h-acc);color:var(--h-ink);}
-.plate-pick{display:flex;flex-wrap:wrap;gap:8px;}
+.plate-pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
 /* Off = the disc is not in your box: drained of colour, dashed, obviously absent. */
 .plate-pick button{min-width:52px;min-height:var(--tap);padding:0 12px;border-radius:var(--r-pill);
   cursor:pointer;font-family:inherit;font-size:var(--fs-body-sm);font-weight:800;
   border:1.5px solid transparent;
   transition:opacity var(--dur-fast) ease,transform var(--dur-fast) var(--ease-out),filter var(--dur-fast) ease;}
 .plate-pick button:active{transform:scale(0.94);}
-.plate-pick button.off{opacity:.4;filter:grayscale(1);border-style:dashed;border-color:var(--border3);}
+/* v8.29: the OFF state is a flat neutral, not a greyscaled version of the
+   plate colour. grayscale() preserves luminance, so yellow (15 kg, #F9C21B)
+   greyed out at ~191 while red and blue landed near ~90 — the 15 looked like
+   a different kind of thing. It also carried dark text where the others carry
+   white. Now every unpicked disc looks identical, which is the point. */
+.plate-pick button.off{background:var(--bg4);color:var(--text3);
+  border:1px dashed var(--border3);opacity:.75;filter:none;}
 .gym-preview{margin-top:14px;font-size:var(--fs-label);color:var(--text3);line-height:1.55;}
 .gym-preview b{color:var(--text2);}
 
@@ -2524,6 +2530,26 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="ctitle">Zones de treball</div>
       <table class="zt"><thead><tr><th>%</th><th>Pes</th><th>Ús</th></tr></thead><tbody id="detZonesBody"></tbody></table>
     </div>
+    <!-- A 1RM you already know (v8.26). best1RM() and recomputeRM1() have always
+         read D.rmHist, but nothing ever wrote to it — so a max you hit at a
+         competition, or on a day you did not log set by set, had nowhere to go
+         and was invisible to every record in the app. -->
+    <div class="det-sec" id="detKnownRmCard">
+      <div class="ctitle">Ja saps el teu màxim?</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.45;margin-bottom:10px">
+        Si has fet un màxim fora de l&#39;app (competició, dia de test…), apunta&#39;l aquí i
+        comptarà per als teus rècords.
+      </div>
+      <div class="frow">
+        <div><label>Pes (kg)</label><input type="number" id="knownRmW" class="fb-field" step="0.5" min="1" placeholder="p. ex. 120"></div>
+        <div><label>Reps</label><input type="number" id="knownRmR" class="fb-field" min="1" max="10" value="1"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label>Data</label>
+        <input type="date" id="knownRmDate" class="fb-field"></div>
+      <button class="btn btn-p" style="width:100%;margin-top:12px" onclick="saveKnownRm()">Desar el màxim</button>
+      <div id="knownRmList" style="margin-top:12px"></div>
+    </div>
+
     <div class="det-sec"><div class="ctitle">Últimes sessions</div><div id="detHist"></div></div>
 
     <!-- Goals section -->
@@ -2814,7 +2840,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.25<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.29<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3549,7 +3575,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.25</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.29</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3849,14 +3875,47 @@ function wodKeyFor(nameOrEntry, tplId){
 function wodEntryKey(e){ return e && (e.wodKey || wodKeyFor(e, e.tplId)); }
 
 // Best score ever recorded for one WoD, and its whole history.
-function wodHistory(key){
-  return (D.wEnt||[]).filter(e=>wodEntryKey(e)===key && e.score && wodScoreValue(e.score)!=null)
+// ── Scale and records (v8.26) ────────────────────────────────────────
+// A record only means something between attempts at the SAME standard. Until
+// now scoring ignored the scale entirely, so Fran Scaled at 4:30 beat Fran Rx at
+// 5:48 and the app called it a personal record — scaling was the easiest way to
+// "beat" yourself. Rx / Intermedi / Scaled are defined standards and each keeps
+// its own record.
+//
+// 'Modificat' is deliberately excluded: it means "I changed the workout my own
+// way", which is not a fixed thing to compare against. Two Modificat attempts
+// may be two different workouts, so they are logged and shown in history but
+// never produce a trophy.
+const WOD_SCALES = ['Rx','Intermedi','Scaled','Modificat'];
+function wodScaleOf(e){
+  const s = (e && e.scale) ? String(e.scale).trim() : '';
+  return WOD_SCALES.indexOf(s) >= 0 ? s : 'Rx';   // pre-scale entries count as Rx
+}
+function wodScaleRanks(scale){ return scale !== 'Modificat'; }
+
+// scale === undefined → every attempt (used by the trend chart, which shows the
+// whole story). Pass a scale to compare like with like.
+function wodHistory(key, scale){
+  return (D.wEnt||[]).filter(e=>
+      wodEntryKey(e)===key && e.score && wodScoreValue(e.score)!=null
+      && (scale===undefined || wodScaleOf(e)===scale))
     .sort((a,b)=>a.date.localeCompare(b.date));
 }
-function bestWodScore(key){
+function bestWodScore(key, scale){
+  if(scale!==undefined && !wodScaleRanks(scale)) return null;
   let best=null;
-  wodHistory(key).forEach(e=>{ if(wodScoreBeats(e.score,best)) best=e.score; });
+  wodHistory(key, scale).forEach(e=>{ if(wodScoreBeats(e.score,best)) best=e.score; });
   return best;
+}
+// The best that ranks, across the scales that rank — for the board, which shows
+// one number per WoD. Returns {score, scale} or null.
+function bestWodScoreAny(key){
+  let out=null;
+  WOD_SCALES.filter(wodScaleRanks).forEach(sc=>{
+    const b=bestWodScore(key, sc);
+    if(b && (!out || wodScoreBeats(b, out.score))) out={score:b, scale:sc};
+  });
+  return out;
 }
 
 const DEF_HEX=[
@@ -4239,7 +4298,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.25';
+const APP_VERSION='8.29';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4518,7 +4577,6 @@ function plateChips(plates){
 }
 function plateHtml(tgt){ return '<span class="plates">'+plateChips(loadable(tgt).plates)+'</span>'; }
 // Kept for the legacy calculator screen, now routed through the solver.
-function calcPlates(tgt){ return loadable(tgt).plates; }
 
 
 // ══ HELPERS ══
@@ -5446,6 +5504,10 @@ function wizFlow(){
   // Building a complex replaces the single-exercise picker with the component
   // builder — same position in the flow, different question.
   if(wizS && wizS.isComplex) f = f.map(n => n === 'ex' ? 'cpxBuild' : n);
+  // Editing an existing session never asks "is this a complex?" — the exercise
+  // is already chosen, and a complex appears in the normal picker under its own
+  // category if you want to swap to a different one (v8.27).
+  if(wizS && wizS.editId) f = f.filter(n => n !== 'cpxAsk');
   if(!(wizS && wizS.saveAsTemplate)) return f;
   // A template is a plan, not a session: it has no date and no result. v8.20
   // dropped the date; the score screen stayed, so building a template still
@@ -5743,15 +5805,26 @@ function wizRenderSets(){
   const wlbl=gym?'Lastre kg':'Pes kg';
   // For a complex a "rep" is one round of the whole chain, so say so.
   const rlbl=(wizS.cat==='complex')?'Rondes':'Reps';
+  // RPE column added in v8.26. The app already had a full RPE trend analysis —
+  // weighted average, theoretical-vs-actual gap, an insight card — and the
+  // registrar had no way to enter it, so the card could only ever tell you it
+  // needed five sessions you had no way to record. It is per SET, not per
+  // session, because getRpeDataPoints weights by the load of each set and reads
+  // the RPE of the heaviest one.
   document.getElementById('wizSets').innerHTML = wizS.sets.map((st,i)=>
-    '<div style="display:grid;grid-template-columns:30px 1fr 1fr 44px;gap:8px;align-items:end;margin-bottom:10px">'
+    '<div style="display:grid;grid-template-columns:26px 1fr 1fr 58px 40px;gap:8px;align-items:end;margin-bottom:10px">'
     +'<div style="font-size:var(--fs-body-sm);color:var(--text3);font-weight:700;padding-bottom:12px">'+(i+1)+'</div>'
     +'<div><label style="font-size:var(--fs-label);color:var(--text2)">'+rlbl+'</label>'
     +'<input type="number" class="fb-field" value="'+(st.r||'')+'" onchange="wizSetVal('+i+',\'r\',this.value)"></div>'
     +'<div><label style="font-size:var(--fs-label);color:var(--text2)">'+wlbl+'</label>'
     +'<input type="number" class="fb-field" value="'+(st.w===''?'':st.w)+'" onchange="wizSetVal('+i+',\'w\',this.value)"></div>'
+    +'<div><label style="font-size:var(--fs-label);color:var(--text2)">RPE</label>'
+    +'<input type="number" class="fb-field" min="1" max="10" step="0.5" placeholder="—" value="'+(st.rpe===''||st.rpe==null?'':st.rpe)+'" onchange="wizSetVal('+i+',\'rpe\',this.value)"></div>'
     +'<button class="xbtn" onclick="wizDelSet('+i+')" aria-label="Elimina la sèrie">×</button></div>'
-  ).join('');
+  ).join('')
+  + '<div style="font-size:13px;color:var(--text3);line-height:1.45;margin-top:2px">'
+  + 'RPE és opcional: com de dur ha anat, d&#39;1 a 10. <b>10</b> = no podies fer ni una repetició més. '
+  + 'Amb 5 sessions, Mètriques et dirà si vas acumulant fatiga.</div>';
 }
 // ── WoD types and their real structures (v8.15) ───────────────────────
 // A Tabata is not an AMRAP. Each type asks only for the fields that define it.
@@ -5785,14 +5858,6 @@ const WOD_FIELD_DEFS = {
 // ── WoD movement builder (v8.14) ──────────────────────────────────────
 // Movements are what make a WoD re-trainable and analysable. Stored as
 // {exId, reps, weight} to match the shape the shipped benchmarks already use.
-function wizAddMov(){
-  wizS.wod = wizS.wod || {};
-  wizS.wod.movements = wizS.wod.movements || [];
-  const first=(D.wEx||[])[0];
-  wizS.wod.movements.push({exId:first?first.id:'', reps:10, weight:0});
-  wizS.touched=true;
-  wizRenderMovs();
-}
 function wizDelMov(i){
   if(!wizS.wod||!wizS.wod.movements) return;
   wizS.wod.movements.splice(i,1);
@@ -5848,6 +5913,19 @@ function openWizardEditWod(id){
   document.getElementById('wizWScale').value=wizS.wod.scale;
   document.getElementById('wizWNote').value=wizS.wod.note;
   wizS.i=0; wizShow();
+}
+// One editor, one behaviour (v8.27). The exercise detail and the old historial
+// list opened a separate overlay that could not edit tags or change the
+// exercise, and — until v8.26 — was the only place RPE could be entered at all.
+// Both now route here.
+//
+// The id arrives from a template literal as a STRING while hEnt ids are numbers,
+// and openWizardEditForca matches with ===. Without this normalisation the
+// exercise-detail edit would silently do nothing.
+function editHEntry(id){
+  const e=(D.hEnt||[]).find(x=>String(x.id)===String(id));
+  if(!e){ toast('No trobem aquest registre','error'); return; }
+  openWizardEditForca(e.id);
 }
 function openWizardEditForca(id){
   const e=D.hEnt.find(x=>x.id===id); if(!e) return;
@@ -6136,7 +6214,7 @@ function wizCollectScore(){
 // The WoD equivalent of showPR — same overlay, same confetti, so beating Fran
 // feels like adding 5kg to a squat. Mirrors showPR's element ids and `.show`
 // class exactly; the only difference is that a WoD score is a string, not kg.
-function showWodPR(name, prevTxt, nowTxt, date){
+function showWodPR(name, prevTxt, nowTxt, date, scale){
   try{
     const set=(id,txt)=>{const el=document.getElementById(id); if(el) el.textContent=txt;};
     set('prExName', name);
@@ -6145,7 +6223,9 @@ function showWodPR(name, prevTxt, nowTxt, date){
     // v8.23 gave showPR variable labels; this overlay shares the same nodes, so
     // it MUST set every one of them or a WoD result inherits the last lifting
     // PR's copy — "Nou pes màxim aixecat" printed over a time.
-    set('prKicker', 'Nou rècord en aquest WoD');
+    // Name the standard: an Rx record and a Scaled record are different
+    // records, and the trophy has to say which one it is (v8.26).
+    set('prKicker', 'Nou rècord en aquest WoD' + (scale ? ' · ' + scale : ''));
     set('prNewLbl', 'Nou resultat');
     set('prFoot', '');
     const sec = document.getElementById('prSecond');
@@ -6248,15 +6328,24 @@ function wizSave(){
           wizS.saving=false;
           toast('Cap sèrie vàlida: posa repeticions i pes','error'); return;
         }
+        // v8.27: the exercise itself can be changed in an edit. Only the new one
+        // was being recomputed, so moving a session off an exercise left that
+        // exercise's ratchet standing on a set it no longer owns.
+        const prevExId=e.exId;
         e.date=wizS.date; e.exId=wizS.exId; e.pct=wizS.pct; e.note=wizS.note;
         e.tags=[...wizS.tags]; e.sets=valid.map(st=>({...st}));
         recomputeRM1(e.exId);        // an edited-down PR must lower the ratchet
+        if(prevExId && prevExId!==e.exId) recomputeRM1(prevExId);
       }
     }
     save(); refreshGoalCompletion();
     wizS.touched=false; wizClose();
     toast('Actualitzat ✓');
     if(document.getElementById('histOv').classList.contains('on')){ renderHistCal(); renderHistDay(); }
+    // The exercise detail can now launch an edit too (v8.27), so it has to be
+    // redrawn — its chart, zones and records all read the entry just changed.
+    const detOv=document.getElementById('detailOv');
+    if(detOv && detOv.classList.contains('on') && detailGoalExId) showDetail(detailGoalExId);
     return;
   }
   // Building a template writes a template and NOTHING else. Until v8.24 the
@@ -6321,14 +6410,17 @@ function wizSave(){
     const wName=w.name||w.type||'WoD';
     const wKey=wodKeyFor(wName, w.tplId);
     const wScore=w.score&&w.score.kind?w.score:null;
-    // Is this a new best for THIS WoD? Compared before the entry is pushed.
-    const prevBest=wScore?bestWodScore(wKey):null;
+    // Is this a new best for THIS WoD, AT THIS SCALE? Compared before the entry
+    // is pushed. Scale-blind comparison made scaling the easiest way to set a
+    // "record" (v8.26).
+    const wScale=wodScaleOf(w);
+    const prevBest=(wScore&&wodScaleRanks(wScale))?bestWodScore(wKey,wScale):null;
     // v8.24: a PR needs something to beat. wodScoreBeats(x, null) is true by
     // design (any score beats no score), so the first time a WoD name was used
     // it always celebrated — and since most sessions are a new metcon with a new
     // name, the trophy fired nearly every day and stopped meaning anything.
     // Àlex: "we can be giving records just for logging a wod".
-    const isWodPR=wScore&&wodScoreValue(wScore)!=null&&prevBest&&wodScoreBeats(wScore,prevBest);
+    const isWodPR=wScore&&wodScoreValue(wScore)!=null&&wodScaleRanks(wScale)&&prevBest&&wodScoreBeats(wScore,prevBest);
     D.wEnt.push({id:Date.now()+1,date:wizS.date,name:wName,type:w.type||'For Time',
       wodKey:wKey, tplId:w.tplId||null, score:wScore,
       result:w.result||'',scale:w.scale||'Rx',
@@ -6346,7 +6438,7 @@ function wizSave(){
     if(isWodPR){
       const prevTxt=prevBest?wodScoreText(prevBest):null;
       const nowTxt=wodScoreText(wScore), prName=wName, prDate=wizS.date;
-      setTimeout(()=>{ showWodPR(prName,prevTxt,nowTxt,prDate); },400);
+      setTimeout(()=>{ showWodPR(prName,prevTxt,nowTxt,prDate,wScale); },400);
     }
   }
   save();
@@ -7155,11 +7247,6 @@ function renderHistDay(){
 
 // Edits are staged in memory and only written when "Desar" is pressed.
 const histPending={};
-function histSetEdit(entId,i,field,val){
-  histPending[entId]=histPending[entId]||{};
-  histPending[entId][i]=histPending[entId][i]||{};
-  histPending[entId][i][field]= field==='r' ? (+val||0) : val;
-}
 function histSaveH(id){
   const e=D.hEnt.find(x=>x.id===id); if(!e) return;
   const patch=histPending[id]||{};
@@ -7180,12 +7267,6 @@ function histSaveH(id){
   delete histPending[id];
   recomputeRM1(e.exId);          // an edited-down PR must lower the ratchet too
   save(); refreshGoalCompletion(); renderHistCal(); renderHistDay();
-  toast('Desat ✓');
-}
-function histSaveW(id){
-  const el=document.getElementById('histW'+id); if(!el) return;
-  saveWodEntryEdit(id,{result:el.value.trim()});
-  renderHistCal(); renderHistDay();
   toast('Desat ✓');
 }
 // What a WoD entry actually scored. Typed scores (v8.21) live in e.score; the
@@ -7814,16 +7895,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   checkWeeklySummary();
 
 // ── v6 mode-swipe animation (animates the visible Entrenar container) ──
-function animateModeSwipe(dir) {
-  if(!document.getElementById('hTplCreateBody')) return;   // pre-rebuild editor, removed v8.18
-  const el = document.getElementById(activeMode === 'h' ? 'entrH' : 'entrW');
-  if (!el) return;
-  const cls = dir === 'right' ? 'swipe-in-right' : 'swipe-in-left';
-  el.classList.remove('swipe-in-right', 'swipe-in-left');
-  void el.offsetWidth; // reflow
-  el.classList.add(cls);
-  setTimeout(() => el.classList.remove(cls), 300);
-}
 
 // ── Swipe left/right to toggle Haltero ↔ WoD ───────────────────────────
 (function(){
@@ -7990,7 +8061,6 @@ function togTag(t){if(selTags.includes(t))selTags=selTags.filter(x=>x!==t);else 
 // ══ SETS ══
 let sets=[{r:5,w:'',rpe:''}];
 function initSets(){sets=[{r:5,w:'',rpe:''}];renderSets();}
-function addSet(){sets.push({r:5,w:'',rpe:''});renderSets();}
 function delSet(i){if(sets.length>1){sets.splice(i,1);renderSets();}}
 function renderSets(){
   if(!document.getElementById('setsList')) return;   // pre-rebuild editor, removed v8.18
@@ -8043,39 +8113,6 @@ function isMeaningfulSet(s, cat){
   return isFinite(w) && w > 0;                       // haltero/complex need a real load
 }
 
-function saveHEntry(){
-  if(!document.getElementById('logDate')) return;   // pre-rebuild editor, removed v8.18
-  const exId=document.getElementById('logEx').value;
-  const date=document.getElementById('logDate').value;
-  const pct=document.getElementById('logPct').value;
-  const note=document.getElementById('logNote').value.trim();
-  const cat=document.getElementById('logSubcat').value;
-  const valid=sets.filter(s=>isMeaningfulSet(s,cat));
-  if(!exId||!valid.length){
-    toast(cat==='gym'?'Afegeix una sèrie amb repeticions':'Afegeix una sèrie amb pes i repeticions','error');
-    return;
-  }
-  // store only the meaningful sets, so blank rows never become phantom entries
-  const ent={id:Date.now(),date,exId,pct,note,tags:[...selTags],sets:valid.map(s=>({...s}))};
-  D.hEnt.push(ent);
-  if(cat!=='gym'){
-    const pV=+pct; let imp=valid.reduce((b,s)=>Math.max(b,epley(s.w,s.r)),0);
-    if(pV>0&&pV<=100){const mw=Math.max(...valid.map(s=>s.w));imp=Math.max(imp,mw/(pV/100));}
-    const ex=D.hEx.find(e=>e.id===exId);
-    if(ex&&(!ex.rm1||imp>ex.rm1*1.005)){
-      const oldRM=ex.rm1||null;
-      ex.rm1=Math.round(imp*10)/10;
-      // Trigger PR celebration
-      setTimeout(()=>{showPR(ex.name, oldRM, ex.rm1, date);}, 300);
-    }
-  }
-  save(); initSets(); selTags=[]; renderTagBtns();
-  setLogStep(1);   // next entry starts guided again
-  document.getElementById('logNote').value='';
-  document.getElementById('logPct').value='';
-  document.getElementById('rmPrev').classList.remove('on');
-  renderTodaySummary(); toast('Entrada guardada ✓');
-}
 
 // ══ TODAY ══
 // Rendered #todayList inside the pre-rebuild editor, removed in v8.18. Kept as a
@@ -8515,14 +8552,6 @@ let detCI=null;
 
 
 // ── Jump to Exercicis to pick an exercise for a new goal ───────
-function gotoExercicisForGoal() {
-  switchTab('entrenar');
-  setModePill('h');
-  const btn = [...document.querySelectorAll('#subnavH .entr-sub-btn')]
-    .find(b => (b.getAttribute('onclick')||'').includes("'exs'"));
-  showHSub('exs', btn);
-  toast('Tria un exercici i afegeix-hi l\'objectiu');
-}
 
 // ── Quick log from exercise detail ─────────────────────────────
 function quickLogEx() {
@@ -8544,9 +8573,53 @@ function quickLogEx() {
   if (typeof renderInici === 'function') renderInici();
 }
 
+// Known-1RM entries write to D.rmHist, which best1RM/recomputeRM1 already read.
+// Gymnastics has no 1RM (gymRecords covers it), so the card is hidden there.
+function renderKnownRm(exId){
+  const card=document.getElementById('detKnownRmCard'); if(!card) return;
+  const ex=D.hEx.find(e=>e.id===exId);
+  if(!ex || isGymEx(ex)){ card.style.display='none'; return; }
+  card.style.display='';
+  const dEl=document.getElementById('knownRmDate'); if(dEl && !dEl.value) dEl.value=localToday();
+  const host=document.getElementById('knownRmList');
+  const mine=(D.rmHist||[]).filter(r=>r.exId===exId).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  host.innerHTML = mine.length
+    ? mine.map(r=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--border)">'
+        +'<span style="font-size:var(--fs-body-sm)"><b>'+r.weight+' kg</b> × '+r.reps
+        +' <span style="color:var(--text3)">· '+esc(r.date||'')+'</span></span>'
+        +'<button class="xbtn" onclick="delKnownRm(\''+esc(String(r.id))+'\')" aria-label="Elimina">×</button></div>').join('')
+    : '';
+}
+function saveKnownRm(){
+  const exId=detailGoalExId; if(!exId) return;
+  const w=+document.getElementById('knownRmW').value||0;
+  const r=+document.getElementById('knownRmR').value||1;
+  const date=document.getElementById('knownRmDate').value||localToday();
+  if(!(w>0)){ toast('Posa-hi un pes','error'); return; }
+  if(!(r>=1&&r<=10)){ toast('Entre 1 i 10 repeticions','error'); return; }
+  if(!Array.isArray(D.rmHist)) D.rmHist=[];
+  D.rmHist.push({id:'rm_'+Date.now(), exId, weight:w, reps:r, date});
+  recomputeRM1(exId);          // fold it into the stored ratchet immediately
+  save();
+  document.getElementById('knownRmW').value='';
+  showDetail(exId);            // redraw the whole panel: chart, zones, records
+  toast('Màxim desat ✓');
+}
+function delKnownRm(id){
+  const rec=(D.rmHist||[]).find(r=>String(r.id)===String(id)); if(!rec) return;
+  showDeleteSheet('Eliminar aquest màxim', rec.weight+' kg × '+rec.reps+' · '+(rec.date||''), ()=>{
+    const exId=rec.exId;
+    D.rmHist=(D.rmHist||[]).filter(r=>String(r.id)!==String(id));
+    recomputeRM1(exId);        // the ratchet must come back down
+    save();
+    showDetail(exId);
+    toast('Eliminat');
+  });
+}
 function showDetail(exId){
   detailGoalExId=exId;
   const ex=D.hEx.find(e=>e.id===exId);if(!ex)return;
+  renderKnownRm(exId);
   document.getElementById('detNm').textContent=ex.name;
   const bc=ex.cat==='gym'?'bg':ex.cat==='complex'?'bc':'bh';
   const bl=ex.cat==='gym'?'Gymnastics':ex.cat==='complex'?'Complex':'Halterofília';
@@ -8569,7 +8642,7 @@ function showDetail(exId){
   if(rm1&&ex.cat!=='gym'){document.getElementById('detZonesCard').style.display='block';document.getElementById('detZonesBody').innerHTML=D.calcPcts.map(p=>`<tr class="${p>=80?'hi':''}"><td class="zpct">${p}%</td><td>${(rm1*p/100).toFixed(1)} kg</td><td style="font-size:12px;color:var(--text2)">${zlbl(p)}</td></tr>`).join('');}
   else document.getElementById('detZonesCard').style.display='none';
   const recent=[...ents].reverse().slice(0,8);
-  document.getElementById('detHist').innerHTML=recent.length?recent.map(e=>{const ss=(e.sets||[]).filter(s=>s.w>=0&&s.r>0).map(s=>`${s.r}×${s.w}kg`).join(' · ');const impl=sessImpl(e);return`<div class="loge anim-slidein" style="cursor:pointer" onclick="openEdit('${e.id}')"><div style="display:flex;justify-content:space-between"><div class="logd">${fmt(e.date)}${e.pct?' · '+e.pct+'%':''}</div>${impl&&ex.cat!=='gym'?`<div class="log1">~${impl.toFixed(1)} kg</div>`:''}</div><div class="logs">${ss}</div>${e.tags&&e.tags.length?`<div style="margin-top:2px">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''} ${e.note?`<div class="logn">${e.note}</div>`:''}<div style="font-size:12px;color:var(--text3);margin-top:2px">toca per editar</div></div>`;}).join(''):'<div class="empty">Cap registre</div>';
+  document.getElementById('detHist').innerHTML=recent.length?recent.map(e=>{const ss=(e.sets||[]).filter(s=>s.w>=0&&s.r>0).map(s=>`${s.r}×${s.w}kg`).join(' · ');const impl=sessImpl(e);return`<div class="loge anim-slidein" style="cursor:pointer" onclick="editHEntry('${e.id}')"><div style="display:flex;justify-content:space-between"><div class="logd">${fmt(e.date)}${e.pct?' · '+e.pct+'%':''}</div>${impl&&ex.cat!=='gym'?`<div class="log1">~${impl.toFixed(1)} kg</div>`:''}</div><div class="logs">${ss}</div>${e.tags&&e.tags.length?`<div style="margin-top:2px">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''} ${e.note?`<div class="logn">${e.note}</div>`:''}<div style="font-size:12px;color:var(--text3);margin-top:2px">toca per editar</div></div>`;}).join(''):'<div class="empty">Cap registre</div>';
   // Quick-log labels (gym = pes llastrat)
   const _ql=document.getElementById('detQuickWLabel');
   if(_ql) _ql.textContent = ex.cat==='gym' ? 'Pes llastrat (kg)' : 'Pes (kg)';
@@ -8634,24 +8707,13 @@ function delEntry(){
 
 // ══ HISTORY ══
 function populateHistFilters(){const s=document.getElementById('histEx');const cur=s.value;s.innerHTML='<option value="">Tots</option>'+D.hEx.filter(ex=>D.hEnt.some(e=>e.exId===ex.id)).map(e=>`<option value="${e.id}" ${cur===e.id?'selected':''}>${e.name}</option>`).join('');const ms=[...new Set(D.hEnt.map(e=>e.date.slice(0,7)))].sort().reverse();document.getElementById('histMon').innerHTML='<option value="">Tots</option>'+ms.map(m=>{const d=new Date(m+'-01T12:00:00');return`<option value="${m}">${d.toLocaleDateString('ca-ES',{month:'long',year:'numeric'})}</option>`;}).join('');}
-function renderHist(){const ef=document.getElementById('histEx').value;const mf=document.getElementById('histMon').value;let ents=[...D.hEnt].sort((a,b)=>b.date.localeCompare(a.date));if(ef)ents=ents.filter(e=>e.exId===ef);if(mf)ents=ents.filter(e=>e.date.startsWith(mf));const c=document.getElementById('histList');if(!ents.length){c.innerHTML='<div class="empty">Cap registre</div>';return;}c.innerHTML=ents.map((e,i)=>{const ex=D.hEx.find(x=>x.id===e.exId);const nm=ex?ex.name:e.exId;const ss=(e.sets||[]).filter(s=>s.w>=0&&s.r>0).map(s=>`${s.r}×${s.w}kg`).join(' · ');const impl=sessImpl(e);const gym=ex&&ex.cat==='gym';return`<div class="loge anim-slidein" style="animation-delay:${Math.min(i,8)*30}ms;cursor:pointer" onclick="openEdit('${e.id}')"><div class="logd">${fmt(e.date)}${e.pct?' · al '+e.pct+'%':''}</div><div style="display:flex;justify-content:space-between;align-items:center"><div class="logx">${nm}</div>${impl&&!gym?`<div class="log1">~${impl.toFixed(1)} kg</div>`:''}</div><div class="logs">${ss}</div>${e.tags&&e.tags.length?`<div style="margin-top:2px">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''} ${e.note?`<div class="logn">${e.note}</div>`:''}</div>`;}).join('');}
+function renderHist(){const ef=document.getElementById('histEx').value;const mf=document.getElementById('histMon').value;let ents=[...D.hEnt].sort((a,b)=>b.date.localeCompare(a.date));if(ef)ents=ents.filter(e=>e.exId===ef);if(mf)ents=ents.filter(e=>e.date.startsWith(mf));const c=document.getElementById('histList');if(!ents.length){c.innerHTML='<div class="empty">Cap registre</div>';return;}c.innerHTML=ents.map((e,i)=>{const ex=D.hEx.find(x=>x.id===e.exId);const nm=ex?ex.name:e.exId;const ss=(e.sets||[]).filter(s=>s.w>=0&&s.r>0).map(s=>`${s.r}×${s.w}kg`).join(' · ');const impl=sessImpl(e);const gym=ex&&ex.cat==='gym';return`<div class="loge anim-slidein" style="animation-delay:${Math.min(i,8)*30}ms;cursor:pointer" onclick="editHEntry('${e.id}')"><div class="logd">${fmt(e.date)}${e.pct?' · al '+e.pct+'%':''}</div><div style="display:flex;justify-content:space-between;align-items:center"><div class="logx">${nm}</div>${impl&&!gym?`<div class="log1">~${impl.toFixed(1)} kg</div>`:''}</div><div class="logs">${ss}</div>${e.tags&&e.tags.length?`<div style="margin-top:2px">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''} ${e.note?`<div class="logn">${e.note}</div>`:''}</div>`;}).join('');}
 
 
 // ══ WOD TYPE FORMS ══
 let wodType='AMRAP', wodScale='Rx';
 let emomMins=[], amrapMovs=[], ftMovs=[], tabMovs=[], chipMovs=[];
 
-function selWType(t,btn){
-  wodType=t;
-  document.querySelectorAll('#wtypeGrid .wtbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderWodTypeForm();
-}
-function selScale(s,btn){
-  wodScale=s;
-  ['scRx','scSc','scRx2'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  btn.classList.add('active');
-}
 
 function getWExOpts(){return D.wEx.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');}
 
@@ -8769,49 +8831,6 @@ function addChipMov(){chipMovs.push({exId:'',w:0,reps:0});renderChipMovs();}
 function renderChipMovs(){document.getElementById('chipMovList').innerHTML=chipMovs.map((m,i)=>`<div class="wex-row anim-slidein" style="animation-delay:${i*25}ms"><span style="font-size:12px;color:var(--text3);font-weight:700;min-width:16px">${i+1}</span><select style="flex:2;font-size:14px;padding:5px 7px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text)" onchange="chipMovs[${i}].exId=this.value"><option value="">— Exercici —</option>${getWExOpts()}</select><input type="number" class="sinp" style="width:52px;padding:6px 4px" placeholder="reps" oninput="chipMovs[${i}].reps=+this.value"><input type="number" class="sinp" style="width:52px;padding:6px 4px" placeholder="kg" step="0.5" oninput="chipMovs[${i}].w=+this.value"><button class="xbtn" onclick="chipMovs.splice(${i},1);renderChipMovs()">×</button></div>`).join('');}
 
 // ══ SAVE WOD ══
-function saveWod(){
-  if(!document.getElementById('wDate')) return;   // pre-rebuild editor, removed v8.18
-  const date=document.getElementById('wDate').value;
-  const name=document.getElementById('wName').value.trim();
-  const note=document.getElementById('wNote').value.trim();
-  const result=document.getElementById('wResult')?document.getElementById('wResult').value.trim():'';
-  if(!date){toast('Selecciona data','error');return;}
-  let wodData={type:wodType};
-  let exercises=[];
-  if(wodType==='AMRAP'){
-    wodData.duration=+document.getElementById('wDur').value||0;
-    wodData.movements=amrapMovs.filter(m=>m.exId);
-    exercises=amrapMovs.filter(m=>m.exId);
-  }else if(wodType==='EMOM'){
-    wodData.totalMin=+document.getElementById('emomTotal').value||10;
-    wodData.interval=+document.getElementById('emomInterval').value||1;
-    wodData.minutes=emomMins.map(b=>({isRest:b.isRest,movements:b.movements.filter(m=>m.exId)}));
-    emomMins.forEach(b=>{if(!b.isRest)b.movements.filter(m=>m.exId).forEach(m=>exercises.push({exId:m.exId,weight:m.weight,reps:m.reps}));});
-  }else if(wodType==='For Time'){
-    wodData.timeCap=+document.getElementById('ftCap').value||0;
-    wodData.rounds=+document.getElementById('ftRounds').value||1;
-    wodData.movements=ftMovs.filter(m=>m.exId);
-    exercises=ftMovs.filter(m=>m.exId);
-  }else if(wodType==='Tabata'){
-    wodData.work=+document.getElementById('tabWork').value||20;
-    wodData.rest=+document.getElementById('tabRest').value||10;
-    wodData.rounds=+document.getElementById('tabRounds').value||8;
-    wodData.movements=tabMovs.filter(m=>m.exId);
-    exercises=tabMovs.filter(m=>m.exId).map(m=>({...m,reps:0}));
-  }else if(wodType==='Chipper'){
-    wodData.timeCap=+document.getElementById('chipCap').value||0;
-    wodData.movements=chipMovs.filter(m=>m.exId);
-    exercises=chipMovs.filter(m=>m.exId);
-  }else{
-    wodData.description=document.getElementById('wodFree')?document.getElementById('wodFree').value:'';
-  }
-  const ent={id:Date.now(),date,name,type:wodType,result,scale:wodScale,wodData,exercises,note,tags:[]};
-  D.wEnt.push(ent);
-  save();renderRecentWods();
-  document.getElementById('wName').value='';document.getElementById('wNote').value='';
-  renderWodTypeForm();
-  toast('WoD guardat ✓');
-}
 
 // ══ RECENT WODS ══
 function renderWodTemplates(){
@@ -8913,12 +8932,6 @@ function cancelWodTplForm() {
   if (body) body.style.display = 'none';
   if (chev) chev.style.transform = '';
 }
-function selWodTplType(type, btn) {
-  wodTplType = type;
-  document.querySelectorAll('#wodTplTypeGrid .wtbtn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderWodTplTypeForm();
-}
 function renderWodTplTypeForm() {
   if(!document.getElementById('wodTplTypeForm')) return;   // pre-rebuild editor, removed v8.18
   const div = document.getElementById('wodTplTypeForm');
@@ -8977,49 +8990,6 @@ function renderWodTplTabMovs(){const c=document.getElementById('wodTplTabList');
 function renderWodTplChipMovs(){const c=document.getElementById('wodTplChipList');if(!c)return;const o=getTplWExOpts();c.innerHTML=tplChipMovs.map((m,i)=>`<div class="wex-row anim-slidein" style="animation-delay:${i*20}ms"><span style="font-size:12px;color:var(--text3);font-weight:700;min-width:16px">${i+1}</span><select style="flex:2;font-size:14px;padding:5px 7px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text)" onchange="tplChipMovs[${i}].exId=this.value"><option value="">—</option>${o}</select><input type="number" class="sinp" style="width:46px;padding:5px 3px" placeholder="reps" oninput="tplChipMovs[${i}].reps=+this.value"><input type="number" class="sinp" style="width:46px;padding:5px 3px" placeholder="kg" step="0.5" oninput="tplChipMovs[${i}].w=+this.value"><button class="xbtn" onclick="tplChipMovs.splice(${i},1);renderWodTplTypeForm()">×</button></div>`).join('');}
 function syncWodTplEmomMins(){const total=+document.getElementById('wTplEmomTotal')?.value||10;const interval=+document.getElementById('wTplEmomInterval')?.value||1;const blocs=Math.ceil(total/interval);while(tplEmomMins.length<blocs)tplEmomMins.push({movements:[{exId:'',reps:0,weight:0}],isRest:false});tplEmomMins=tplEmomMins.slice(0,blocs);const c=document.getElementById('wodTplEmomBlocs');if(!c)return;const o=getTplWExOpts();c.innerHTML=tplEmomMins.map((bl,i)=>`<div class="emom-min anim-slidein" style="animation-delay:${i*15}ms"><div class="emom-min-hd"><span class="emom-min-lbl">Minut ${i+1}</span><label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;margin:0"><input type="checkbox" ${bl.isRest?'checked':''} onchange="tplEmomMins[${i}].isRest=this.checked;syncWodTplEmomMins()"> Descans</label></div>${!bl.isRest?`${bl.movements.map((m,j)=>`<div class="wex-row" style="margin-bottom:4px"><select style="flex:2;font-size:14px;padding:5px 7px;background:var(--bg5);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text)" onchange="tplEmomMins[${i}].movements[${j}].exId=this.value"><option value="">—</option>${o}</select><input type="number" class="sinp" style="width:46px;padding:5px 3px" placeholder="reps" oninput="tplEmomMins[${i}].movements[${j}].reps=+this.value"><input type="number" class="sinp" style="width:46px;padding:5px 3px" placeholder="kg" step="0.5" oninput="tplEmomMins[${i}].movements[${j}].weight=+this.value">${bl.movements.length>1?`<button class="xbtn" onclick="tplEmomMins[${i}].movements.splice(${j},1);syncWodTplEmomMins()">×</button>`:'<div></div>'}</div>`).join('')}<button class="ghost btn-sm" style="font-size:12px;padding:3px 8px" onclick="tplEmomMins[${i}].movements.push({exId:'',reps:0,weight:0});syncWodTplEmomMins()">+ Ex.</button>`:`<div style="text-align:center;padding:6px;font-size:14px;color:var(--text3)">${icSVG('moon',12)} Descans</div>`}</div>`).join('');}
 
-function saveWodTpl() {
-  if(!document.getElementById('wodTplEditId')) return;   // pre-rebuild editor, removed v8.18
-  const name = document.getElementById('wodTplName').value.trim();
-  if (!name) { toast('El nom és obligatori','error'); return; }
-  let movements=[], duration=0, timeCap=0, rounds=1, extraData={};
-  if (wodTplType==='AMRAP') {
-    duration=+document.getElementById('wTplDur')?.value||0;
-    movements=tplAmrapMovs.filter(m=>m.exId).map(m=>({exId:m.exId,reps:m.reps,weight:m.w}));
-  } else if (wodTplType==='EMOM') {
-    extraData.totalMin=+document.getElementById('wTplEmomTotal')?.value||10;
-    extraData.interval=+document.getElementById('wTplEmomInterval')?.value||1;
-    extraData.minutes=tplEmomMins.map(b=>({isRest:b.isRest,movements:b.movements.filter(m=>m.exId)}));
-    tplEmomMins.forEach(b=>{if(!b.isRest)b.movements.filter(m=>m.exId).forEach(m=>movements.push({exId:m.exId,reps:m.reps,weight:m.weight}));});
-  } else if (wodTplType==='For Time') {
-    timeCap=+document.getElementById('wTplFtCap')?.value||0;
-    rounds=+document.getElementById('wTplFtRounds')?.value||1;
-    movements=tplFtMovs.filter(m=>m.exId).map(m=>({exId:m.exId,reps:m.reps,weight:m.w}));
-  } else if (wodTplType==='Tabata') {
-    extraData.work=+document.getElementById('wTplTabWork')?.value||20;
-    extraData.rest=+document.getElementById('wTplTabRest')?.value||10;
-    rounds=+document.getElementById('wTplTabRounds')?.value||8;
-    movements=tplTabMovs.filter(m=>m.exId).map(m=>({exId:m.exId,reps:0,weight:m.w}));
-  } else if (wodTplType==='Chipper') {
-    timeCap=+document.getElementById('wTplChipCap')?.value||0;
-    movements=tplChipMovs.filter(m=>m.exId).map(m=>({exId:m.exId,reps:m.reps,weight:m.w}));
-  } else {
-    extraData.description=document.getElementById('wTplFree')?.value||'';
-  }
-  const wodBlock={type:wodTplType,duration,timeCap,rounds,movements,...extraData};
-  const editId=document.getElementById('wodTplEditId').value;
-  if(!D.templates)D.templates=[];
-  if (editId) {
-    const t=D.templates.find(t=>t.id===editId);
-    if(t){t.name=name;t.notes=document.getElementById('wodTplNotes').value.trim();t.wodBlock=wodBlock;t.halBlocks=t.halBlocks||[];}
-  } else {
-    // WoD-only template (no haltero blocks)
-    D.templates.push({id:'wtpl_'+Date.now(),name,notes:document.getElementById('wodTplNotes').value.trim(),halBlocks:[],wodBlock,wodOnly:true});
-  }
-  save();
-  cancelWodTplForm();
-  renderWodTplFullList();
-  toast('Plantilla WoD guardada ✓');
-}
 
 function renderWodTplFullList() {
   if(!document.getElementById('wodTplFullList')) return;   // pre-rebuild editor, removed v8.18
@@ -9306,14 +9276,23 @@ function renderWodBoard(){
     const hist=wodHistory(k);
     if(!hist.length) return null;
     const name=hist[hist.length-1].name||'WoD';
-    const best=bestWodScore(k);
+    const bestAny=bestWodScoreAny(k);            // ranks within a scale (v8.26)
+    const best=bestAny&&bestAny.score;
+    const bestScale=bestAny&&bestAny.scale;
     const kind=best&&best.kind;
-    // previous best, i.e. the best excluding the most recent entry
+    // "Improved" means the latest attempt beat your previous best AT ITS OWN
+    // SCALE (v8.26). Comparing across scales flagged an easier attempt as
+    // progress; a Modificat attempt is never progress, because it is not a
+    // repeat of anything fixed.
     const last=hist[hist.length-1];
+    const lastScale=wodScaleOf(last);
     let prev=null;
-    hist.slice(0,-1).forEach(e=>{ if(wodScoreBeats(e.score,prev)) prev=e.score; });
-    const improved = prev && wodScoreBeats(last.score,prev);
-    return {k,name,best,kind,n:hist.length,last,prev,improved};
+    if(wodScaleRanks(lastScale)){
+      hist.slice(0,-1).filter(e=>wodScaleOf(e)===lastScale)
+        .forEach(e=>{ if(wodScoreBeats(e.score,prev)) prev=e.score; });
+    }
+    const improved = !!(prev && wodScoreBeats(last.score,prev));
+    return {k,name,best,bestScale,kind,n:hist.length,last,prev,improved};
   }).filter(Boolean).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));
 
   if(!rows.length){
@@ -9327,10 +9306,19 @@ function renderWodBoard(){
     // The count already sits in the meta line; the right column only speaks when
     // there is something to say — how much you beat your own best by.
     const trend = r.improved ? '<span class="wodb-up">↑ '+wodDeltaText(r.last.score,r.prev)+'</span>' : '';
+    // A WoD only ever done as Modificat has no ranking best (v8.26). It still
+    // belongs on the board — you did it — so show the latest result instead,
+    // muted, and say why it is not a mark.
+    const ranked = !!r.best;
+    const shown  = ranked ? r.best : r.last.score;
+    const tail   = ranked
+      ? (r.bestScale && r.bestScale!=='Rx' ? ' · '+esc(r.bestScale) : '')
+      : ' · només modificat';
     return '<button class="wodb-row" onclick="openWodTrend(\''+esc(r.k)+'\')">'
       +'<span class="wodb-main"><span class="wodb-nm">'+esc(r.name)+'</span>'
-      +'<span class="wodb-meta">'+times+' · '+esc(r.last.date)+'</span></span>'
-      +'<span class="wodb-right"><span class="wodb-val">'+wodScoreText(r.best)+'</span>'+trend+'</span>'
+      +'<span class="wodb-meta">'+times+' · '+esc(r.last.date)+tail+'</span></span>'
+      +'<span class="wodb-right"><span class="wodb-val"'+(ranked?'':' style="color:var(--text3)"')+'>'
+        +wodScoreText(shown)+'</span>'+trend+'</span>'
     +'</button>';
   }).join('');
 }
@@ -9356,9 +9344,10 @@ function wodDeltaText(now, prev){
 }
 // Tapping a WoD shows every attempt, oldest first, with the best one marked.
 function openWodTrend(key){
-  const hist=wodHistory(key);
+  const hist=wodHistory(key);            // every attempt, all scales
   if(!hist.length) return;
-  const best=bestWodScore(key);
+  const bestAny=bestWodScoreAny(key);
+  const best=bestAny&&bestAny.score;
   const name=hist[hist.length-1].name||'WoD';
   const rows=hist.slice().reverse().map(e=>{
     const isBest=wodScoreValue(e.score)===wodScoreValue(best)&&e.score.kind===best.kind;
@@ -9397,7 +9386,6 @@ function populateAjEx(){
   if(famSel)famSel.innerHTML=Object.values(HFAM).flat().map(f=>`<option value="${f}">${f}</option>`).join('');
   loadAjEx();
 }
-function openAj(){ switchTab('ajustaments'); }
 
 function loadAjProfile(){
   const p=D.profile||{};
@@ -9526,18 +9514,8 @@ function resetTplForm() {
   renderTplBlocks();
 }
 
-function toggleTplWod() {
-  if(!document.getElementById('tplWodToggle')) return;   // pre-rebuild editor, removed v8.18
-  const on = document.getElementById('tplWodToggle').checked;
-  document.getElementById('tplWodSection').style.display = on ? 'block' : 'none';
-  if (on) { tplWodType='AMRAP'; renderTplWodTypeForm(); }
-}
 
 // ── Haltero blocks builder ──
-function addTplBlock() {
-  tplBlocks.push({ exId: D.hEx[0]?.id || '', sets: 3, reps: 5, pct: '' });
-  renderTplBlocks();
-}
 function removeTplBlock(i) { tplBlocks.splice(i, 1); renderTplBlocks(); }
 
 function renderTplBlocks() {
@@ -9572,12 +9550,6 @@ let tplWodType = 'AMRAP';
 // State per type (parallel to main registrar state)
 let tplAmrapMovs=[], tplEmomMins=[], tplFtMovs=[], tplTabMovs=[], tplChipMovs=[];
 
-function selTplWodType(type, btn) {
-  tplWodType = type;
-  document.querySelectorAll('#tplWodTypeGrid .wtbtn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderTplWodTypeForm();
-}
 function getTplWExOpts() { return D.wEx.map(e => `<option value="${e.id}">${e.name}</option>`).join(''); }
 
 function renderTplWodTypeForm() {
@@ -9661,60 +9633,6 @@ function addTplChipMov(){tplChipMovs.push({exId:'',w:0,reps:0});renderTplChipMov
 function renderTplChipMovs(){const c=document.getElementById('tplChipMovList');if(!c)return;const o=getTplWExOpts();c.innerHTML=tplChipMovs.map((m,i)=>`<div class="wex-row anim-slidein" style="animation-delay:${i*20}ms"><span style="font-size:12px;color:var(--text3);font-weight:700;min-width:16px">${i+1}</span><select style="flex:2;font-size:14px;padding:5px 7px;background:var(--bg4);border:0.5px solid var(--border2);border-radius:var(--rs);color:var(--text)" onchange="tplChipMovs[${i}].exId=this.value"><option value="">—</option>${o}</select><input type="number" class="sinp" style="width:46px;padding:5px 3px" placeholder="reps" oninput="tplChipMovs[${i}].reps=+this.value"><input type="number" class="sinp" style="width:46px;padding:5px 3px" placeholder="kg" step="0.5" oninput="tplChipMovs[${i}].w=+this.value"><button class="xbtn" onclick="tplChipMovs.splice(${i},1);renderTplChipMovs()">×</button></div>`).join('');}
 
 // ── Save template ──
-function saveTpl() {
-  if(!document.getElementById('tplEditId')) return;   // pre-rebuild editor, removed v8.18
-  const name = document.getElementById('tplName').value.trim();
-  if (!name) { toast('El nom és obligatori', 'error'); return; }
-  if (!tplBlocks.length && !document.getElementById('tplWodToggle').checked) {
-    toast('Afegeix almenys un exercici o un WoD', 'error'); return;
-  }
-  const wodOn = document.getElementById('tplWodToggle').checked;
-  let wodBlock = null;
-  if (wodOn) {
-    let movements = [], duration = 0, timeCap = 0, rounds = 1;
-    let extraData = {};
-    if (tplWodType === 'AMRAP') {
-      duration = +document.getElementById('tplWodDur')?.value || 0;
-      movements = tplAmrapMovs.filter(m => m.exId).map(m => ({exId:m.exId,reps:m.reps,weight:m.w}));
-    } else if (tplWodType === 'EMOM') {
-      extraData.totalMin = +document.getElementById('tplEmomTotal')?.value || 10;
-      extraData.interval = +document.getElementById('tplEmomInterval')?.value || 1;
-      extraData.minutes = tplEmomMins.map(b => ({isRest:b.isRest,movements:b.movements.filter(m=>m.exId)}));
-      // Flatten for the exercises index
-      tplEmomMins.forEach(b => { if(!b.isRest) b.movements.filter(m=>m.exId).forEach(m=>movements.push({exId:m.exId,reps:m.reps,weight:m.weight})); });
-    } else if (tplWodType === 'For Time') {
-      timeCap = +document.getElementById('tplFtCap')?.value || 0;
-      rounds = +document.getElementById('tplFtRounds')?.value || 1;
-      movements = tplFtMovs.filter(m => m.exId).map(m => ({exId:m.exId,reps:m.reps,weight:m.w}));
-    } else if (tplWodType === 'Tabata') {
-      extraData.work = +document.getElementById('tplTabWork')?.value || 20;
-      extraData.rest = +document.getElementById('tplTabRest')?.value || 10;
-      rounds = +document.getElementById('tplTabRounds')?.value || 8;
-      movements = tplTabMovs.filter(m => m.exId).map(m => ({exId:m.exId,reps:0,weight:m.w}));
-    } else if (tplWodType === 'Chipper') {
-      timeCap = +document.getElementById('tplChipCap')?.value || 0;
-      movements = tplChipMovs.filter(m => m.exId).map(m => ({exId:m.exId,reps:m.reps,weight:m.w}));
-    } else {
-      extraData.description = document.getElementById('tplWodFree')?.value || '';
-    }
-    wodBlock = { type: tplWodType, duration, timeCap, rounds, movements, ...extraData };
-  }
-
-  const editId = document.getElementById('tplEditId').value;
-  if (editId) {
-    const t = (D.templates||[]).find(t => t.id === editId);
-    if (t) { t.name = name; t.notes = document.getElementById('tplNotes').value.trim(); t.halBlocks = [...tplBlocks]; t.wodBlock = wodBlock; }
-  } else {
-    if(!D.templates)D.templates=[];
-    D.templates.push({ id: 'tpl_' + Date.now(), name, notes: document.getElementById('tplNotes').value.trim(), halBlocks: [...tplBlocks], wodBlock });
-  }
-  save();
-  toast((editId ? 'Plantilla actualitzada' : 'Plantilla guardada') + ' ✓');
-  cancelHTplForm();
-  renderHTplList();
-  renderWodTplFullList();
-  renderWodTemplates();
-}
 // ── Log mode selector ──────────────────────────────────────────────────
 let logMode = 'free';
 
@@ -9950,7 +9868,7 @@ function goalProgress(g){
   if(g.kind==='wodTime'){
     // Typed scores first (v8.21); the free-text parse remains for old entries.
     const key=g.wodKey||wodKeyFor(g.wodName);
-    const sc=bestWodScore(key);
+    const sc=(bestWodScoreAny(key)||{}).score;   // v8.26: ignore Modificat
     const best=(sc&&sc.kind==='time'&&sc.sec!=null)?sc.sec:bestWodSeconds(g.wodName);
     if(!best||!g.targetSec) return 0;
     return Math.min(100, Math.round(g.targetSec/best*100));
@@ -10064,13 +9982,6 @@ function showHTplForm(editId) {
   if (!editId) { resetTplForm(); renderTplBlocks(); }
   const card = document.querySelector('#h-tpl .tpl-create');
   if (card) card.scrollIntoView({behavior:'smooth',block:'start'});
-}
-function toggleTplCreate(mode) {
-  const bodyId = mode === 'h' ? 'hTplCreateBody' : 'wodTplCreateBody';
-  const body = document.getElementById(bodyId);
-  const isOpen = body && body.style.display !== 'none';
-  if (isOpen) { mode === 'h' ? cancelHTplForm() : cancelWodTplForm(); }
-  else { mode === 'h' ? showHTplForm() : showWodTplForm(); }
 }
 function cancelHTplForm() {
   if(!document.getElementById('hTplCreateBody')) return;   // pre-rebuild editor, removed v8.18
@@ -10281,7 +10192,7 @@ function saveSetup(skip) {
 // ══════════════════════════════════════════
 // LEGAL / PRIVACY — documents, acceptance, in-app screens
 // ══════════════════════════════════════════
-const LEGAL_VERSION = '1.1';   // v8.19: optional location/weather added
+const LEGAL_VERSION = '1.2';   // v8.29: 3.A inventory completed (date of birth, RPE, known maxes, complexes)
 const LEGAL_HOLDER = 'Àlex Alemany Muñoz';
 const LEGAL_EMAIL  = 'alexalemanymunoz@gmail.com';
 
@@ -10379,7 +10290,7 @@ async function sendFeedback() {
 
 const LEGAL_DOCS = {
   privacitat: { t: 'Política de Privacitat', h: `
-<div class="lmeta">Última actualització: 2 d'agost de 2026 · v1.1</div>
+<div class="lmeta">Última actualització: 6 d'agost de 2026 · v1.2</div>
 <h2>1. Responsable del tractament</h2>
 <p>D'acord amb el Reglament (UE) 2016/679 (RGPD) i la Llei Orgànica 3/2018 (LOPDGDD):</p>
 <ul><li><strong>Responsable:</strong> ${LEGAL_HOLDER}</li><li><strong>Contacte:</strong> ${LEGAL_EMAIL}</li></ul>
@@ -10388,7 +10299,7 @@ const LEGAL_DOCS = {
 <p>PRsonal és una aplicació autònoma sense compte ni servidor propi. <strong>La immensa majoria de les teves dades no surten mai del teu dispositiu:</strong> es guarden localment al navegador i el Responsable ni les rep ni hi pot accedir. Cap dada que arribi a tercers inclou el teu nom. <strong>L'única funció que envia res fora del dispositiu és «El temps», que està desactivada per defecte</strong> (vegeu 3.B).</p>
 <h2>3. Dades, finalitats i base jurídica</h2>
 <h3>3.A Dades que es guarden només al teu dispositiu</h3>
-<p>Perfil (nom opcional, sexe, pes, alçada), registres d'entrenament, objectius, plantilles, preferències i còpies JSON que generis tu. El pes i el sexe poden considerar-se dades de salut (categoria especial, art. 9 RGPD); es tracten només al teu dispositiu i no es transmeten. El teu nom, si l'introdueixes, es guarda només al dispositiu i no s'envia enlloc.</p>
+<p>Perfil (nom opcional, sexe, <strong>data de naixement</strong>, pes, alçada), registres d'entrenament (sèries, pesos, repeticions, notes, etiquetes i <strong>esforç percebut &mdash; RPE</strong>), <strong>marques màximes que introdueixis manualment</strong>, objectius, plantilles, <strong>complexos</strong>, la configuració del teu gimnàs, preferències i còpies JSON que generis tu. El pes, el sexe, la data de naixement i l'RPE poden considerar-se dades de salut (categoria especial, art. 9 RGPD); es tracten només al teu dispositiu i no es transmeten. El teu nom, si l'introdueixes, es guarda només al dispositiu i no s'envia enlloc.</p>
 <p><strong>Base jurídica:</strong> el teu consentiment (art. 6.1.a) i, per a dades de salut, el consentiment explícit (art. 9.2.a), que atorgues en acceptar aquesta política i introduir les dades. Pots retirar-lo esborrant les dades. <strong>Conservació:</strong> fins que les esborris.</p>
 <h3>3.B Dades que es transmeten a tercers</h3>
 <p><strong>Mètrica d'ús anònima (Google Forms):</strong> en completar o ometre la configuració inicial, s'envia un esdeveniment anònim amb només la data i hora. <strong>No inclou el teu nom ni cap identificador personal.</strong> Finalitat: comptar de forma agregada les configuracions completades. Destinatari: Google.</p>
@@ -10423,7 +10334,7 @@ const LEGAL_DOCS = {
 <p>Podem actualitzar aquesta política; la versió vigent és sempre l'accessible des de l'app. Si els canvis són substancials, te la tornarem a mostrar.</p>
 <p style="font-size:13px;color:var(--text3);margin-top:16px">Aquest text és informatiu i no constitueix assessorament jurídic.</p>` },
   termes: { t: 'Avís Legal i Condicions d\'Ús', h: `
-<div class="lmeta">Última actualització: 23 de juliol de 2026 · v1.0</div>
+<div class="lmeta">Última actualització: 6 d\'agost de 2026 · v1.1</div>
 <h2>1. Identificació (art. 10 LSSI)</h2>
 <ul><li><strong>Titular:</strong> ${LEGAL_HOLDER}</li><li><strong>Contacte:</strong> ${LEGAL_EMAIL}</li></ul>
 <p>PRsonal és avui una app gratuïta i sense finalitat comercial. Quan s'introdueixi monetització (App Store, compres), s'activaran obligacions addicionals de la LSSI i de consum, i aquestes condicions s'actualitzaran.</p>
@@ -10436,7 +10347,7 @@ const LEGAL_DOCS = {
 <h2>5. Absència de garanties</h2>
 <p>L'Aplicació es proporciona «tal qual» i «segons disponibilitat», sense garantia de funcionament ininterromput, absència d'errors ni exactitud dels càlculs, en la mesura permesa per la llei.</p>
 <h2>6. Advertiment de salut</h2>
-<div class="lwarn">PRsonal és una eina de registre esportiu. La informació i els càlculs (1RM, Wilks, percentatges) tenen finalitat informativa i <strong>no constitueixen consell mèdic, diagnòstic ni prescripció d'exercici</strong>. Consulta un professional abans d'iniciar o modificar un entrenament. L'Usuari assumeix la plena responsabilitat de les seves decisions; el Titular no respon de lesions o danys derivats de l'ús de l'Aplicació.</div>
+<div class="lwarn">PRsonal és una eina de registre esportiu. La informació i els càlculs (1RM, Wilks, percentatges, estimacions de fatiga a partir de l'esforç percebut) tenen finalitat informativa i <strong>no constitueixen consell mèdic, diagnòstic ni prescripció d'exercici</strong>. Consulta un professional abans d'iniciar o modificar un entrenament. L'Usuari assumeix la plena responsabilitat de les seves decisions; el Titular no respon de lesions o danys derivats de l'ús de l'Aplicació.</div>
 <h2>7. Limitació de responsabilitat</h2>
 <p>En la màxima mesura permesa per la llei, el Titular no respon de danys derivats de l'ús o la impossibilitat d'ús, d'errors o interrupcions, ni de la <strong>pèrdua de dades</strong>: les dades es guarden al dispositiu de l'Usuari i és responsabilitat seva fer-ne còpies (exportació JSON). No s'exclou la responsabilitat que la llei no permeti excloure ni els drets imperatius de l'Usuari com a consumidor.</p>
 <h2>8. Propietat intel·lectual i marca</h2>
@@ -10544,11 +10455,6 @@ function calcBestWilks(bwKg, sex) {
 // ══════════════════════════════════════════
 // METRICS OVERLAY
 // ══════════════════════════════════════════
-function openMetrics() {
-  renderMetricsOverlay();
-  document.getElementById('metricsOv').classList.add('on');
-  setTimeout(animateStrengthBars, 80);
-}
 function closeMetrics() { animClose(document.getElementById('metricsOv')); }
 
 function renderMetricsOverlay() {
@@ -11290,14 +11196,6 @@ function checkWeeklySummary() {
   card.style.display = 'block';
 }
 
-function dismissWeeklySummary() {
-  if(!document.getElementById('weeklySummaryCard')) return;   // pre-rebuild editor, removed v8.18
-  const todayStr = localToday();
-  localStorage.setItem('alerx_weekly_dismissed', todayStr);
-  const card = document.getElementById('weeklySummaryCard');
-  card.style.animation = 'fadeOut 0.25s ease forwards';
-  setTimeout(() => { card.style.display = 'none'; card.style.animation = ''; }, 260);
-}
 
 function buildWeeklySummary() {
   const { start, end, weekLabel } = getLastWeekRange();
@@ -11643,6 +11541,12 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.27':['<b>Un sol editor.</b> Editar una sessió des de la fitxa d\'un exercici obria una finestra diferent, que no deixava tocar ni les etiquetes ni l\'exercici. Ara tot passa pel registrar de sempre.',
+          'Arreglat: si canvies l\'exercici d\'una sessió, el màxim de l\'exercici <b>antic</b> també es recalcula. Abans es quedava alt amb una sèrie que ja no era seva.'],
+  '8.26':['<b>Els rècords de WoD ara respecten l\'escala.</b> Abans un Fran Scaled a 4:30 batia un Fran Rx a 5:48 i comptava com a rècord. Ara cada escala té el seu propi rècord, i el trofeu diu quina és.',
+          'Els WoDs marcats com a <b>Modificat</b> es guarden i es veuen a l\'historial, però no fan rècord: si canvies l\'entrenament pel teu compte, no hi ha res fix per comparar.',
+          '<b>Ja pots posar l\'RPE</b> a cada sèrie (opcional, d\'1 a 10). Amb 5 sessions, Mètriques comença a dir-te si vas acumulant fatiga.',
+          '<b>Ja pots apuntar un màxim que ja sabies</b> — el que vas fer a una competició o un dia de test que no vas registrar sèrie a sèrie. El trobaràs a la fitxa de cada exercici.'],
   '8.25':['<b>Ja pots registrar complexos.</b> En triar un exercici de força ara et preguntem si és un sol moviment o un complex; si ho és, en muntes la combinació (moviment + repeticions per ronda) i el pes el poses després, com sempre.',
           '<b>I cada moviment del complex compta pel seu compte.</b> Si fas 3 power clean + 1 jerk a 70 kg, el power clean suma com a 3 reps a 70 i el jerk com a 1 rep a 70, al seu propi històric i als seus rècords.',
           'Aplicar una plantilla de WoD ara obre el registrar: així el resultat queda ben tipat i <b>compta com a rècord</b>. Abans es desava com a text lliure i no comptava per a res.',
