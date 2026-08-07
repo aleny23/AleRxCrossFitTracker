@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.51</title>
+<title>PRsonal v8.52</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -852,6 +852,29 @@ select option{background:var(--bg3);}
 .stitle{font-size:17px;font-weight:800;margin-bottom:3px;}
 .ssub{font-size:14px;color:var(--text2);margin-bottom:13px;}
 
+
+/* ══ EDGE MARKERS (temporary, v8.52) ═══════════════════════════════════
+   Four failed hypotheses about the strip under an open card. This stops
+   describing the layout and draws it, so one screenshot from the phone shows
+   where each box actually lands relative to the physical screen. */
+html.edge-marks body::before{
+  content:''; position:fixed; left:0; right:0; bottom:0; height:6px;
+  background:#ff00d4; z-index:99998; pointer-events:none;
+}
+html.edge-marks body::after{
+  content:''; position:fixed; left:0; right:0; top:0; height:6px;
+  background:#00e5ff; z-index:99998; pointer-events:none;
+}
+html.edge-marks .wiz.on, html.edge-marks .sheet.on{ outline:3px solid #7CFF00; outline-offset:-3px; }
+html.edge-marks .wiz.on .wiz-card, html.edge-marks .sheet.on .sheet-in{
+  outline:3px solid #FF8A00; outline-offset:-3px;
+}
+#edgeReadout{
+  position:fixed; left:8px; bottom:14px; z-index:99999; pointer-events:none;
+  background:rgba(0,0,0,.85); color:#fff; font:11px/1.5 ui-monospace,Menlo,monospace;
+  padding:6px 8px; border-radius:6px; display:none; white-space:pre;
+}
+html.edge-marks #edgeReadout{ display:block; }
 /* ─── FOOTER CC ─── */
 /* The colophon sits BELOW the resting scroll limit: you only meet it if you
    deliberately pull past the end. At rest the logo used to peek above the fold,
@@ -1412,6 +1435,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
 
 /* ─── V6 BOTTOM TAB BAR ──────────────────────────────────────── */
 :root {
+  --vh-probe: 100vh;   /* v8.52: so the diagnostic can report what 100vh resolves to */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -2939,7 +2963,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.51<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.52<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3765,6 +3789,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openFeedback()">Enviar comentari o error</button>
     <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openFontLab()">Provar tipografies</button>
     <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openViewportDiag()">Diagnòstic de pantalla</button>
+    <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();toggleEdgeMarks()">Marcar vores (depuració)</button>
     <button class="btn btn-s" style="width:100%" onclick="closeDbgMenu()">Cancel·lar</button>
   </div>
 </div>
@@ -3845,7 +3870,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.51</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.52</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -4594,7 +4619,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.51';
+const APP_VERSION='8.52';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -11283,6 +11308,47 @@ function closeFontLab(){ animClose(document.getElementById('fontLabSheet')); }
 // different fixes, and does not reproduce on desktop at any viewport size. This
 // prints what the device actually reports so the next change is aimed at the
 // real cause instead of a fourth guess.
+
+// ══ EDGE MARKERS (temporary, v8.52) ════════════════════════════════════
+// MAGENTA bar = where `position:fixed; bottom:0` actually lands.
+// CYAN bar    = where `top:0` lands.
+// GREEN box   = the modal container (.wiz / .sheet).
+// ORANGE box  = the card itself.
+// If magenta is not flush with the physical bottom of the screen, the viewport
+// does not reach it. If magenta IS flush but orange sits above it, the card is
+// not where flex-end should put it.
+let edgeMarksOn=false, edgeRaf=0;
+// What does 100vh actually resolve to? getPropertyValue returns the literal
+// token ("100vh"), so it has to be measured on a real element. On iOS this can
+// differ from innerHeight, which is the whole point of asking.
+let _vhEl=null;
+function vhProbe(){
+  if(!_vhEl){ _vhEl=document.createElement('div');
+    _vhEl.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:100vh;pointer-events:none;';
+    document.body.appendChild(_vhEl); }
+  return Math.round(_vhEl.getBoundingClientRect().height);
+}
+function toggleEdgeMarks(){
+  edgeMarksOn=!edgeMarksOn;
+  document.documentElement.classList.toggle('edge-marks', edgeMarksOn);
+  let box=document.getElementById('edgeReadout');
+  if(!box){ box=document.createElement('div'); box.id='edgeReadout'; document.body.appendChild(box); }
+  if(!edgeMarksOn){ cancelAnimationFrame(edgeRaf); return; }
+  const tick=()=>{
+    const card=document.querySelector('.wiz.on .wiz-card, .sheet.on .sheet-in');
+    const cont=document.querySelector('.wiz.on, .sheet.on');
+    const r=card?card.getBoundingClientRect():null;
+    const rc=cont?cont.getBoundingClientRect():null;
+    box.textContent=
+      'inner '+window.innerHeight+'  screen '+(window.screen?window.screen.height:'?')+'\n'
+     +'100vh '+vhProbe()+'  88vh '+Math.round(vhProbe()*0.88)+'\n'
+     +'scrollY '+Math.round(window.pageYOffset)+'  docH '+document.documentElement.scrollHeight+'\n'
+     +(rc?('cont '+Math.round(rc.top)+'..'+Math.round(rc.bottom)+'\n'):'')
+     +(r?('card '+Math.round(r.top)+'..'+Math.round(r.bottom)):'card: none');
+    edgeRaf=requestAnimationFrame(tick);
+  };
+  tick();
+}
 function openViewportDiag(){
   const sheet=document.getElementById('vpDiagSheet');
   sheet.classList.add('on');
