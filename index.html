@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.49</title>
+<title>PRsonal v8.50</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -2948,7 +2948,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.49<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.50<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3753,6 +3753,19 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   </div>
 </div>
 
+
+<!-- Viewport diagnostic (temporary, v8.50). This sheet is itself the probe: it is
+     an ordinary .sheet, so whatever happens to a card happens to it, and it
+     reports its own geometry. -->
+<div class="sheet" id="vpDiagSheet">
+  <div class="sheet-in" style="max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div class="stitle">Diagnòstic de pantalla</div>
+    <div class="ssub" style="margin:6px 0 12px">Fes-ne una captura i envia-me-la.</div>
+    <div id="vpDiagBody" style="font-size:13px;line-height:1.75;font-family:ui-monospace,Menlo,monospace;color:var(--text)"></div>
+    <button class="btn btn-s" style="width:100%;margin-top:14px" onclick="closeViewportDiag()">Tancar</button>
+  </div>
+</div>
+
 <!-- Debug bubble now offers both tools rather than going straight to feedback. -->
 <div class="sheet" id="dbgMenuSheet">
   <div class="sheet-in">
@@ -3760,6 +3773,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="ssub" style="margin-bottom:14px">Eines temporals de desenvolupament.</div>
     <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openFeedback()">Enviar comentari o error</button>
     <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openFontLab()">Provar tipografies</button>
+    <button class="btn btn-s" style="width:100%;margin-bottom:8px" onclick="closeDbgMenu();openViewportDiag()">Diagnòstic de pantalla</button>
     <button class="btn btn-s" style="width:100%" onclick="closeDbgMenu()">Cancel·lar</button>
   </div>
 </div>
@@ -3840,7 +3854,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.49</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.50</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -4589,7 +4603,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.49';
+const APP_VERSION='8.50';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -11272,6 +11286,48 @@ function renderFontLab(){
 function pickFont(id){ const o=applyFontChoice(id); renderFontLab(); toast(o.name); }
 function openFontLab(){ renderFontLab(); document.getElementById('fontLabSheet').classList.add('on'); }
 function closeFontLab(){ animClose(document.getElementById('fontLabSheet')); }
+
+// ══ VIEWPORT DIAGNOSTIC (temporary, v8.50) ═════════════════════════════
+// The strip of page visible under an open card on iOS has survived three
+// different fixes, and does not reproduce on desktop at any viewport size. This
+// prints what the device actually reports so the next change is aimed at the
+// real cause instead of a fourth guess.
+function openViewportDiag(){
+  const sheet=document.getElementById('vpDiagSheet');
+  sheet.classList.add('on');
+  // measure AFTER the sheet is up, so the numbers describe a real open card
+  setTimeout(()=>{
+    const card=sheet.querySelector('.sheet-in');
+    const sr=sheet.getBoundingClientRect(), cr=card.getBoundingClientRect();
+    // read the raw env() values through a probe, since CSS vars may be wrapped
+    const probe=document.createElement('div');
+    probe.style.cssText='position:fixed;left:-9999px;height:env(safe-area-inset-bottom,0px);'
+                      + 'width:env(safe-area-inset-top,0px);';
+    document.body.appendChild(probe);
+    const envBottom=Math.round(parseFloat(getComputedStyle(probe).height))||0;
+    const envTop=Math.round(parseFloat(getComputedStyle(probe).width))||0;
+    probe.remove();
+    const vv=window.visualViewport;
+    const row=(k,v)=>'<div><span style="color:var(--text3)">'+k+'</span> <b>'+v+'</b></div>';
+    document.getElementById('vpDiagBody').innerHTML=
+      row('innerHeight', window.innerHeight)
+     +row('clientHeight', document.documentElement.clientHeight)
+     +row('visualViewport.h', vv?Math.round(vv.height):'n/a')
+     +row('screen.height', window.screen?window.screen.height:'n/a')
+     +row('devicePixelRatio', window.devicePixelRatio)
+     +row('env safe-bottom', envBottom+'px')
+     +row('env safe-top', envTop+'px')
+     +row('--tab-h', getComputedStyle(document.documentElement).getPropertyValue('--tab-h').trim())
+     +row('standalone', (navigator.standalone===true)?'yes':(matchMedia('(display-mode: standalone)').matches?'yes (dm)':'NO'))
+     +'<hr style="border:none;border-top:0.5px solid var(--border);margin:10px 0">'
+     +row('sheet top/bottom', Math.round(sr.top)+' / '+Math.round(sr.bottom))
+     +row('card top/bottom', Math.round(cr.top)+' / '+Math.round(cr.bottom))
+     +row('GAP under card', Math.round(window.innerHeight-cr.bottom)+'px')
+     +row('card padding-bottom', getComputedStyle(card).paddingBottom)
+     +row('app version', APP_VERSION);
+  }, 120);
+}
+function closeViewportDiag(){ animClose(document.getElementById('vpDiagSheet')); }
 function openDbgMenu(){ document.getElementById('dbgMenuSheet').classList.add('on'); }
 function closeDbgMenu(){ animClose(document.getElementById('dbgMenuSheet')); }
 // Restore the choice before first paint so the app never flashes a second face.
