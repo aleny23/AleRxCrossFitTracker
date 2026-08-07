@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.35</title>
+<title>PRsonal v8.48</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -533,7 +533,7 @@ body.scroll-locked{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
 body.scroll-locked .tab-bar{backdrop-filter:none;-webkit-backdrop-filter:none;}
 /* v8.34: a dimming modal owns the screen — the tab bar must not bleed through
    its scrim, and must not be draggable into view by an iOS rubber-band. */
-body.modal-dim .tab-bar{opacity:0;visibility:hidden;pointer-events:none;}
+body.modal-dim .tab-bar{display:none;}
 /* v8.23: the 48px tail was pure void — .tab-page already reserves the tab bar
    plus 16px. Cut to 16px so the page ends shortly after its last card. The
    background is load-bearing: it is what hides the colophon parked below the
@@ -835,7 +835,7 @@ select option{background:var(--bg3);}
 /* ─── SHEET (bottom drawer) ─── */
 .sheet{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);align-items:flex-end;}
 .sheet.on{display:flex;}
-.sheet-in{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;padding:18px 14px 32px;width:100%;max-width:480px;margin:0 auto;border-top:0.5px solid var(--border2);}
+.sheet-in{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;padding:18px 14px calc(32px + var(--safe-bottom));width:100%;max-width:480px;margin:0 auto;border-top:0.5px solid var(--border2);}
 .stitle{font-size:17px;font-weight:800;margin-bottom:3px;}
 .ssub{font-size:14px;color:var(--text2);margin-bottom:13px;}
 
@@ -1623,8 +1623,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
   transition: background 0.15s;
 }
 .cal-day.today { background: var(--bg3); }
-.cal-day.has-act { cursor: pointer; }
-.cal-day.has-act:active { background: var(--bg4); }
+.cal-day { cursor: pointer; }
+.cal-day:active { background: var(--bg4); }
 .cal-day-label { font-size:12px; color: var(--text3); text-transform: uppercase; font-weight: 500; }
 .cal-day-num { font-size:17px; font-weight: 700; color: var(--text); }
 .cal-day.today .cal-day-num { color: var(--h-ink); }
@@ -1955,7 +1955,7 @@ h1.inici-hero-title,h1.entrenar-page-title,h1.tab-page-title,h1.aj-greeting{marg
    44px effective hit areas measured at 375×812 (mid-workout,
    one-handed use). Visual size mostly unchanged; hit zones grow
    via ::after overlays; smallest controls gain real height. */
-.xbtn,.hint-x,.search-btn,.search-clear,.pill,.entr-sub-btn,.ghost,.dangr,.cal-day.has-act{position:relative;}
+.xbtn,.hint-x,.search-btn,.search-clear,.pill,.entr-sub-btn,.ghost,.dangr,.cal-day{position:relative;}
 /* A centred var(--tap) box is deterministic; inset:-12px landed these at 39-42px
    depending on the glyph, just under the floor. */
 .xbtn::after,.hint-x::after,.search-btn::after,.search-clear::after{content:'';position:absolute;
@@ -1976,7 +1976,7 @@ input[type=text],input[type=number],input[type=date],input[type=password],input[
 }
 /* Collapsible section headers in Més ("Exercicis de força", "El teu gimnàs"…) */
 .aj-nav > div[onclick]{min-height:var(--tap);}
-.cal-day.has-act::after{content:'';position:absolute;inset:-4px;}
+.cal-day::after{content:'';position:absolute;inset:-4px;}
 a[href^="mailto"]{display:inline-block;padding:6px 0;}
 
 /* ─── v6.9 ICON & MOTION LAYER ───────────────────────────────
@@ -2242,7 +2242,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   <div class="mode-tabs three" id="metModeTabs">
     <button class="mode-tab active" data-mode="h" onclick="setSplitMode('met','h')">Força</button>
     <button class="mode-tab" data-mode="w" onclick="setSplitMode('met','w')">WoD</button>
-    <button class="mode-tab" data-mode="c" onclick="setSplitMode('met','c')">Cos</button>
+    <button class="mode-tab" data-mode="c" onclick="setSplitMode('met','c')">Físic</button>
     <span class="mode-underline" id="metModeUnderline"></span>
   </div>
   <div class="bub-row bub-sm" id="metBubbles"></div>
@@ -2419,7 +2419,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     </div>
     <div id="cpxForm" style="display:none">
       <div class="fg"><label>Nom del complex</label><input type="text" id="cpxName" placeholder="ex: Clean & Jerk Complex"></div>
-      <div class="ctitle" style="margin:6px 0 5px">Components (en ordre — pots repetir)</div>
+      <div class="ctitle" style="margin:6px 0 5px">Components (en ordre, pots repetir)</div>
       <div id="cpxBuilderSteps"></div>
       <div style="display:flex;gap:7px;margin-bottom:8px">
         <select id="cpxAddSel" style="flex:1"></select>
@@ -2451,19 +2451,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 
 <!-- W-BENCHMARK -->
 <div id="w-bench" class="sec">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
-    <div class="stitle">Benchmark WoDs</div>
-    <button class="ghost btn-sm" style="border-color:var(--w-ink);color:var(--w-ink)" onclick="toggleAddBench()">+ Nou</button>
-  </div>
-  <div class="card" id="addBenchCard" style="display:none;margin-bottom:11px">
-    <div class="ctitle">Nou benchmark WoD</div>
-    <div class="fg"><label>Nom</label><input type="text" id="benchName" placeholder="ex: Grace"></div>
-    <div class="fg"><label>Descripció / moviments</label><textarea id="benchDesc" placeholder="ex: 30 Clean &amp; Jerks for time @ 61kg"></textarea></div>
-    <div class="frow">
-      <button class="btn btn-s" onclick="toggleAddBench()">Cancel·lar</button>
-      <button class="btn btn-w" onclick="saveNewBench()">Afegir</button>
-    </div>
-  </div>
+  <div class="stitle" style="margin-bottom:4px">Benchmark WoDs</div>
+  <div class="ssub" style="margin-bottom:11px">Per crear-ne un de nou, ves a <b>Entrenar → WoD</b> i marca\u2019l com a benchmark en triar el tipus.</div>
   <div id="benchList"></div>
 </div>
 
@@ -2476,9 +2465,6 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div id="searchBarWexs"></div>
       <button class="ghost btn-sm" style="border-color:var(--w-ink);color:var(--w-ink)" onclick="toggleAddWEx()">+ Nou</button>
     </div>
-  </div>
-  <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:11px">
-    <div style="display:flex;gap:5px;flex-wrap:wrap" id="wodFamFilter"></div>
   </div>
   <div class="card" id="addWExCard" style="display:none;margin-bottom:11px">
     <div class="ctitle">Nou exercici WoD</div>
@@ -2496,7 +2482,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <button class="btn btn-w" onclick="saveNewWEx()">Afegir</button>
     </div>
   </div>
-  <div class="card"><div id="wExList"></div></div>
+  <div id="wExList"></div>
 </div>
 
 <!-- W-STATS -->
@@ -2759,6 +2745,17 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <div><label>Pes (kg)</label><input type="number" id="ajProfileWeight" step="0.5" min="30" max="200" placeholder="75"></div>
           <div><label>Alçada (cm)</label><input type="number" id="ajProfileHeight" min="100" max="230" placeholder="175"></div>
         </div>
+        <div class="wlink">
+          <div class="wlink-t">Aquest pes i el de <b>Físic</b> són el mateix número</div>
+          <div class="wlink-s">
+            Si el registres a <b>Mètriques &rarr; Físic</b>, queda guardat amb la data i
+            <b>aquest camp s&#39;actualitza sol</b>.<br>
+            Si el canvies aquí, s&#39;aplica als càlculs (Wilks, força relativa, classificació)
+            però <b>no queda cap registre</b>: sovint és un pes de memòria, i no volem inventar-te
+            una mesura que no t&#39;has pres.
+          </div>
+          <button class="btn btn-s btn-sm" style="margin-top:9px" onclick="goToFisic()">Registrar-lo a Físic &rarr;</button>
+        </div>
         <div class="fg"><label>Data de naixement</label>
           <input type="date" id="ajProfileDob" onchange="ajDobEcho()">
           <div style="font-size:13px;color:var(--text3);margin-top:5px" id="ajDobEcho"></div></div>
@@ -2805,7 +2802,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div style="border-top:0.5px solid var(--border);padding-top:12px">
         <button class="btn btn-sm" id="dangerOpenBtn" onclick="revealDangerZone()" style="width:100%;background:transparent;color:var(--red);border:0.5px solid var(--red);font-weight:700"><i data-lucide="trash" style="width:13px;height:13px;vertical-align:-2px;margin-right:6px"></i>Eliminar totes les dades i reiniciar</button>
         <div id="dangerZone" style="display:none">
-          <div style="font-size:13px;color:var(--text3);margin-bottom:10px;line-height:1.5"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--red);vertical-align:-1px"></i> <strong style="color:var(--text)">Zona de perill</strong> — Esborra totes les dades i reinicia l'app com si fos la primera vegada. Útil per a testing o per cedir el dispositiu a algú altre. <strong>Irreversible.</strong></div>
+          <div style="font-size:13px;color:var(--text3);margin-bottom:10px;line-height:1.5"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--red);vertical-align:-1px"></i> <strong style="color:var(--text)">Zona de perill</strong>: esborra totes les dades i reinicia l'app com si fos la primera vegada. Útil per a testing o per cedir el dispositiu a algú altre. <strong>Irreversible.</strong></div>
           <button class="btn btn-sm" onclick="resetApp()" style="background:transparent;color:var(--red);border:0.5px solid var(--red);font-weight:700;width:100%"><i data-lucide="trash" style="width:13px;height:13px;vertical-align:-2px"></i> Confirmar: esborrar-ho tot</button>
           <button class="btn btn-s btn-sm" onclick="hideDangerZone()" style="width:100%;margin-top:7px">Cancel·lar</button>
         </div>
@@ -2888,12 +2885,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <button class="xpl-btn" onclick="toggleXpl('xplSci1')"><span class="xpl-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align:-0.18em;flex-shrink:0" data-icon="chevron-right"><path d="M9 6l6 6-6 6"/></svg></span>1RM estimat</button>
         <div class="xpl-body">
           Fem servir l'equació d'<strong>Epley (1985)</strong>: <code>1RM ≈ pes × (1 + reps/30)</code>.
-          Amb 1 repetició no estimem res — una sola repetició <em>ja és</em> un màxim.<br><br>
+          Amb 1 repetició no estimem res: una sola repetició <em>ja és</em> un màxim.<br><br>
           <strong>Fins on és fiable:</strong> LeSuer i col·laboradors (1997) van comparar set equacions
           amb màxims reals de 67 persones. Totes correlacionaven molt bé (r &gt; 0,95), i entre
           <strong>2 i 10 repeticions</strong> l'error mitjà era d'un ~3%. Però l'error creix amb les
           repeticions, al <strong>squat</strong> Epley no va sortir prou fiable, i <strong>totes set
-          infravaloraven el deadlift</strong> — el teu màxim real de deadlift probablement és més alt del que et mostrem.
+          infravaloraven el deadlift</strong>. El teu màxim real de deadlift probablement és més alt del que et mostrem.
         </div>
       </div>
 
@@ -2902,8 +2899,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         <div class="xpl-body">
           Totes aquestes equacions donen per fet que la sèrie va <strong>a prop del fallo</strong>.
           Si et sobraven repeticions, infravaloren sempre: «8 reps» no vol dir el mateix al límit que a mig gas.
-          Per això la pràctica actual es basa en les <strong>repeticions en reserva (RIR)</strong>
-          — Zourdos i col·laboradors (2016) van validar una escala on <strong>RPE 10 = 0 repeticions en reserva</strong>.<br><br>
+          Per això la pràctica actual es basa en les <strong>repeticions en reserva (RIR)</strong>.
+          Zourdos i col·laboradors (2016) van validar una escala on <strong>RPE 10 = 0 repeticions en reserva</strong>.<br><br>
           Així que <strong>només</strong> compten per al teu 1RM estimat les sessions on: hi has posat un
           <strong>%</strong>, o la sèrie forta té <strong>RPE ≥ 8</strong>, o (sense RPE) és de
           <strong>6 repeticions o menys</strong>. La resta es guarden i es veuen, però no dibuixen cap estimació.
@@ -2917,7 +2914,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
           <strong>Exacte:</strong> el pes que has aixecat de veritat, i els discs del %Calc
           (garantim <code>barra + 2×Σdiscs = total</code>).<br>
           <strong>Estimació:</strong> el 1RM i, per tant, el Wilks, que en depèn.<br>
-          <strong>Només orientatiu:</strong> la classificació de força — són múltiples del pes corporal
+          <strong>Només orientatiu:</strong> la classificació de força, que són múltiples del pes corporal
           triats a mà, no cap norma validada.<br><br>
           Aquí sota tens el document complet, amb totes les fórmules i les referències.
         </div>
@@ -2929,12 +2926,12 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.35<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.48<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
         <strong style="color:var(--text)">Com es guarden les dades?</strong><br>
-        El codi de l'app està allotjat a GitHub i és igual per a tothom. Les teves dades (entrenaments, exercicis, plantilles, objectius) es guarden <strong>només al teu dispositiu</strong> (localStorage del navegador) — mai s'envien a cap servidor ni són accessibles per a ningú més, només per a tu.<br><br>
+        El codi de l'app està allotjat a GitHub i és igual per a tothom. Les teves dades (entrenaments, exercicis, plantilles, objectius) es guarden <strong>només al teu dispositiu</strong> (localStorage del navegador). Mai s'envien a cap servidor ni són accessibles per a ningú més, només per a tu.<br><br>
         <i data-lucide="lightbulb" style="width:12px;height:12px;vertical-align:-1px"></i> El navegador podria esborrar les teves dades (per exemple, si esborres freqüentment les dades de navegació, reinstal·les el sistema o canvies de dispositiu sense importar una còpia de seguretat...). Recomanem fer una <strong>còpia de seguretat (Desar una còpia)</strong> de tant en tant des d'aquí mateix. Amb la còpia, sempre podràs recuperar totes les dades.<br><br>
         <strong>1RM Epley:</strong> pes × (1 + reps/30)<br>
         <strong>Implícit:</strong> pes ÷ (% / 100)<br><br>
@@ -3262,6 +3259,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-q">Quin objectiu?</div>
       <div id="gwCurrent" class="wiz-sum"></div>
       <div id="gwSuggest" style="display:none;font-size:var(--fs-label);color:var(--text2);line-height:1.5;margin:-2px 0 10px"></div>
+      <div id="gwOpenGoal" style="display:none;font-size:var(--fs-caption);color:var(--text2);line-height:1.55;background:var(--h-dim);border:0.5px solid var(--h-acc);border-radius:var(--rs);padding:9px 11px;margin:0 0 12px"></div>
       <div class="frow">
         <div><label>Pes (kg)</label><input type="number" id="gwKg" class="fb-field" placeholder="140"></div>
         <div><label>Repeticions</label><input type="number" id="gwReps" class="fb-field" value="1"></div>
@@ -3458,6 +3456,15 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-kicker">Pas 1</div>
       <div class="wiz-q">Quan?</div>
       <input type="date" id="wizDate" class="fb-field" style="font-size:var(--fs-body)">
+      <!-- v8.37: asked here rather than tacked onto the type list. Only shown when
+           the session actually contains a WoD, and never for a template. -->
+      <label class="toggle-row" id="wizBenchRow" style="display:none;margin-top:16px">
+        <span class="toggle-txt">
+          <span class="toggle-t">És un benchmark WoD</span>
+          <span class="toggle-s">El desarem a Benchmark WoDs per tornar-lo a fer i comparar-t&#39;hi.</span>
+        </span>
+        <input type="checkbox" switch id="wizBenchTick" onchange="wizSetBenchmark(this.checked)">
+      </label>
     </div>
 
     <!-- step 2: what -->
@@ -3542,7 +3549,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-sum" id="wizWodStructHint"></div>
       <div id="wizWodStructFields"></div>
       <div class="fg" style="margin-top:14px"><label>Nom del WoD</label>
-        <input type="text" id="wizWName" class="fb-field" placeholder="p. ex. Fran"></div>
+        <input type="text" id="wizWName" class="fb-field" placeholder="p. ex. Fran" oninput="wizBenchNoteSync()">
+        <div id="wizBenchNote" style="display:none;font-size:var(--fs-caption);color:var(--text2);line-height:1.5;margin-top:6px"></div></div>
     </div>
 
     <div class="wiz-step" id="wizStepWodMovs">
@@ -3636,6 +3644,8 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="fg"><label>Data</label><input type="date" id="bfDate"></div>
       <div class="fg"><label>Pes (kg) <span style="color:var(--red)">*</span></label><input type="number" step="0.1" inputmode="decimal" id="bfW" placeholder="78,4"></div>
     </div>
+    <div class="bhint">Si aquesta és la teva mesura més recent, aquest pes passarà a ser el que
+      l&#39;app fa servir per al <b>Wilks</b>, la força relativa i la classificació.</div>
 
     <div class="bsec">Composició <span class="bsec-opt">opcional</span></div>
     <div class="frow">
@@ -3669,6 +3679,10 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 </div>
 
 <style>
+.cos-title{font-size:var(--fs-title);font-weight:800;color:var(--text);letter-spacing:-0.3px;margin:2px 0 12px}
+.wlink{background:var(--c-dim);border:0.5px solid var(--c-acc);border-radius:var(--rs);padding:11px 13px;margin-top:10px}
+.wlink-t{font-size:var(--fs-label);font-weight:800;color:var(--text);margin-bottom:4px}
+.wlink-s{font-size:var(--fs-caption);color:var(--text2);line-height:1.55}
 .bsec{font-size:var(--fs-label);font-weight:800;color:var(--text);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
 .bsec-opt{font-weight:600;color:var(--text3);font-size:var(--fs-caption)}
 .brow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -3684,10 +3698,19 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   font-weight:700;color:var(--text2);z-index:1}
 .btbl thead th{color:var(--c-ink);font-weight:800;font-size:var(--fs-caption)}
 .btbl tbody tr:last-child td{border-bottom:none}
-.bchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.bchip{padding:6px 11px;border-radius:var(--r-pill);border:0.5px solid var(--border);background:var(--bg3);
-  font-size:var(--fs-caption);font-weight:700;color:var(--text2);cursor:pointer}
-.bchip.on{background:var(--c-dim);border-color:var(--c-acc);color:var(--c-ink)}
+.bchips{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  margin:0 -14px 14px;padding:2px 14px 6px;scrollbar-width:none}
+.bchips::-webkit-scrollbar{display:none}
+.cos-pick{flex:0 0 auto;min-width:84px;text-align:left;padding:9px 12px;border-radius:var(--rs);
+  border:0.5px solid var(--border);background:var(--bg3);cursor:pointer;
+  transition:background var(--dur-fast) ease,border-color var(--dur-fast) ease;}
+.cos-pick:active{transform:scale(0.98)}
+.cos-pick.on{background:var(--c-dim);border-color:var(--c-acc)}
+.cos-pick-l{display:block;font-size:var(--fs-caption);font-weight:700;color:var(--text3);white-space:nowrap}
+.cos-pick.on .cos-pick-l{color:var(--c-ink)}
+.cos-pick-v{display:block;font-size:var(--fs-headline);font-weight:800;color:var(--text);margin-top:2px;white-space:nowrap}
+.cos-pick-u{font-size:var(--fs-caption);font-weight:700;color:var(--text3);margin-left:2px}
+.cos-pick-d{display:block;font-size:var(--fs-caption);color:var(--text3);margin-top:1px;white-space:nowrap}
 .bkpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .bkpi-c{background:var(--bg3);border-radius:var(--rs);padding:11px 12px}
 .bkpi-l{font-size:var(--fs-caption);color:var(--text3);font-weight:700}
@@ -3795,7 +3818,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.35</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.48</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -3826,7 +3849,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <div class="sheet" id="deleteSheet" style="z-index:880">
   <div class="sheet-in">
     <div class="stitle" id="deleteSheetTitle">Eliminar</div>
-    <div class="ssub" id="deleteSheetSub" style="margin-bottom:18px"></div>
+    <div class="ssub" id="deleteSheetSub" style="margin-bottom:18px;white-space:pre-line"></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-s" style="flex:1" onclick="closeDeleteSheet()">Cancel·lar</button>
       <button class="btn" style="flex:1;background:var(--red);color:#fff;font-weight:700" id="deleteSheetConfirmBtn">Eliminar</button>
@@ -3989,11 +4012,7 @@ const WOD_FAM_CFG = {
 function wodFamColor(fam){ return WOD_FAM_CFG[fam]?.color || 'var(--text3)'; }
 function wodFamDot(fam){ return WOD_FAM_CFG[fam]?.dot || 'var(--text3)'; }
 function wodFamSub(fam){ return WOD_FAM_CFG[fam]?.sub || ''; }
-function wodFamWrapCls(fam){
-  const map={'Barbell':'fam-Clean','KB / DB':'fam-Jerk','Gymnastics':'fam-Gym',
-             'Monostructural':'fam-Snatch','Especial':'fam-Pull'};
-  return map[fam]||'';
-}
+
 function famDot(fam){ return FAM_CFG[fam]?.dot || 'var(--text3)'; }
 function famSub(fam){ return FAM_CFG[fam]?.sub || ''; }
 // CSS class for the family wrapper div (for ::before accent bar)
@@ -4071,6 +4090,16 @@ function wodScoreValue(score){
   if(score.kind==='load')   return score.kg!=null?score.kg:null;
   return null;                                   // 'done' is not ranked
 }
+// v8.46: does this score object actually SAY anything? Deliberately not the same
+// question as "is it rankable": an EMOM records completed/failed and is never
+// ranked, so `done` is a statement even though wodScoreValue() returns null for
+// it. Only the three numeric kinds can be empty in a way that means "nothing was
+// entered", and only those get discarded.
+function wodScoreIsEmpty(sc){
+  if(!sc || !sc.kind) return true;
+  if(sc.kind==='done') return false;
+  return wodScoreValue(sc)==null;
+}
 const wodLowerIsBetter = kind => kind==='time';
 // Is `a` a better score than `b`? null-safe both ways.
 function wodScoreBeats(a,b){
@@ -4127,15 +4156,25 @@ function bestWodScore(key, scale){
   wodHistory(key, scale).forEach(e=>{ if(wodScoreBeats(e.score,best)) best=e.score; });
   return best;
 }
-// The best that ranks, across the scales that rank — for the board, which shows
-// one number per WoD. Returns {score, scale} or null.
-function bestWodScoreAny(key){
+// The ENTRY that produced your best ranking score, across the scales that rank.
+// v8.38: the board used to take the score from here and the DATE from the most
+// recent attempt, so three Cindys (Rx 18, Scaled 25, Modificat 30) rendered as
+// "2026-07-15 · Scaled · 25 rondes" — a session that never happened. Callers
+// that need to say WHEN must read the whole entry, not just the number.
+// On a tie the earliest attempt at the highest-ranking scale wins: that is the
+// day the mark was actually set.
+function bestWodEntryAny(key){
   let out=null;
   WOD_SCALES.filter(wodScaleRanks).forEach(sc=>{
-    const b=bestWodScore(key, sc);
-    if(b && (!out || wodScoreBeats(b, out.score))) out={score:b, scale:sc};
+    wodHistory(key, sc).forEach(e=>{ if(!out || wodScoreBeats(e.score, out.score)) out=e; });
   });
   return out;
+}
+// Kept for callers that only want the number. Derived from the entry above so
+// the two can never disagree.
+function bestWodScoreAny(key){
+  const e=bestWodEntryAny(key);
+  return e ? {score:e.score, scale:wodScaleOf(e)} : null;
 }
 
 const DEF_HEX=[
@@ -4391,6 +4430,9 @@ function migrate(parsed){
   // out of the rankings — better than inventing a number.
   out.wEnt.forEach(e=>{
     if(!e.wodKey) e.wodKey = wodKeyFor(e, e.tplId);
+    // v8.46: drop an empty score shell first, so the backfill below can finally
+    // read the free text of entries that were saved with the fields left blank.
+    if(wodScoreIsEmpty(e.score)) e.score=null;
     if(e.score && e.score.kind) return;
     const kind = wodScoreKind(e.type);
     const txt  = String(e.result||'').trim();
@@ -4525,7 +4567,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.35';
+const APP_VERSION='8.48';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4569,7 +4611,7 @@ function load(){
   const mir=readMirror();
   if(mir && (!parsed || entryCount(parsed)===0) && entryCount(mir.data)>0){
     parsed=mir.data; _recoveredFromMirror=true;
-    console.warn('PRsonal: primary store empty/unreadable — recovered from mirror copy');
+    console.warn('PRsonal: primary store empty/unreadable, recovered from mirror copy');
   }
   const migrated=migrate(parsed||defaultData());
   try{
@@ -4863,6 +4905,20 @@ function ageFromDob(dob){
   return (a>=0&&a<130)?a:null;
 }
 function profileAge(){ return ageFromDob(D.profile&&D.profile.dob); }
+// v8.40: the terms and the privacy policy both declare 14+ (LOPDGDD art. 7, the
+// age of digital consent in Spain), and the app collected a date of birth while
+// doing nothing with it: a future date, an impossible one and a nine-year-old
+// all walked straight through. One rule, used wherever a DOB is entered.
+// Returns null when the date is fine, or the reason it is not.
+const MIN_AGE = 14;
+function dobProblem(dob){
+  if(!dob) return 'Posa la teva data de naixement';
+  if(dob > localToday()) return 'La data de naixement no pot ser al futur';
+  const a = ageFromDob(dob);
+  if(a === null) return 'Aquesta data de naixement no sembla vàlida';
+  if(a < MIN_AGE) return 'Has de tenir com a mínim ' + MIN_AGE + ' anys per fer servir PRsonal';
+  return null;
+}
 // Same day and month as the stored date of birth.
 function isBirthdayToday(){
   const dob=D.profile&&D.profile.dob;
@@ -5011,7 +5067,7 @@ function showW(sec,btn){
   if(sec==='tpl'){renderWodTplFullList();}
   if(sec==='hist'){populateWHistFilters();renderWHist();}
   if(sec==='exs'){
-    renderWodFamFilter();renderWExList();
+    renderWExList();
     const sb=document.getElementById('searchBarWexs');
     if(sb&&!sb.innerHTML) sb.innerHTML=makeSearchBar('wexs','Cerca exercici WoD...');
   }
@@ -5277,7 +5333,7 @@ function switchTab(tab) {
     if (tab === 'inici') maybeHint(document.querySelector('#tabInici .inici-body'), 'inici');
     else if (tab === 'objectius') maybeHint(document.getElementById('tabObjectiusBody'), 'objectius');
     // The hint lands AFTER applyMetOcclusion has run, so re-apply the rule that
-    // keeps this Wilks-specific banner off the Cos tab.
+    // keeps this Wilks-specific banner off the Físic tab.
     else if (tab === 'metriques') { maybeHint(document.getElementById('tabMetriquesBody'), 'metriques'); applyMetOcclusion(); }
     else if (tab === 'ajustaments') maybeHint(document.getElementById('ajTabContent'), 'ajustaments');
     else if (tab === 'entrenar') maybeHint(document.getElementById(activeMode==='w'?('w-'+activeWSub):('h-'+activeHSub)), (activeMode==='w'?'w_'+activeWSub:'h_'+activeHSub));
@@ -5316,7 +5372,7 @@ function renderInici() {
   // Subtitle
   const subEl = document.getElementById('inicHSub');
   if (subEl) {
-    const SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d'avui.","Força, consistència, progrés.","Avui és un bon dia per batre un rècord.","Quants quilos més tens per descobrir?","Dona-li un cop de mà.","Entrena dur. Registra-ho tot. Millora.","Progressar és lent, abandonar massa ràpid.","Pateix avui, gaudeix-ho demà.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro. O fer veure que el mous.","El WoD no es farà sol... malauradament.","Si no et fa mal, és que no has comptat bé les reps.","La mobilitat és per als que volen poder seure demà.","Avui et toca sopar amb agulletes. Bon profit.","Si no sues, porta un ventilador al box.","La barra et mira. Tu la mires. Algú ha de cedir.","Escales? No, avui tot Rx. (Ja veurem a la primera sèrie.)","Si marxes ara, probablement t'estalvies burpees. Probablement."];
+    const SUBS=["Preparat per donar el millor avui?","Cada repetició compta. Fes-les totes.","El millor entrenament és el d'avui.","Si tremolen les cames, vas pel bon camí.","Avui és un bon dia per batre un rècord.","La tècnica primer. L'ego després.","El cronòmetre no té pietat.","Ningú recorda les excuses.","Progressar és una cursa de fons.","El teu futur PR està escalfant.","Ep, ja portes les calleres i la corda?","Avui toca moure ferro (o fer veure que el mous).","Escalfar és més barat que les lesions.","Si no et fa mal, és que no has comptat bé les reps.","El rellotge corre. Tu també hauries.","Avui et toca sopar amb agulletes. Bon profit.","L'únic entrenament dolent és el que no es fa.","Que els «no reps» siguin pocs.","Snatch primer, crisis existencial després.","Menys excuses. Més magnesi."];
     const d = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
     subEl.textContent = SUBS[d % SUBS.length];
   }
@@ -5491,7 +5547,7 @@ function renderCalStrip() {
     else if (hasH) dots += '<div class="cal-dot"></div>';
     if (hasW) dots += '<div class="cal-dot wod"></div>';
     const hasAct = hasH || hasW;
-    html.push(`<div class="cal-day${isToday?' today':''}${hasAct?' has-act':''}"${hasAct?` onclick="showDayActivity('${ds}')"`:''}>
+    html.push(`<div class="cal-day${isToday?' today':''}${hasAct?' has-act':''}" onclick="showDayActivity('${ds}')" role="button" tabindex="0" aria-label="${fmt(ds)}${hasAct?'':', sense activitat'}">
       <div class="cal-day-label">${days[d.getDay()]}</div>
       <div class="cal-day-num">${d.getDate()}</div>
       ${dots}
@@ -5848,13 +5904,25 @@ function wizShow(){
     .forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('on');});
   const name=flow[wizS.i];
   document.getElementById(wizStepId(name)).classList.add('on');
-  if(name==='date') document.getElementById('wizDate').value=wizS.date;
+  if(name==='date'){
+    document.getElementById('wizDate').value=wizS.date;
+
+    document.getElementById('wizDate').max=localToday();
+    // Benchmarks are WoDs, so the question only makes sense for a session that
+    // has one, and never for a template (a plan is not a result).
+    const hasWod = wizS.kind==='wod' || wizS.kind==='both';
+    const row=document.getElementById('wizBenchRow');
+    if(row){
+      row.style.display = (hasWod && !wizS.saveAsTemplate) ? '' : 'none';
+      document.getElementById('wizBenchTick').checked = !!(wizS.wod && wizS.wod.asBenchmark);
+    }
+  }
   if(name==='ex') wizFillCats();
   if(name==='cpxBuild') cpxRenderRows();
   if(name==='sets') wizRenderSets();
   if(name==='det') wizRenderTags();
   if(name==='wodType')   wizRenderWodTypes();
-  if(name==='wodStruct'){ wizRenderWodStruct(); wizSeedWodName(); }
+  if(name==='wodStruct'){ wizRenderWodStruct(); wizSeedWodName(); wizBenchNoteSync(); }
   if(name==='wodMovs')   wizRenderWodMovs();
   if(name==='wodResult'){ wizRenderWodRecap(); wizRenderScoreFields(); }
   const last = wizS.i===flow.length-1;
@@ -5884,6 +5952,16 @@ function wizCollect(name){
   wizS.touched=true;
 }
 function wizValidate(name){
+  // v8.41: a future date sailed through, so you could "log" a session for 2028
+  // and have it sit in the historial and the records as though it had happened.
+  // Planning ahead is what Plantilles is for, so the message says so.
+  if(name==='date'){
+    const d=document.getElementById('wizDate').value;
+    if(d && d>localToday()){
+      toast('No pots registrar una sessió amb data futura. Per planificar-la, fes-ne una plantilla.','error');
+      return false;
+    }
+  }
   if(name==='ex' && !wizS.exId){ toast('Tria un exercici','error'); return false; }
   if(name==='cpxBuild'){
     const real=wizS.cpxParts.filter(p=>p.exId && +p.reps>0);
@@ -5892,6 +5970,8 @@ function wizValidate(name){
   if(name==='sets'){
     const ok=wizS.sets.filter(st=>isMeaningfulSet(st,wizS.cat));
     if(!ok.length){ toast(wizS.cat==='gym'?'Afegeix una sèrie amb repeticions':'Afegeix una sèrie amb pes i repeticions','error'); return false; }
+    const bad=setRangeProblem(ok);
+    if(bad){ toast(bad,'error'); return false; }
   }
   if(name==='wodType' && !wizS.wod.type){ toast('Tria un tipus de WoD','error'); return false; }
   if(name==='wodStruct' && !String(wizS.wod.name||'').trim()){
@@ -6097,9 +6177,9 @@ function wizRenderSets(){
     '<div style="display:grid;grid-template-columns:26px 1fr 1fr 58px 40px;gap:8px;align-items:end;margin-bottom:10px">'
     +'<div style="font-size:var(--fs-body-sm);color:var(--text3);font-weight:700;padding-bottom:12px">'+(i+1)+'</div>'
     +'<div><label style="font-size:var(--fs-label);color:var(--text2)">'+rlbl+'</label>'
-    +'<input type="number" class="fb-field" value="'+(st.r||'')+'" onchange="wizSetVal('+i+',\'r\',this.value)"></div>'
+    +'<input type="number" class="fb-field" min="1" max="'+SET_MAX_REPS+'" inputmode="numeric" value="'+(st.r||'')+'" onchange="wizSetVal('+i+',\'r\',this.value)"></div>'
     +'<div><label style="font-size:var(--fs-label);color:var(--text2)">'+wlbl+'</label>'
-    +'<input type="number" class="fb-field" value="'+(st.w===''?'':st.w)+'" onchange="wizSetVal('+i+',\'w\',this.value)"></div>'
+    +'<input type="number" class="fb-field" min="0" max="'+SET_MAX_W+'" step="0.5" inputmode="decimal" value="'+(st.w===''?'':st.w)+'" onchange="wizSetVal('+i+',\'w\',this.value)"></div>'
     +'<div><label style="font-size:var(--fs-label);color:var(--text2)">RPE</label>'
     +'<input type="number" class="fb-field" min="1" max="10" step="0.5" placeholder="—" value="'+(st.rpe===''||st.rpe==null?'':st.rpe)+'" onchange="wizSetVal('+i+',\'rpe\',this.value)"></div>'
     +'<button class="xbtn" onclick="wizDelSet('+i+')" aria-label="Elimina la sèrie">×</button></div>'
@@ -6204,6 +6284,8 @@ function openWizardEditWod(id){
   document.getElementById('wizStepMode').classList.remove('on');
   document.getElementById('wizNav').style.display='flex';
   document.getElementById('wizDate').value=wizS.date;
+
+  document.getElementById('wizDate').max=localToday();
   document.getElementById('wizWName').value=wizS.wod.name;
   document.getElementById('wizWResult').value=wizS.wod.result;
   document.getElementById('wizWScale').value=wizS.wod.scale;
@@ -6235,6 +6317,8 @@ function openWizardEditForca(id){
   document.getElementById('wizStepMode').classList.remove('on');
   document.getElementById('wizNav').style.display='flex';
   document.getElementById('wizDate').value=wizS.date;
+
+  document.getElementById('wizDate').max=localToday();
   document.getElementById('wizPct').value=wizS.pct;
   document.getElementById('wizNote').value=wizS.note;
   wizS.i=0; wizShow();
@@ -6250,6 +6334,30 @@ function wizRenderWodTypes(){
       +'<span class="wiz-opt-ico">'+icSVG(c.ico,20)+'</span>'
       +'<span><span class="wiz-opt-t">'+t+'</span><span class="wiz-opt-s">'+c.sub+'</span></span></button>';
   }).join('');
+}
+// v8.45: ticking "benchmark" and naming it Grace did nothing visible, because
+// Grace already exists and the duplicate guard refused in silence. It is not an
+// error (your result still counts towards the existing Grace), so this informs
+// rather than blocks, and it does so while the name can still be changed.
+function existingBenchmarkNamed(name){
+  const n=String(name||'').trim().toLowerCase();
+  if(!n) return null;
+  return (D.benchmarks||[]).find(b=>String(b.name||'').trim().toLowerCase()===n)||null;
+}
+function wizBenchNoteSync(){
+  const el=document.getElementById('wizBenchNote'); if(!el) return;
+  const on=!!(wizS && wizS.wod && wizS.wod.asBenchmark);
+  const nm=(document.getElementById('wizWName')||{}).value||'';
+  const hit=on?existingBenchmarkNamed(nm):null;
+  if(!hit){ el.style.display='none'; el.textContent=''; return; }
+  el.style.display='';
+  el.innerHTML='<b>«'+esc(hit.name)+'» ja és un benchmark.</b> No se\u2019n crearà un de nou, '
+             + 'però el teu resultat s\u2019hi guardarà igualment i el podràs comparar.';
+}
+function wizSetBenchmark(on){
+  wizS.wod=wizS.wod||{};
+  wizS.wod.asBenchmark=!!on;
+  wizS.touched=true;
 }
 function wizPickWodType(t){
   wizS.wod.type=t;
@@ -6672,9 +6780,25 @@ function wizToggleTag(t){
   if(i>=0) wizS.tags.splice(i,1); else wizS.tags.push(t);
   wizS.touched=true; wizRenderTags();
 }
+// Turns a built WoD into the one-line description the benchmark list shows.
+function benchDescFromWod(w){
+  const bits=[];
+  if(w.type) bits.push(w.type);
+  const st=w.struct||{};
+  if(st.rounds)   bits.push(st.rounds+' rondes');
+  if(st.duration) bits.push(st.duration+' min');
+  if(st.timeCap)  bits.push('cap '+st.timeCap+' min');
+  const movs=(w.movements||[]).filter(m=>m.exId)
+    .map(m=>{ const ex=(D.wEx||[]).find(x=>x.id===m.exId); return ex?ex.name:null; })
+    .filter(Boolean);
+  const head=bits.join(' \u00b7 ');
+  return movs.length ? (head+' \u2014 '+movs.join(', ')) : head;
+}
 function wizSave(){
   wizS.saving=true;
   const k=wizS.kind;
+  let benchNote='';   // v8.45: what the benchmark tick actually did, said out loud
+
   // Editing an existing entry: patch it in place rather than adding a new one.
   if(wizS.editId){
     if(wizS.editKind==='wod'){
@@ -6782,7 +6906,11 @@ function wizSave(){
     const allMovs=wodAllMovements(w);
     const wName=w.name||w.type||'WoD';
     const wKey=wodKeyFor(wName, w.tplId);
-    const wScore=w.score&&w.score.kind?w.score:null;
+    // Leaving every field blank used to store {kind:'rounds', rounds:null, reps:0}:
+    // an object shaped like a score that holds no score. It ranked nowhere, but it
+    // was truthy and carried a `kind`, which was enough to make the v8.21 backfill
+    // skip the entry entirely and never parse its free-text result.
+    const wScore=wodScoreIsEmpty(w.score)?null:w.score;
     // Is this a new best for THIS WoD, AT THIS SCALE? Compared before the entry
     // is pushed. Scale-blind comparison made scaling the easiest way to set a
     // "record" (v8.26).
@@ -6806,6 +6934,18 @@ function wizSave(){
       // flattened index spans cash-in, body, stations and cash-out, or stats desync
       exercises:allMovs.map(m=>m.exId),
       note:w.note||'',tags:[]});
+    // Registered from the same object that was just logged, so the benchmark and
+    // the entry can never describe different workouts.
+    if(w.asBenchmark && wName){
+      D.benchmarks=D.benchmarks||[];
+      if(existingBenchmarkNamed(wName)){
+        benchNote='«'+wName+'» ja era un benchmark';   // said out loud below
+      }else{
+        D.benchmarks.push({id:'b_'+Date.now(), name:wName,
+          desc:benchDescFromWod(w), fromWodKey:wKey});
+        benchNote='Desat també com a benchmark';
+      }
+    }
     // A WoD PR gets the same moment a lifting PR does — that was the whole point
     // of typing the score. Values captured now; wizS is null 200ms from here.
     if(isWodPR){
@@ -6818,7 +6958,7 @@ function wizSave(){
   refreshGoalCompletion();
   wizS.touched=false;
   wizClose();
-  toast('Registrat ✓');
+  toast('Registrat ✓' + (benchNote ? ' · ' + benchNote : ''));
   renderEntrenarSuggestion();
   if(typeof renderTodaySummary==='function') renderTodaySummary();
   if(typeof renderRecentWods==='function') renderRecentWods();
@@ -7376,7 +7516,7 @@ function tplPick(id){
   } else {
     body += (t.halBlocks||[]).map(b=>{
       const ex=D.hEx.find(x=>x.id===b.exId);
-      return (ex?ex.name:b.exId)+' — '+(b.sets||[]).length+' sèries';
+      return (ex?ex.name:b.exId)+' · '+(b.sets||[]).length+' sèries';
     }).join('<br>');
   }
   // A template with no movements and no notes previously rendered a bare "—".
@@ -7666,7 +7806,7 @@ function histRepeatH(id){
   const ex=D.hEx.find(x=>x.id===e.exId);
   showDeleteSheet(
     'Repetir aquest entrenament?',
-    (ex?ex.name:'Aquesta sessió')+' — obrirem el registrar ja omplert, amb la data d\'avui. Ho pots canviar tot.',
+    (ex?ex.name:'Aquesta sessió')+': obrirem el registrar ja omplert, amb la data d\'avui. Ho pots canviar tot.',
     ()=>{
       openWizard();
       wizPickKind('forca');
@@ -7688,7 +7828,7 @@ function histRepeatW(id){
   const e=D.wEnt.find(x=>String(x.id)===String(id)); if(!e) return;
   showDeleteSheet(
     'Repetir aquest WoD?',
-    (e.name||e.type||'Aquest WoD')+' — obrirem el registrar ja omplert, amb la data d\'avui. Ho pots canviar tot.',
+    (e.name||e.type||'Aquest WoD')+': obrirem el registrar ja omplert, amb la data d\'avui. Ho pots canviar tot.',
     ()=>{
       const wd=e.wodData||{};
       openWizard();
@@ -7892,17 +8032,33 @@ function suggestGoalKg(exId){
 function gwRenderCurrent(){
   const ex=D.hEx.find(e=>e.id===gwS.exId);
   const rm=best1RM(gwS.exId);
-  document.getElementById('gwCurrent').innerHTML='<b>'+(ex?ex.name:'')+'</b> — '
+  document.getElementById('gwCurrent').innerHTML='<b>'+(ex?ex.name:'')+'</b>: '
     +(rm?('ara mateix el teu millor és <b>'+rm.toFixed(1)+' kg</b>'):'encara no hi tens cap marca');
   const sug=suggestGoalKg(gwS.exId);
   const host=document.getElementById('gwSuggest');
   if(host){
     // The button was inline and wrapped mid-sentence; it gets its own row.
     host.innerHTML = sug
-      ? '<div>Suggeriment: <b>'+fmtKg(sug.kg)+' kg</b> <span style="color:var(--text3)">— '+sug.why+'</span></div>'
+      ? '<div>Suggeriment: <b>'+fmtKg(sug.kg)+' kg</b> <span style="color:var(--text3)">('+sug.why+')</span></div>'
         +'<button class="ghost btn-sm" style="margin-top:7px;padding:5px 12px" onclick="gwUseSuggestion('+sug.kg+')">Fer servir</button>'
       : '';
     host.style.display = sug?'':'none';
+  }
+  // v8.47: a second goal on the same exercise was accepted in silence, and then
+  // getGoalForEx() only ever surfaces the HIGHEST open one, so the older target
+  // quietly vanished from the exercise card and the progress chart while still
+  // sitting in the Objectius list. Not blocked (a near-term and a stretch target
+  // are both legitimate), but no longer a surprise.
+  const openNote=document.getElementById('gwOpenGoal');
+  if(openNote){
+    const open=(typeof goalsForEx==='function'?goalsForEx(gwS.exId):[]).filter(g=>!g.done);
+    if(open.length){
+      const top=open.slice().sort((a,b)=>(b.targetKg||0)-(a.targetKg||0))[0];
+      openNote.innerHTML='<b>Ja hi tens un objectiu obert: '+fmtKg(top.targetKg)+' kg.</b> '
+        +'Pots afegir-ne un altre, però a la fitxa de l\u2019exercici i al gràfic només hi surt '
+        +'el més alt. Si el vols canviar, esborra l\u2019anterior a Objectius.';
+      openNote.style.display='';
+    } else { openNote.style.display='none'; openNote.innerHTML=''; }
   }
   const kgEl=document.getElementById('gwKg');
   if(sug && !kgEl.value) kgEl.placeholder=fmtKg(sug.kg);
@@ -8001,11 +8157,19 @@ function renderForcaGoals(host){
   }
   host.innerHTML=html;
 }
+// v8.45: `goal.targetDate < today` was used directly in two places, and the
+// deadline is OPTIONAL. For strings '' < '2026-08-07' is TRUE, so every
+// open-ended goal was stamped "Caducat" and drawn with a red line on the chart.
+// A goal with no deadline cannot be late.
+const pastDeadline = d => !!d && d < localToday();
 function goalCardHtml(g,isDone){
   const ex=D.hEx.find(e=>e.id===g.exId);
   const rm=best1RM(g.exId);
   const pct=goalProgress(g);
   const close = !isDone && pct>=90 && pct<100;
+  // Same vocabulary the exercise-detail card already uses, so "Caducat" means
+  // one thing across the app.
+  const overdue = !isDone && pastDeadline(g.targetDate);
   return '<div class="card'+(close?' goal-close':'')+'" style="margin-bottom:12px">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
     +'<div><div style="font-size:var(--fs-headline);font-weight:800">'+(ex?ex.name:'—')+'</div>'
@@ -8015,8 +8179,9 @@ function goalCardHtml(g,isDone){
     +(isDone?'<span class="hist-tag h">Assolit</span>':'<span style="font-size:var(--fs-headline);font-weight:800;color:var(--h-ink)">'+pct+'%</span>')
     +'</div>'
     +'<div class="goal-bar-track" style="margin-top:12px"><div class="goal-bar-fill" style="background:var(--h-acc);width:'+pct+'%"></div></div>'
-    +(close?'<div style="font-size:var(--fs-body-sm);color:var(--h-ink);font-weight:700;margin-top:10px">Ja el tens a tocar — val la pena intentar-ho!</div>':'')
-    +(g.targetDate?'<div style="font-size:var(--fs-label);color:var(--text3);margin-top:8px">Data límit: '+fmt(g.targetDate)+'</div>':'')
+    +(close?'<div style="font-size:var(--fs-body-sm);color:var(--h-ink);font-weight:700;margin-top:10px">Ja el tens a tocar: val la pena intentar-ho!</div>':'')
+    +(g.targetDate?'<div style="font-size:var(--fs-label);color:'+(overdue?'var(--red)':'var(--text3)')+';margin-top:8px">'
+        +(overdue?icSVG('alert-triangle',11)+' Caducat: ':'Data límit: ')+fmt(g.targetDate)+'</div>':'')
     +'<div style="margin-top:12px"><button class="dangr btn-sm" onclick="deleteGoalById(\''+g.id+'\');renderObjectiusTab()">Elimina</button></div>'
     +'</div>';
 }
@@ -8030,7 +8195,7 @@ const MET_BUBS = {
   // (the quick-log and goal-creation route). Editing exercises lives in Més.
   h:[{sec:'pr',label:'Rècords',ico:'trophy'},{sec:'prog',label:'Progrés',ico:'bar-chart-2'}],
   w:[{sec:'bench',label:'Benchmarks',ico:'flame'},{sec:'stats',label:'Rècords',ico:'trophy'},{sec:'exs',label:'Exercicis',ico:'zap'}],
-  // Cos has no sub-sections yet — one screen is the whole feature for now.
+  // Físic has no sub-sections yet: one screen is the whole feature for now.
   c:[]
 };
 const metSec = { h:null, w:null, c:null };
@@ -8269,6 +8434,18 @@ let cosMetric='w';           // which series the chart draws
 // Newest LAST, so charts read left-to-right in time like every other chart here.
 function bodyEntries(){ return (D.bEnt||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')); }
 function bodyLatest(){ const e=bodyEntries(); return e.length?e[e.length-1]:null; }
+// v8.39: the newest measurement that has ACTUALLY HAPPENED.
+// `profile.weightKg` feeds Wilks, and it used to follow bodyLatest(), so a row
+// dated in the future became "the newest" and Wilks started scoring against a
+// bodyweight from a day that had not arrived. The sheet now refuses future
+// dates, but an imported backup or a device with a wrong clock can still carry
+// one, so the source of truth filters as well. Display is untouched: the table
+// and chart still show every row the user has, including a stray future one.
+function bodyLatestPast(){
+  const t=localToday();
+  const e=bodyEntries().filter(x=>(x.date||'')<=t);
+  return e.length?e[e.length-1]:null;
+}
 
 // ── Derived figures ───────────────────────────────────────────────────────
 // Each returns null when an input is missing. A missing measurement must never
@@ -8292,11 +8469,18 @@ const bnum=v=>(v==null||v===''||isNaN(+v))?null:+v;
 const bfmt=(v,d)=>v==null?'—':(+v).toFixed(d==null?1:d).replace('.',',');
 
 // ── Entry sheet ───────────────────────────────────────────────────────────
+// One tap from the profile weight to the place that keeps a record of it.
+function goToFisic(){
+  switchTab('metriques');
+  setTimeout(()=>{ setSplitMode('met','c'); }, 60);
+}
 function openBodySheet(id){
   bodyEditId = id==null?null:id;
   const e = id==null?null:(D.bEnt||[]).find(x=>String(x.id)===String(id));
   document.getElementById('bodySheetTitle').textContent = e?'Editar mesura':'Nova mesura';
-  document.getElementById('bfDate').value = e?e.date:localToday();
+  const dEl=document.getElementById('bfDate');
+  dEl.value = e?e.date:localToday();
+  dEl.max = localToday();          // the picker itself greys out future days
   const map={bfW:'w',bfBf:'bf',bfMm:'mm',bfArm:'arm',bfWaist:'waist',bfHip:'hip',bfThigh:'thigh'};
   Object.entries(map).forEach(([el,k])=>{
     const n=document.getElementById(el); if(n) n.value = (e && e[k]!=null)?e[k]:'';
@@ -8313,6 +8497,13 @@ function saveBodyEntry(){
   const w=bnum(document.getElementById('bfW').value);
   const fail=m=>{ err.textContent=m; err.style.display=''; return false; };
   if(!date)        return fail('Falta la data.');
+  // A measurement is an observation, not a plan: it cannot be dated ahead.
+  if(date>localToday()) return fail('No pots registrar una mesura amb una data futura.');
+  // v8.41: two rows on the same day produced two identical columns in the table
+  // and a "change since the previous measurement" computed against yourself an
+  // hour earlier. One measurement per date; the existing one stays editable.
+  const clash=(D.bEnt||[]).find(x=>x.date===date && String(x.id)!==String(bodyEditId));
+  if(clash) return fail('Ja tens una mesura del '+fmt(date)+'. Toca aquesta data a la taula per editar-la.');
   if(w==null)      return fail('El pes és obligatori.');
   if(w<=0||w>400)  return fail('El pes ha de ser un valor real en kg.');
   const rec={
@@ -8336,19 +8527,21 @@ function saveBodyEntry(){
   // truth for the same number is how they drift apart, so the newest measure
   // wins — but only when it IS the newest, or editing an old row would silently
   // rewrite today's weight.
-  const last=bodyLatest();
+  const last=bodyLatestPast();
   if(last && String(last.id)===String(rec.id)){ D.profile=D.profile||{}; D.profile.weightKg=rec.w; }
 
+  const drivesProfile = !!(last && String(last.id)===String(rec.id));
   save();
   closeBodySheet();
   renderMetriquesTab();
-  toast(i>=0?'Mesura actualitzada':'Mesura desada');
+  toast((i>=0?'Mesura actualitzada':'Mesura desada')
+        + (drivesProfile?'. Pes del perfil actualitzat.':''));
 }
 function delBodyEntry(){
   if(bodyEditId==null) return;
   D.bEnt=(D.bEnt||[]).filter(x=>String(x.id)!==String(bodyEditId));
   // Keep the profile weight consistent with whatever is now the newest row.
-  const last=bodyLatest(); if(last){ D.profile=D.profile||{}; D.profile.weightKg=last.w; }
+  const last=bodyLatestPast(); if(last){ D.profile=D.profile||{}; D.profile.weightKg=last.w; }
   save(); closeBodySheet(); renderMetriquesTab(); toast('Mesura eliminada');
 }
 
@@ -8360,6 +8553,7 @@ function renderCosTab(host){
   const prev=ents.length>1?ents[ents.length-2]:null;
 
   let h='';
+  h+='<div class="cos-title">Composició corporal</div>';
   h+='<div class="cos-warn"><b>Secció en desenvolupament inicial.</b> Ara mateix registra i '
    + 'representa les teves mesures, res més. Relacionar-les amb la força i el rendiment '
    + 'arribarà més endavant, quan hi hagi prou historial per fer-ho amb sentit.</div>';
@@ -8371,7 +8565,7 @@ function renderCosTab(host){
     h+='<div class="card" style="text-align:center;padding:26px 18px">'
      + '<div style="font-size:var(--fs-headline);font-weight:800;margin-bottom:6px">Cap mesura encara</div>'
      + '<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55">'
-     + 'Comença pel pes. Els perímetres i els percentatges els pots afegir quan vulguis — '
+     + 'Comença pel pes. Els perímetres i els percentatges els pots afegir quan vulguis. '
      + 'val més una mesura senzilla i constant que una de completa i esporàdica.</div></div>';
     host.innerHTML=h; renderIcons(host); return;
   }
@@ -8434,8 +8628,17 @@ function renderCosChips(){
   const ents=bodyEntries();
   const avail=BODY_FIELDS.filter(f=>ents.some(e=>e[f.k]!=null));
   if(!avail.some(f=>f.k===cosMetric)) cosMetric = avail.length?avail[0].k:'w';
-  host.innerHTML=avail.map(f=>'<button class="bchip'+(f.k===cosMetric?' on':'')
-    +'" onclick="setCosMetric(\''+f.k+'\')">'+f.label+'</button>').join('');
+  host.innerHTML=avail.map(f=>{
+    const vals=ents.filter(e=>e[f.k]!=null);
+    const last=vals[vals.length-1], prev=vals.length>1?vals[vals.length-2]:null;
+    const d=prev?(last[f.k]-prev[f.k]):null;
+    const arrow=(d==null||Math.abs(d)<0.05)?'' : (d>0?'\u2191':'\u2193');
+    return '<button class="cos-pick'+(f.k===cosMetric?' on':'')+'" onclick="setCosMetric(\''+f.k+'\')">'
+      +'<span class="cos-pick-l">'+f.label+'</span>'
+      +'<span class="cos-pick-v">'+bfmt(last[f.k])+'<span class="cos-pick-u">'+f.unit+'</span></span>'
+      +(arrow?'<span class="cos-pick-d">'+arrow+' '+bfmt(Math.abs(d))+'</span>':'<span class="cos-pick-d">\u2014</span>')
+      +'</button>';
+  }).join('');
 }
 function setCosMetric(k){ cosMetric=k; renderCosChips(); drawCosChart(); }
 
@@ -8617,7 +8820,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     // Modes only exist on the Entrenar tab — don't hijack swipes elsewhere
     if (activeTab !== 'metriques' && activeTab !== 'objectius') return;   // both split tabs
     const sec = activeTab==='objectius' ? 'obj' : 'met';
-    // v8.35: was a hardcoded h<->w toggle, which left Cos reachable only by tap.
+    // v8.35: was a hardcoded h<->w toggle, which left Físic reachable only by tap.
     // Order-driven so the gesture matches whatever tabs the section actually has.
     const order = (sec==='met') ? ['h','w','c'] : ['h','w'];
     const i = order.indexOf(splitMode[sec]);
@@ -8811,6 +9014,32 @@ function updateRMPreview(){
 // existing entries disappear from history — indistinguishable from data loss.
 // Note `'' >= 0` is true in JS, which is why an untouched form used to save a
 // phantom 5 × 0 kg set.
+// v8.44: only w<=0 and r<=0 were refused, so 5000 kg, 999 reps and RPE 15 all
+// saved happily. The RPE one is not cosmetic: sessInforms1RM() gates the 1RM
+// estimate at RPE >= 8, so a mistyped 15 silently promoted a submaximal session
+// into your 1RM line, and a negative one silently kept a real effort out.
+// Bounds chosen to catch a typo without arguing with a real athlete.
+const SET_MAX_W = 500;      // kg; comfortably past any human single
+const SET_MAX_REPS = 200;   // high-rep bodyweight sets are real, 999 is a slip
+function setRangeProblem(sets){
+  for(const s of (sets||[])){
+    const hasW = !(s.w==='' || s.w==null);
+    if(hasW){
+      const w=+s.w;
+      if(!isFinite(w) || w<=0 || w>SET_MAX_W)
+        return 'El pes de cada sèrie ha d\'anar entre 0 i ' + SET_MAX_W + ' kg.';
+    }
+    const r=+s.r;
+    if(!isFinite(r) || r<=0 || r>SET_MAX_REPS)
+      return 'Les repeticions han d\'anar entre 1 i ' + SET_MAX_REPS + '.';
+    const hasRpe = !(s.rpe==='' || s.rpe==null);
+    if(hasRpe){
+      const v=+s.rpe;
+      if(!isFinite(v) || v<1 || v>10) return 'L\'RPE va d\'1 a 10.';
+    }
+  }
+  return null;
+}
 function isMeaningfulSet(s, cat){
   const r = +s.r || 0;
   if (r <= 0) return false;
@@ -8902,7 +9131,7 @@ let sheetExId='';
 function openSheet(exId,pct,w){
   sheetExId=exId;
   const ex=D.hEx.find(e=>e.id===exId); const rm=best1RM(exId);
-  document.getElementById('shTitle').textContent=(ex?ex.name:exId)+' — '+pct+'%';
+  document.getElementById('shTitle').textContent=(ex?ex.name:exId)+' · '+pct+'%';
   document.getElementById('shSub').textContent=`1RM: ${rm?rm.toFixed(1)+' kg':'—'} · Suggerit: ${w} kg`;
   document.getElementById('shWt').value=w;
   document.getElementById('shReps').value=3;
@@ -8999,7 +9228,7 @@ function renderRecords(){
 // DEAD since v8.8 — superseded by renderRecords(). Kept only as a tombstone;
 // its markup (#prSub/#prBoard) was removed, so it must never be called.
 function renderPR(){
-  console.warn('renderPR() is dead — use renderRecords()');
+  console.warn('renderPR() is dead, use renderRecords()');
   return renderRecords();
   /* eslint-disable no-unreachable */
   const f=document.getElementById('prSub').value;
@@ -9123,7 +9352,7 @@ function renderProg(){
   const today2=localToday();
   if(goal&&progMode==='weight'){
     const achieved=ds[0].data.some(v=>v&&v>=goal.targetKg);
-    const overdue=!achieved&&goal.targetDate<today2;
+    const overdue=!achieved&&pastDeadline(goal.targetDate);
     const goalColor=achieved?'#4ecb71':overdue?'#ff5555':'#a78bfa';
     ds.push({label:'Objectiu',data:Array(lbls.length).fill(goal.targetKg),
       borderColor:goalColor,backgroundColor:'transparent',
@@ -9268,6 +9497,14 @@ function quickLogEx() {
   const r = +document.getElementById('quickR').value || 1;
   const date = document.getElementById('quickD').value || localToday();
   if (w <= 0 && ex.cat !== 'gym') { toast('Introdueix un pes', 'error'); return; }
+  // Same rules as the registrar: a second door to the same data must not be a
+  // way around them (v8.44).
+  const rangeBad = setRangeProblem([{ r, w: (ex.cat==='gym' && !w) ? '' : w, rpe:'' }]);
+  if (rangeBad) { toast(rangeBad, 'error'); return; }
+  if (date > localToday()) {
+    toast('No pots registrar una sessió amb data futura. Per planificar-la, fes-ne una plantilla.','error');
+    return;
+  }
   D.hEnt.push({ id: Date.now()+Math.random(), date, exId, pct:'', note:'Registre ràpid', tags:[], sets:[{r, w, rpe:''}] });
   if (w > 0 && ex.cat !== 'gym') {
     const imp = epley(w, r);
@@ -9604,7 +9841,7 @@ function loadWodTpl(id, date){
   // thing left to ask is how it went.
   wizS.i = wizFlow().indexOf('wodResult');
   wizShow();
-  toast(t.name+' a punt — posa el resultat');
+  toast(t.name+' a punt: posa el resultat');
 }
 
 
@@ -9864,8 +10101,6 @@ function openBenchLog(id){
   document.getElementById('calcSheet').classList.add('on');
 }
 
-function toggleAddBench(){const c=document.getElementById('addBenchCard');c.style.display=c.style.display==='none'?'block':'none';}
-function saveNewBench(){const nm=document.getElementById('benchName').value.trim();const desc=document.getElementById('benchDesc').value.trim();if(!nm){toast('Nom requerit','error');return;}D.benchmarks.push({id:'b_'+Date.now(),name:nm,desc});save();toggleAddBench();renderBenchList();document.getElementById('benchName').value='';document.getElementById('benchDesc').value='';toast('Benchmark afegit ✓');}
 
 // Bench confirm sheet: reuse calcSheet with bench mode
 
@@ -9915,60 +10150,46 @@ function confirmSheet(){
 
 
 // ══ WOD EXERCISES ══
-let actWodFam = 'Tots';
-function renderWodFamFilter(){
-  const fams=['Tots','Barbell','KB / DB','Gymnastics','Monostructural'];
-  const container=document.getElementById('wodFamFilter');
-  if(!container)return;
-  container.innerHTML=fams.map(f=>{
-    const cfg=WOD_FAM_CFG[f];
-    const isActive=f===actWodFam;
-    const lightColors=['#F2AE3E','#26d97f'];
-    const textColor=isActive&&cfg?(lightColors.includes(cfg.color)?'#000':'#fff'):'';
-    const style=isActive&&cfg?`style="background:${cfg.color};border-color:${cfg.color};color:${textColor}"`:
-                              (f==='Tots'&&isActive?'style="background:var(--text);border-color:var(--text);color:var(--bg);"':'');
-    return`<button class="pill ${isActive?'active':''}" onclick="setWodFam('${f}')" ${style}>${f}</button>`;
-  }).join('');
-}
-function setWodFam(f){actWodFam=f;renderWodFamFilter();renderWExList();}
 
 const wodFamOrder=['Barbell','KB / DB','Gymnastics','Monostructural','Especial'];
+const wodOpenFam={};
+function toggleWodFam(fam){ wodOpenFam[fam]=!wodOpenFam[fam]; renderWExList(document.getElementById('wexsSearch')?document.getElementById('wexsSearch').value.trim().toLowerCase():''); }
 function renderWExList(query=''){
-  let filtered=actWodFam==='Tots'?D.wEx:D.wEx.filter(e=>e.family===actWodFam);
-  if(query)filtered=filtered.filter(e=>e.name.toLowerCase().includes(query));
-  const g={};filtered.forEach(e=>{if(!g[e.family])g[e.family]=[];g[e.family].push(e);});
+  // v8.36: was a chip-row filter above a flat grouped list. The chips said the
+  // same thing as the group headers, so they went; the groups now collapse,
+  // matching Rècords (see renderRecords / .fam-row).
+  let filtered=D.wEx;
+  if(query) filtered=filtered.filter(e=>e.name.toLowerCase().includes(query));
+  const g={}; filtered.forEach(e=>{ (g[e.family||'Altres']=g[e.family||'Altres']||[]).push(e); });
   const sorted=Object.entries(g).sort(([a],[b])=>{
     const ai=wodFamOrder.indexOf(a),bi=wodFamOrder.indexOf(b);
-    return(ai===-1?99:ai)-(bi===-1?99:bi);
+    return (ai===-1?99:ai)-(bi===-1?99:bi);
   });
-  document.getElementById('wExList').innerHTML=sorted.map(([fam,items])=>{
-    const color=wodFamColor(fam);
-    const dot=wodFamDot(fam);
-    const sub=wodFamSub(fam);
-    const wrapCls=wodFamWrapCls(fam);
-    return`<div class="${wrapCls}" style="margin-bottom:4px">
-      <div class="fam-header">
-        <div class="fam-dot" style="background:${dot}"></div>
-        <div class="fam-title" style="color:${color}">${fam}</div>
-        ${sub?`<div class="fam-subtitle">${sub}</div>`:''}
-        <div style="font-size:12px;color:var(--text3);margin-left:6px">${items.length}</div>
-      </div>
-      ${items.map((ex,i)=>{
-        const uses=D.wEnt.filter(w=>w.exercises&&w.exercises.some(e=>e.exId===ex.id)).length;
-        const lastW=D.wEnt.filter(w=>w.exercises&&w.exercises.some(e=>e.exId===ex.id)).sort((a,b)=>b.date.localeCompare(a.date))[0];
-        const lw=lastW?lastW.exercises.find(e=>e.exId===ex.id)?.weight:null;
-        return`<div class="exrow anim-slidein" style="animation-delay:${i*25}ms">
-          <div style="flex:1;min-width:0">
-            <div class="exname">${ex.name}</div>
-            <div class="exmeta">${uses>0?uses+' WoD'+(uses!==1?'s':''):'Sense entrades'}</div>
-          </div>
-          <div class="exrm">
-            ${lw?`<div class="exrmv" style="color:${color}">${lw} kg</div><div class="exrml">últim pes</div>`
-               :`<div style="font-size:12px;color:var(--text3)">—</div>`}
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
+  const host=document.getElementById('wExList'); if(!host) return;
+  if(!sorted.length){
+    host.innerHTML='<div class="card" style="text-align:center;padding:22px 16px;color:var(--text2);font-size:var(--fs-body-sm)">Cap exercici coincideix.</div>';
+    return;
+  }
+  host.innerHTML=sorted.map(([fam,items])=>{
+    const color=wodFamColor(fam), dot=wodFamDot(fam), sub=wodFamSub(fam);
+    const open = query ? true : !!wodOpenFam[fam];     // searching auto-expands
+    const used = items.filter(ex=>D.wEnt.some(w=>w.exercises&&w.exercises.some(e=>e.exId===ex.id))).length;
+    const rows = open ? '<div class="fam-body">'+items.map(ex=>{
+      const mine=D.wEnt.filter(w=>w.exercises&&w.exercises.some(e=>e.exId===ex.id));
+      const lastW=mine.slice().sort((a,b)=>b.date.localeCompare(a.date))[0];
+      const lw=lastW?(lastW.exercises.find(e=>e.exId===ex.id)||{}).weight:null;
+      return '<div class="ex-row'+(mine.length?'':' none')+'">'
+        +'<span style="flex:1;min-width:0"><span class="ex-nm">'+ex.name+'</span>'
+        +'<span class="ex-meta">'+(mine.length?(mine.length+' WoD'+(mine.length!==1?'s':'')):'sense entrades')+'</span></span>'
+        +'<span class="ex-val">'+(lw?('<b>'+lw+' kg</b>'):'—')+'</span></div>';
+    }).join('')+'</div>' : '';
+    return '<button class="fam-row'+(open?' open':'')+'" onclick="toggleWodFam(\''+fam.replace(/'/g,"\\'")+'\')">'
+      +'<span class="fam-dot" style="background:'+dot+'"></span>'
+      +'<span style="flex:1;min-width:0"><span class="fam-name" style="color:'+color+'">'+fam+'</span>'
+      +(sub?'<span class="fam-sub">'+sub+'</span>':'')+'</span>'
+      +'<span class="fam-count">'+used+' de '+items.length+'</span>'
+      +'<span class="fam-chev">'+icSVG('chevron-right',18)+'</span></button>'
+      + rows;
   }).join('');
 }
 function toggleAddWEx(){const c=document.getElementById('addWExCard');c.style.display=c.style.display==='none'?'block':'none';}
@@ -9985,9 +10206,11 @@ function renderWodBoard(){
     const hist=wodHistory(k);
     if(!hist.length) return null;
     const name=hist[hist.length-1].name||'WoD';
-    const bestAny=bestWodScoreAny(k);            // ranks within a scale (v8.26)
-    const best=bestAny&&bestAny.score;
-    const bestScale=bestAny&&bestAny.scale;
+    // v8.38: the whole entry, so the score, its scale and its date describe the
+    // same session. Taking the date from `last` instead invented workouts.
+    const bestEnt=bestWodEntryAny(k);            // ranks within a scale (v8.26)
+    const best=bestEnt&&bestEnt.score;
+    const bestScale=bestEnt&&wodScaleOf(bestEnt);
     const kind=best&&best.kind;
     // "Improved" means the latest attempt beat your previous best AT ITS OWN
     // SCALE (v8.26). Comparing across scales flagged an easier attempt as
@@ -10001,7 +10224,7 @@ function renderWodBoard(){
         .forEach(e=>{ if(wodScoreBeats(e.score,prev)) prev=e.score; });
     }
     const improved = !!(prev && wodScoreBeats(last.score,prev));
-    return {k,name,best,bestScale,kind,n:hist.length,last,prev,improved};
+    return {k,name,best,bestScale,bestEnt,kind,n:hist.length,last,prev,improved};
   }).filter(Boolean).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));
 
   if(!rows.length){
@@ -10020,12 +10243,14 @@ function renderWodBoard(){
     // muted, and say why it is not a mark.
     const ranked = !!r.best;
     const shown  = ranked ? r.best : r.last.score;
+    // The date must belong to whatever score is on the right of the row.
+    const shownDate = ranked ? r.bestEnt.date : r.last.date;
     const tail   = ranked
       ? (r.bestScale && r.bestScale!=='Rx' ? ' · '+esc(r.bestScale) : '')
       : ' · només modificat';
     return '<button class="wodb-row" onclick="openWodTrend(\''+esc(r.k)+'\')">'
       +'<span class="wodb-main"><span class="wodb-nm">'+esc(r.name)+'</span>'
-      +'<span class="wodb-meta">'+times+' · '+esc(r.last.date)+tail+'</span></span>'
+      +'<span class="wodb-meta">'+times+' · '+esc(shownDate)+tail+'</span></span>'
       +'<span class="wodb-right"><span class="wodb-val"'+(ranked?'':' style="color:var(--text3)"')+'>'
         +wodScoreText(shown)+'</span>'+trend+'</span>'
     +'</button>';
@@ -10055,18 +10280,27 @@ function wodDeltaText(now, prev){
 function openWodTrend(key){
   const hist=wodHistory(key);            // every attempt, all scales
   if(!hist.length) return;
-  const bestAny=bestWodScoreAny(key);
-  const best=bestAny&&bestAny.score;
+  // v8.38: the star used to be awarded by NUMBER — any row whose value matched
+  // the best got one, so a Modificat attempt that tied an Rx mark was crowned,
+  // flatly contradicting the rule that Modificat never produces a record. Mark
+  // by entry identity instead: exactly one row, and always the right one.
+  const bestEnt=bestWodEntryAny(key);
+  const best=bestEnt&&bestEnt.score;
+  const bestId=bestEnt?bestEnt.id:null;
   const name=hist[hist.length-1].name||'WoD';
   const rows=hist.slice().reverse().map(e=>{
-    const isBest=wodScoreValue(e.score)===wodScoreValue(best)&&e.score.kind===best.kind;
+    const isBest = bestId!=null && e.id===bestId;
     return '<div class="wodt-row'+(isBest?' best':'')+'">'
       +'<span>'+esc(fmt(e.date))+(e.scale&&e.scale!=='Rx'?' · '+esc(e.scale):'')+'</span>'
       +'<b>'+wodScoreText(e.score)+(isBest?' ★':'')+'</b></div>';
   }).join('');
   document.getElementById('wodTrendTitle').textContent=name;
-  document.getElementById('wodTrendBody').innerHTML=
-    '<div class="wodt-head">'+hist.length+' registre'+(hist.length===1?'':'s')+' · millor: <b>'+wodScoreText(best)+'</b></div>'+rows;
+  // A WoD only ever done as Modificat has no mark, so do not print a dangling
+  // "millor:" with nothing after it.
+  const head = best
+    ? hist.length+' registre'+(hist.length===1?'':'s')+' · millor: <b>'+wodScoreText(best)+'</b>'
+    : hist.length+' registre'+(hist.length===1?'':'s')+' · <span style="color:var(--text3)">sense marca: només modificat</span>';
+  document.getElementById('wodTrendBody').innerHTML='<div class="wodt-head">'+head+'</div>'+rows;
   document.getElementById('wodTrendSheet').classList.add('on');
 }
 function closeWodTrend(){ animClose(document.getElementById('wodTrendSheet')); }
@@ -10078,7 +10312,7 @@ function renderWStats(){const exId=document.getElementById('wStatEx').value;
     <div class="sgrid"><div class="sc"><div class="sv" style="color:var(--w-ink)">${allW.length}</div><div class="sl">WoDs registrats</div></div>
     <div class="sc"><div class="sv" style="color:var(--w-ink)">${Object.keys(byType).length}</div><div class="sl">Tipus diferents</div></div></div>
     <div style="font-size:13px;color:var(--text2);margin-top:8px">${Object.entries(byType).map(([t,c])=>t+' ×'+c).join(' · ')}</div>
-    ${latest.map(w=>`<div class="loge"><div class="logd">${fmt(w.date)} · ${w.type}</div><div class="logx">${w.name||w.type}${w.result?' — '+w.result:''}</div></div>`).join('')}
+    ${latest.map(w=>`<div class="loge"><div class="logd">${fmt(w.date)} · ${w.type}</div><div class="logx">${w.name||w.type}${w.result?' · '+w.result:''}</div></div>`).join('')}
   </div>`:`<div class="card"><div class="empty">Registra el teu primer WoD per veure estadístiques.</div></div>`;
   if(!exId){document.getElementById('wStatsContent').innerHTML=summary;return;}const ex=D.wEx.find(e=>e.id===exId);const uses=D.wEnt.filter(w=>w.exercises&&w.exercises.some(e=>e.exId===exId)).sort((a,b)=>a.date.localeCompare(b.date));const weights=uses.map(w=>({date:w.date,w:(w.exercises||[]).find(e=>e.exId===exId)?.weight||0})).filter(x=>x.w>0);const maxW=weights.length?Math.max(...weights.map(x=>x.w)):0;document.getElementById('wStatsContent').innerHTML=`<div class="card"><div class="sgrid"><div class="sc anim-popin"><div class="sv" style="color:var(--w-ink)">${maxW?maxW+' kg':'—'}</div><div class="sl">Pes màxim</div></div><div class="sc anim-popin anim-delay-1"><div class="sv" style="color:var(--w-ink)">${uses.length}</div><div class="sl">Aparicions</div></div></div></div><div class="card"><div class="ctitle">Últims usos</div>${uses.slice().reverse().slice(0,6).map(w=>{const exD=w.exercises.find(e=>e.exId===exId);return`<div class="loge"><div class="logd">${fmt(w.date)} · ${w.type}</div><div class="logx">${w.name||w.type}</div>${exD?`<div class="logs">${exD.weight?exD.weight+' kg ':''} ${exD.reps?'×'+exD.reps+' reps':''}${w.result?' · Resultat: '+w.result:''}</div>`:''}</div>`;}).join('')}</div>`;}
 
@@ -10127,10 +10361,14 @@ function selAjSex(sex){
 }
 function saveAjProfile(){
   if(!D.profile) D.profile={};
+  // v8.41: the 14+ rule reached onboarding but not here, so the profile editor
+  // was a way straight past it. One rule, every entry point.
+  const dob=document.getElementById('ajProfileDob').value||'';
+  if(dob){ const bad=dobProblem(dob); if(bad){ toast(bad,'error'); return; } }
   D.profile.name=document.getElementById('ajProfileName').value.trim();
   D.profile.weightKg=+document.getElementById('ajProfileWeight').value||0;
   D.profile.heightCm=+document.getElementById('ajProfileHeight').value||0;
-  D.profile.dob=document.getElementById('ajProfileDob').value||'';
+  D.profile.dob=dob;
   D.profile.setupDone=true;
   save();
   renderAjGreeting();
@@ -10655,14 +10893,14 @@ function renderGoalDisplay(exId) {
   const today = localToday();
   const rm = best1RM(exId);
   const achieved = rm && rm >= goal.targetKg;
-  const overdue = !achieved && goal.targetDate < today;
+  const overdue = !achieved && pastDeadline(goal.targetDate);
   const pct = rm ? Math.min(100, Math.round(rm / goal.targetKg * 100)) : 0;
   const barColor = achieved ? 'var(--green)' : overdue ? 'var(--red)' : 'var(--acc)';
   c.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <div>
         <span style="font-size:19px;font-weight:800;color:${barColor}">${goal.targetKg} kg</span>
-        <span style="font-size:13px;color:var(--text2);margin-left:6px">→ ${fmt(goal.targetDate)}</span>
+        ${goal.targetDate ? `<span style="font-size:13px;color:var(--text2);margin-left:6px">→ ${fmt(goal.targetDate)}</span>` : ''}
         ${achieved ? '<span style="font-size:13px;color:var(--green);font-weight:700;margin-left:6px">✓ Assolit!</span>' : ''}
         ${overdue ? '<span style="font-size:13px;color:var(--red);font-weight:700;margin-left:6px">'+icSVG('alert-triangle',10)+' Caducat</span>' : ''}
       </div>
@@ -10850,7 +11088,7 @@ function _pingSetupComplete() {
     const formId = '1FAIpQLSef07viIV1gW6QaZD_IUflcuoSATQFXg7BnBGxSJA1HpyjdNw';
     const entry = 'entry.81607569';
     const url = 'https://docs.google.com/forms/d/e/' + formId + '/formResponse?' + entry + '=' +
-      encodeURIComponent('PRsonal setup — ' + new Date().toISOString());
+      encodeURIComponent('PRsonal setup: ' + new Date().toISOString());
     fetch(url, { method: 'POST', mode: 'no-cors' });
   } catch(e) { /* silent */ }
 }
@@ -10901,7 +11139,7 @@ function saveSetup(skip) {
 // ══════════════════════════════════════════
 // LEGAL / PRIVACY — documents, acceptance, in-app screens
 // ══════════════════════════════════════════
-const LEGAL_VERSION = '1.3';   // v8.33: body-composition data declared in 3.A (art. 9 special category)
+const LEGAL_VERSION = '1.4';   // v8.40: use restricted to 14+, parental-consent route removed
 const LEGAL_HOLDER = 'Àlex Alemany Muñoz';
 const LEGAL_EMAIL  = 'alexalemanymunoz@gmail.com';
 
@@ -11050,11 +11288,11 @@ async function sendFeedback() {
   const bodyMsg = ctx + '\n\n' + text;
   try {
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ title: 'PRsonal — comentari', text: bodyMsg, files: [file] });
+      await navigator.share({ title: 'PRsonal, comentari', text: bodyMsg, files: [file] });
     } else {
       const extra = file ? '\n\n(Si us plau, adjunta la captura manualment.)' : '';
       window.location.href = 'mailto:' + FEEDBACK_EMAIL +
-        '?subject=' + encodeURIComponent('PRsonal comentari — ' + (activeTab || '')) +
+        '?subject=' + encodeURIComponent('PRsonal comentari: ' + (activeTab || '')) +
         '&body=' + encodeURIComponent(bodyMsg + extra);
     }
     closeFeedback();
@@ -11066,14 +11304,14 @@ const LEGAL_DOCS = {
   // Not a legal document, but the same viewer: a full-screen scrollable page
   // with a Tornar navbar is exactly what this needed. Mirrors SCIENCE.md.
   ciencia: { t: "D'on surten els números", h: `
-<div class="lmeta">Correspon a SCIENCE.md del projecte · v8.34</div>
+<div class="lmeta">Correspon a SCIENCE.md del projecte · v8.37</div>
 <p>Cada xifra que et mostrem surt d'algun lloc. Aquí tens quin, i <strong>fins on t'hi pots
 refiar</strong>. Està escrit per ser honest, no per impressionar: tres dels càlculs vénen de
 feina publicada i validada; la resta són decisions raonades a partir d'aquesta literatura,
 però no validades elles mateixes. Van separades i no es barregen mai.</p>
 <p><em>Això no és consell mèdic ni d'entrenament. Vegeu l'apartat 6 de l'Avís Legal.</em></p>
 
-<h2>1. 1RM estimat — equació d'Epley</h2>
+<h2>1. 1RM estimat: equació d'Epley</h2>
 <p><code>1RM ≈ pes × (1 + reps/30)</code>, i amb 1 repetició no estimem res: una sola repetició
 <em>ja és</em> un màxim. Epley ho multiplicaria per 1,033 i s'inventaria un 3,3% que no has aixecat.</p>
 <p><strong>Font:</strong> Epley, B. (1985). <em>Poundage Chart</em>.</p>
@@ -11086,7 +11324,7 @@ deadlift</strong>, o sigui que el teu màxim real de deadlift probablement és m
 exercicis no es poguessin comparar al mateix gràfic.</p>
 
 <h2>2. Quines sessions compten per al teu 1RM</h2>
-<p>Aquesta és una <strong>regla nostra</strong>, no publicada — però surt directament d'una troballa
+<p>Aquesta és una <strong>regla nostra</strong>, no publicada, però surt directament d'una troballa
 que sí que ho és. Totes les equacions donen per fet que la sèrie va <strong>a prop del fallo</strong>.
 Si et sobraven repeticions, infravaloren sempre: «8 reps» no vol dir el mateix al límit que a mig gas.</p>
 <p>Per això la pràctica actual es basa en les <strong>repeticions en reserva (RIR)</strong>. Zourdos i
@@ -11104,7 +11342,7 @@ avala. Sense això, 3×8 al 50% et pintava una caiguda del 37% que no havia pass
 Australia, 1994), oficial a l'IPF fins al 2019.</p>
 <p><strong>Dos matisos honestos:</strong> no és la revisió «Wilks-2» del 2020 ni els IPF GL Points, que
 donen números diferents (el codi deia el contrari fins a la v8.31 i era fals). I és una
-<strong>fórmula de federació</strong>, ajustada a dades de competició — no un model fisiològic revisat
+<strong>fórmula de federació</strong>, ajustada a dades de competició, no un model fisiològic revisat
 per parells. Com que l'alimentem amb 1RM estimats, n'hereta la incertesa.</p>
 
 <h2>4. Classificació de força</h2>
@@ -11159,7 +11397,7 @@ una ratlla al 25 diria a persones reals que són impossibles.</p>
 <p><strong>Protocol:</strong> els perímetres segueixen l'estàndard <strong>ISAK</strong>. Val més un
 protocol constant amb una cinta barata que un d'inconstant amb una cinta bona: el que llegeixes és el
 canvi.</p>
-<p><strong>Cap on va:</strong> la relació entre composició corporal i rendiment és real i mesurable —
+<p><strong>Cap on va:</strong> la relació entre composició corporal i rendiment és real i mesurable:
 en el <em>Fran</em>, la massa magra i la força prediuen el temps (correlacions de ρ ≈ −0,54 a −0,65
 contra 1RM estimats de squat, deadlift i press). Això apunta a tres coses per construir quan hi hagi
 prou historial: <strong>força per quilo de massa magra</strong> (que separa «he guanyat força» de «he
@@ -11201,7 +11439,7 @@ High-Intensity Functional Training Workout Fran…». <em>Front Physiol</em>, 13
 </ol>
 ` },
   privacitat: { t: 'Política de Privacitat', h: `
-<div class="lmeta">Última actualització: 7 d'agost de 2026 · v1.3</div>
+<div class="lmeta">Última actualització: 7 d'agost de 2026 · v1.4</div>
 <h2>1. Responsable del tractament</h2>
 <p>D'acord amb el Reglament (UE) 2016/679 (RGPD) i la Llei Orgànica 3/2018 (LOPDGDD):</p>
 <ul><li><strong>Responsable:</strong> ${LEGAL_HOLDER}</li><li><strong>Contacte:</strong> ${LEGAL_EMAIL}</li></ul>
@@ -11231,7 +11469,7 @@ High-Intensity Functional Training Workout Fran…». <em>Front Physiol</em>, 13
 <h2>9. Els teus drets</h2>
 <p>Accés, rectificació, supressió, limitació, portabilitat, oposició, no ser objecte de decisions automatitzades i retirar el consentiment (sense afectar la licitud prèvia). Com que la major part de les dades són al teu dispositiu, molts drets els exerceixes directament (editar, esborrar o exportar en JSON = portabilitat). Per a la resta, escriu a ${LEGAL_EMAIL}. Pots reclamar davant l'AEPD (C/ Jorge Juan 6, 28001 Madrid · www.aepd.es) o l'APDCAT (apdcat.gencat.cat).</p>
 <h2>10. Menors</h2>
-<p>Adreçada a persones de 14 anys o més (art. 7 LOPDGDD). Els menors de 14 necessiten el consentiment de qui exerceixi la pàtria potestat o tutela.</p>
+<p>Adreçada a persones de <strong>14 anys o més</strong> (art. 7 LOPDGDD). L'app comprova l'edat a partir de la data de naixement i <strong>no permet completar la configuració inicial</strong> a qui no hi arribi.</p>
 <h2>10 bis. Què ha canviat a la v1.1 (2 d'agost de 2026)</h2>
 <p>S'ha afegit la funció opcional <strong>«El temps»</strong> (apartat 3.B): ubicació aproximada arrodonida a ~11 km enviada a Open-Meteo, només si l'actives, i sense cap identificador. S'ha corregit també una referència obsoleta a una connexió amb Cloudflare per carregar la llibreria de gràfics: des de la v8.1 va incorporada dins l'app i aquesta connexió ja no existeix.</p>
 <h2>11. Acceptació</h2>
@@ -11252,7 +11490,7 @@ High-Intensity Functional Training Workout Fran…». <em>Front Physiol</em>, 13
 <h2>2. Objecte i acceptació</h2>
 <p>Aquest document regula l'accés i l'ús de PRsonal («l'Aplicació»), una eina personal de registre d'entrenaments. L'ús atribueix la condició d'Usuari i implica l'acceptació plena d'aquestes condicions i de la Política de Privacitat. En crear el perfil, l'app et demana l'acceptació expressa, que es registra localment.</p>
 <h2>3. Accés i edat</h2>
-<p>L'accés pot estar protegit per una contrasenya privada, que no és una mesura de seguretat tècnica ni garantia de confidencialitat. L'ús està adreçat a persones de 14 anys o més; en utilitzar l'app, l'Usuari declara que hi té l'edat o el consentiment de qui n'exerceixi la pàtria potestat o tutela.</p>
+<p>L'accés pot estar protegit per una contrasenya privada, que no és una mesura de seguretat tècnica ni garantia de confidencialitat. L'ús està <strong>reservat a persones de 14 anys o més</strong>; en utilitzar l'app, l'Usuari declara que hi té l'edat.</p>
 <h2>4. Ús acceptable</h2>
 <p>L'Usuari es compromet a no fer un ús il·lícit, a no introduir contingut que infringeixi drets de tercers, a no manipular el codi ni introduir programari maliciós, i a no fer un ús que danyi l'Aplicació o els serveis de tercers.</p>
 <h2>5. Absència de garanties</h2>
@@ -11602,9 +11840,9 @@ function getRpeTrendInsight(points) {
   let gapText = '';
   if (avgGap !== null) {
     if (avgGap > 0.8) {
-      gapText = ` A més, estàs aixecant <strong>${avgGap.toFixed(1)} punts per sota</strong> del RPE teòric esperat — vas millor del que suggeriria el teu 1RM.`;
+      gapText = ` A més, estàs aixecant <strong>${avgGap.toFixed(1)} punts per sota</strong> del RPE teòric esperat: vas millor del que suggeriria el teu 1RM.`;
     } else if (avgGap < -0.5) {
-      gapText = ` El teu esforç real supera lleugerament el previst — considera ajustar els pesos de treball.`;
+      gapText = ` El teu esforç real supera lleugerament el previst: considera ajustar els pesos de treball.`;
     }
   }
 
@@ -11704,7 +11942,7 @@ function renderRpeChart(exId) {
 // ══════════════════════════════════════════
 const PROG_INFO = {
   weight: {
-    title: 'Pes màxim — com llegir el gràfic',
+    title: 'Pes màxim: com llegir el gràfic',
     color: '#F2AE3E',
     body: `<div style="font-size:14px;color:var(--text2);line-height:1.7">
       Mostra el <strong style="color:var(--text)">pes més alt aixecat en cada sessió</strong>, independentment del nombre de reps. És la mesura més directa de càrrega de treball.<br><br>
@@ -11713,25 +11951,25 @@ const PROG_INFO = {
     </div>`
   },
   '1rm': {
-    title: '1RM estimat — com llegir el gràfic',
+    title: '1RM estimat: com llegir el gràfic',
     color: '#4a9eff',
     body: `<div style="font-size:14px;color:var(--text2);line-height:1.7">
       Mostra el <strong style="color:var(--text)">1RM estimat per cada sessió</strong> calculat amb la fórmula d'Epley: <em>pes × (1 + reps/30)</em>. Si has indicat el % intentat, s'usa la fórmula implícita: <em>pes ÷ (% / 100)</em>, que sol ser més precisa.<br><br>
-      <strong style="color:var(--text)">Epley vs implícit:</strong> si vas aixecar 80 kg a 3 reps, Epley estima ~88 kg de 1RM. Si vas indicar que era el 80%, l'implícit dona 100 kg — generalment més fidel a la realitat.<br><br>
+      <strong style="color:var(--text)">Epley vs implícit:</strong> si vas aixecar 80 kg a 3 reps, Epley estima ~88 kg de 1RM. Si vas indicar que era el 80%, l'implícit dona 100 kg, generalment més fidel a la realitat.<br><br>
       Utilitza aquest gràfic per veure la progressió real de la teva força màxima al llarg del temps.
     </div>`
   },
   volume: {
-    title: 'Volum — com llegir el gràfic',
+    title: 'Volum: com llegir el gràfic',
     color: '#4ecb71',
     body: `<div style="font-size:14px;color:var(--text2);line-height:1.7">
       Mostra el <strong style="color:var(--text)">volum total per sessió</strong> calculat com: <em>Σ (sèries × reps × pes)</em>. S'expressa en kg·reps.<br><br>
       El volum és un dels millors indicadors de càrrega d'entrenament. Puja el volum progressivament per induir adaptació. Una caiguda sobtada de volum pot indicar desentrenament o tapering intencionat.<br><br>
-      <strong style="color:var(--text)">Consell:</strong> compara el volum entre sessions del mateix tipus, no entre exercicis diferents — 5×5 d'esquat i 5×5 de press no es comparen directament en volum absolut.
+      <strong style="color:var(--text)">Consell:</strong> compara el volum entre sessions del mateix tipus, no entre exercicis diferents: 5×5 d'esquat i 5×5 de press no es comparen directament en volum absolut.
     </div>`
   },
   rpe: {
-    title: 'RPE — Rating of Perceived Exertion',
+    title: 'RPE, Rating of Perceived Exertion',
     color: '#a78bfa',
     body: `<div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:10px">
       Mesura l'<strong style="color:var(--text)">esforç percebut</strong> en una escala de l'1 al 10. Un RPE decreixent per al mateix pes = millora real de la força, fins i tot sense canviar els kg.
@@ -12051,7 +12289,7 @@ function sharePR() {
     const file = new File([blob], 'prsonal_pr.png', { type: 'image/png' });
     // canShare must be CALLED with the payload, not merely tested for existence
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: 'PRsonal — nou rècord: ' + prData.exName })
+      navigator.share({ files: [file], title: 'PRsonal, nou rècord: ' + prData.exName })
         .catch(err => { if (!err || err.name !== 'AbortError') downloadPRCard(dataUrl); });
     } else {
       downloadPRCard(dataUrl);
@@ -12178,9 +12416,9 @@ function renderWeeklySummary(s) {
   if(!document.getElementById('weeklySummaryContent')) return;   // pre-rebuild editor, removed v8.18
   // Motivational line
   let motive = '';
-  if (s.prs >= 3) motive = icSVG('flame',12,'color:var(--h-ink)')+' Setmana excepcional — '+s.prs+' nous rècords!';
+  if (s.prs >= 3) motive = icSVG('flame',12,'color:var(--h-ink)')+' Setmana excepcional: '+s.prs+' nous rècords!';
   else if (s.prs > 0) motive = icSVG('star',12,'color:var(--h-ink)')+' '+s.prs+' nou'+(s.prs>1?'s':'')+' rècord'+(s.prs>1?'s':'')+' la setmana passada!';
-  else if (s.sessions >= 4) motive = icSVG('dumbbell',12)+' Gran constància — '+s.sessions+' sessions!';
+  else if (s.sessions >= 4) motive = icSVG('dumbbell',12)+' Gran constància: '+s.sessions+' sessions!';
   else if (s.sessions >= 2) motive = icSVG('circle-check',12,'color:var(--green)')+' Bona setmana d\'entrenament.';
   else motive = icSVG('footprints',12)+' Una sessió és millor que cap.';
 
@@ -12280,7 +12518,8 @@ function obValidate(slideId) {
   if (slideId === 'ob1') {
     if (!document.getElementById('setupName').value.trim()) return bad('Com et dius?', 'setupName');
     if (!setupSex) return bad('Tria el sexe: canvia els càlculs de Wilks');
-    if (!document.getElementById('setupDob').value)          return bad('Posa la teva data de naixement', 'setupDob');
+    const dobBad = dobProblem(document.getElementById('setupDob').value);
+    if (dobBad) return bad(dobBad, 'setupDob');
     const w = +document.getElementById('setupWeight').value || 0;
     if (!(w >= 30 && w <= 250))  return bad('Posa el teu pes corporal', 'setupWeight');
     const h = +document.getElementById('setupHeight').value || 0;
@@ -12310,7 +12549,16 @@ function obBack() {
 // Echo the derived age back, so the date entered is visibly the right one.
 function setupDobEcho() {
   const el = document.getElementById('setupDobEcho'); if (!el) return;
-  const a = ageFromDob(document.getElementById('setupDob').value);
+  const dob = document.getElementById('setupDob').value;
+  const a = ageFromDob(dob);
+  // Say it here rather than only on Continua, so nobody fills in the rest of the
+  // form before finding out.
+  if (a !== null && a < MIN_AGE) {
+    el.textContent = a + ' anys. PRsonal és per a persones de ' + MIN_AGE + ' anys o més.';
+    el.style.color = 'var(--red)';
+    return;
+  }
+  el.style.color = '';
   el.textContent = a === null ? '' : a + ' anys. L\'app l\'anirà actualitzant sola.';
 }
 // The onboarding gym picker shares gymDraft with Més → El teu gimnàs.
@@ -12464,13 +12712,37 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.48':['A Inici, ara pots tocar qualsevol dia dels últims catorze, no només els que tenen activitat: els de descans et diuen que no en tenen.'],
+  '8.47':['Si ja tens un objectiu obert per a un exercici, l\u2019app t\u2019ho diu abans de crear-ne un altre, i t\u2019explica que a la fitxa només hi surt el més alt.'],
+  '8.46':['Si vas registrar un WoD deixant el resultat en blanc però el vas escriure a la nota, ara l\u2019app el llegeix i el WoD entra als teus rècords.'],
+  '8.45':['Els objectius amb la data límit passada surten marcats com a <b>caducats</b>, i els que no en tenen ja no ho semblen.',
+          'Si marques un WoD com a benchmark i el nom ja existeix, ara t\u2019ho diu mentre escrius, en comptes de no fer res.'],
+  '8.44':['Les sèries ara comproven els valors: fins a 500 kg, fins a 200 repeticions i RPE d\u20191 a 10.',
+          'Això importa perquè un RPE mal escrit canviava en silenci si la sessió comptava o no per al teu 1RM estimat.'],
+  '8.43':['Restaurar una còpia ara et pregunta abans de fer res, i et diu quantes sessions entren i quantes en surten.',
+          'Si la còpia està buida o té molt menys del que tens, t\u2019avisa clarament: és una acció que no es pot desfer.'],
+  '8.42':['El registrar ja no accepta dates futures: serveix per apuntar el que has fet. Si vols deixar-ho preparat, fes-ne una <b>plantilla</b>.'],
+  '8.41':['La pestanya de composició corporal ara es diu <b>Físic</b>.',
+          'El pes de <b>Físic</b> i el del perfil són el mateix número, i ara l\u2019app t\u2019ho diu: registrar-lo a Físic el desa amb data i actualitza el perfil sol.',
+          'Ja no pots desar dues mesures el mateix dia: t\u2019indica quina hi ha i la pots editar.'],
+  '8.40':['La data de naixement ara es comprova: no pot ser al futur, ni impossible, i cal tenir 14 anys o més, que és el que ja deien les condicions.',
+          'Hem actualitzat les condicions i la política de privacitat perquè diguin exactament això. Caldrà tornar a acceptar-les.'],
+  '8.39':['Les mesures de composició ja no accepten dates futures, i el pes que fa servir el Wilks surt sempre de la mesura més recent que has fet de veritat.'],
+  '8.38':['Als rècords de WoD, la data que veies era la de l\u2019últim intent, no la del teu millor. Ara totes dues coses parlen de la mateixa sessió.',
+          'Un intent modificat ja no es pot emportar l\u2019estrella de millor marca encara que hi empati.'],
+  '8.37':['Els benchmarks es marquen amb una casella just sota la data del WoD, i després segueixes el camí de sempre.',
+          'Hem canviat la puntuació dels textos: fora els guions llargs, ara amb comes, dos punts i punts normals.'],
+  '8.36':['La barra de baix ja no es veu mai per sota d\u2019un pop-up: la targeta ocupa tota la part inferior.',
+          '<b>Cos</b> ara es diu <b>Composició</b>, i el selector del gràfic mostra el valor i el canvi de cada mesura.',
+          'Els exercicis de WoD s\u2019agrupen per família i es despleguen, com als Rècords.',
+          'Els benchmarks es creen des d\u2019<b>Entrenar → WoD</b>, amb tipus i estructura de debò.'],
   '8.35':['Ja pots arribar a <b>Cos</b> lliscant el dit, com entre Força i WoD.',
           'Als objectius, triar la família ja et porta a l\'exercici: fora el botó de continuar que no feia res.'],
   '8.34':['El text científic ja es llegeix dins l\'app: <b>Més → D\'on surten els números → Llegir el document complet</b>.',
           'Els objectius ja no deixen passar sense triar exercici, i et suggereixen un pes raonable (fins i tot si encara no hi tens cap marca).',
           'La bombolla d\'avís als Objectius ara només surt quan n\'has <b>assolit</b> un, i desapareix en veure la felicitació.',
           'La barra de pestanyes ja no es veu per sota dels pop-ups.'],
-  '8.33':['Nova secció <b>Cos</b> a Mètriques: pes, percentatge de greix i de múscul, i perímetres. Està en desenvolupament inicial — de moment registra i dibuixa, res més.',
+  '8.33':['Nova secció <b>Cos</b> a Mètriques: pes, percentatge de greix i de múscul, i perímetres. Està en desenvolupament inicial: de moment registra i dibuixa, res més.',
           'Només el pes és obligatori; la resta, quan et vingui de gust. Tot es queda al teu telèfon, com sempre.',
           'La <b>tipografia</b> ara es prova des de Més → Aparença, i «D\'on surten els números» ja es llegeix bé.'],
   '8.32':['Prova de tipografies: toca la icona d\'error (a dalt a la dreta) → <b>Provar tipografies</b>. Cap no es baixa, així que segueix funcionant sense connexió.',
@@ -12582,31 +12854,69 @@ function goTopUp(){
     if(t) t.scrollIntoView({behavior:'smooth',block:'center'});
   },260);
 }
+// v8.43: import REPLACES everything and cannot be undone, and it used to do so
+// the instant the file was picked. Deleting a single session asked for
+// confirmation; wiping the entire history did not. Worse, a structurally valid
+// but EMPTY backup passed every check and silently erased the lot.
+// Now it reads the file, says exactly what is coming in and what is going out,
+// and waits. The type check from v8.13 still runs first: a malformed file is
+// rejected before the user is ever asked anything.
+function backupCounts(o){
+  const n=a=>Array.isArray(a)?a.length:0;
+  return {forca:n(o&&o.hEnt), wod:n(o&&o.wEnt), cos:n(o&&o.bEnt),
+          obj:n(o&&o.goals), tpl:n(o&&o.templates)};
+}
+function countsLine(c){
+  const bits=[];
+  bits.push(c.forca+' '+(c.forca===1?'sessió de força':'sessions de força'));
+  bits.push(c.wod+' '+(c.wod===1?'WoD':'WoDs'));
+  if(c.cos) bits.push(c.cos+' '+(c.cos===1?'mesura':'mesures'));
+  if(c.obj) bits.push(c.obj+' '+(c.obj===1?'objectiu':'objectius'));
+  return bits.join(', ');
+}
 function importData(ev){
-  const f=ev.target.files[0];if(!f)return;
+  const input=ev.target;
+  const f=input.files[0];
+  if(!f){ return; }
   const r=new FileReader();
   r.onload=e=>{
+    // Always clear the input, or picking the same file twice fires no change
+    // event the second time and the button looks broken.
+    const done=()=>{ try{ input.value=''; }catch(_){} };
     try{
       const data=JSON.parse(e.target.result);
       // v8.13: this used to be `data.hEx && data.hEnt`, which is truthy for ANY
-      // non-empty value — so a file with the right key names but wrong types
+      // non-empty value, so a file with the right key names but wrong types
       // (e.g. {"hEx":"nope","hEnt":"nope"}) passed validation and REPLACED all
       // data with an empty state. Import is destructive, so it must actually
       // verify the shape before overwriting.
       const looksLikeBackup = data && typeof data==='object' && !Array.isArray(data)
         && Array.isArray(data.hEx) && Array.isArray(data.hEnt);
-      if(looksLikeBackup){
+      if(!looksLikeBackup){ toast('Format JSON no reconegut','error'); done(); return; }
+
+      const inc=backupCounts(data), cur=backupCounts(D);
+      const incTotal=inc.forca+inc.wod+inc.cos, curTotal=cur.forca+cur.wod+cur.cos;
+      let sub='El fitxer conté: '+countsLine(inc)+'.\n'
+             +'Ara tens: '+countsLine(cur)+'.\n\n';
+      if(!incTotal && curTotal){
+        sub+='ATENCIÓ: aquest fitxer no conté cap entrenament ni cap mesura. '
+           + 'Si continues, ho perdràs tot i et quedaràs sense res.';
+      } else if(curTotal && incTotal < curTotal/2){
+        sub+='ATENCIÓ: la còpia té bastant menys del que tens ara. Comprova que és la que vols.';
+      } else {
+        sub+='Tot el que tens ara se substituirà per la còpia. No es pot desfer.';
+      }
+      showDeleteSheet('Restaurar una còpia', sub, ()=>{
         D = (typeof migrate === 'function') ? migrate(data) : data;
         save();
-        renderExList();
-        renderTodaySummary();
-        populateHistFilters();
-        renderWExList();
+        renderExList(); renderTodaySummary(); populateHistFilters(); renderWExList();
+        if(typeof updateGoalsBadge==='function') updateGoalsBadge();
+        if(typeof updateTabBadges==='function') updateTabBadges();
+        if(typeof renderMetriquesTab==='function') renderMetriquesTab();
         toast('Importat correctament ✓');
-      } else {
-        toast('Format JSON no reconegut','error');
-      }
-    }catch(err){toast('Error llegint el JSON','error');}
+      }, {confirmText:'Substituir-ho tot'});
+      done();
+    }catch(err){ toast('Error llegint el JSON','error'); done(); }
   };
   r.readAsText(f);
 }
