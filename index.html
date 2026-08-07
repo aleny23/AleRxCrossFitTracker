@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.32</title>
+<title>PRsonal v8.34</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -47,15 +47,16 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   --shadow:rgba(0,0,0,0.4);
   --h-acc:#F2AE3E;--h-acc2:#C98A20;--h-dim:rgba(242,174,62,0.13);
   --w-acc:#9DC0C4;--w-acc2:#6E9EA3;--w-dim:rgba(157,192,196,0.13);
+  --c-acc:#B3A0D1;--c-acc2:#8B78AB;--c-dim:rgba(179,160,209,0.13);
   /* FILL vs INK split. In dark the brand hue already clears AA as text, so ink
      aliases the accent; the light block overrides ink only. Never use *-acc for
      text — use *-ink; never put white ink on an accent fill (Black Ink Rule). */
-  --h-ink:var(--h-acc);--w-ink:var(--w-acc);
+  --h-ink:var(--h-acc);--w-ink:var(--w-acc);--c-ink:var(--c-acc);
   /* PRIMARY BUTTON FILL (v8.19, Àlex's call): light ink instead of black, which
      needs a darker fill than the accent to stay legible. Deep enough for white
      text (>=4.5:1) and still >=3:1 against the surface it sits on, per theme.
      The bright accent survives everywhere else — bubbles, chips, charts, tabs. */
-  --btn-h:#96660E;--btn-h2:#7F550B;--btn-w:#47747A;--btn-w2:#3C6266;--btn-ink:#fff;
+  --btn-h:#96660E;--btn-h2:#7F550B;--btn-w:#47747A;--btn-w2:#3C6266;--btn-c:#7767A0;--btn-c2:#655488;--btn-ink:#fff;
   --acc:var(--h-acc);--acc2:var(--h-acc2);--dim:var(--h-dim);--ink:var(--h-ink);
   --blue:#4a9eff;--green:#4ecb71;--red:#ff5555;--purple:#a78bfa;
   --r:14px;--rs:10px;
@@ -68,7 +69,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   --dur-fast:140ms;--dur:200ms;--dur-slow:320ms;
   --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:14px;--sp-xl:16px;
   --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
-  --h-glow:rgba(242,174,62,0.3);--w-glow:rgba(157,192,196,0.3);
+  --h-glow:rgba(242,174,62,0.3);--w-glow:rgba(157,192,196,0.3);--c-glow:rgba(179,160,209,0.3);
 }
 @media(prefers-color-scheme:light){
   :root{
@@ -80,13 +81,14 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
     /* FILLS keep the brand hue (black ink sits on them and passes easily) … */
     --h-acc:#C98A20;--h-acc2:#A06A10;--h-dim:rgba(201,138,32,0.1);
     --w-acc:#5A9AA0;--w-acc2:#3D7A80;--w-dim:rgba(90,154,160,0.1);
+    --c-acc:#7C68A0;--c-acc2:#5F4D80;--c-dim:rgba(124,104,160,0.1);
     /* … INK is darkened for text/icons. Verd Ràpita as text was 2.87:1 (Àlex's
        "too pale" complaint, 36% below AA); these clear 4.5:1 on every surface. */
-    --h-ink:#815409;--w-ink:#3F6569;
+    --h-ink:#815409;--w-ink:#3F6569;--c-ink:#4A3A66;
     /* On a white card the button can go deeper still — more contrast both ways. */
-    --btn-h:#7A4E08;--btn-h2:#653F06;--btn-w:#2F585C;--btn-w2:#24474A;--btn-ink:#fff;
+    --btn-h:#7A4E08;--btn-h2:#653F06;--btn-w:#2F585C;--btn-w2:#24474A;--btn-c:#5F4D80;--btn-c2:#4C3D68;--btn-ink:#fff;
     --blue:#0062c4;--green:#1e7e34;--red:#cc0000;--purple:#5a4cbe;
-    --h-glow:rgba(201,138,32,0.25);--w-glow:rgba(90,154,160,0.25);
+    --h-glow:rgba(201,138,32,0.25);--w-glow:rgba(90,154,160,0.25);--c-glow:rgba(124,104,160,0.25);
   }
   /* (the old .tab-btn.active override lived here; it was dead — a later rule at
      equal specificity won. The base rule now uses --h-ink, which is correct in
@@ -468,6 +470,11 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   transition:transform var(--dur) var(--ease-out), background var(--dur-fast) ease;
 }
 .mode-tabs[data-mode="w"] .mode-underline{ background:var(--w-acc); transform:translateX(100%); }
+.mode-tabs[data-mode="c"] .mode-tab.active{ color:var(--c-ink); }
+/* Mètriques carries three modes; Objectius still carries two, so the thirds are
+   scoped to .three rather than changing the shared 50% default. */
+.mode-tabs.three .mode-underline{ width:33.3333%; }
+.mode-tabs.three[data-mode="c"] .mode-underline{ background:var(--c-acc); transform:translateX(200%); }
 @media(prefers-reduced-motion:reduce){ .mode-underline{ transition:none; } }
 
 /* ─── HIGH CONTRAST (point 2) ─────────────────────────────────────────
@@ -478,8 +485,8 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   --bg:#000000;--bg2:#1a1a1a;--bg3:#262626;--bg4:#333333;--bg5:#404040;
   --border:rgba(255,255,255,0.30);--border2:rgba(255,255,255,0.45);--border3:rgba(255,255,255,0.65);
   --text:#ffffff;--text2:#d8d8d8;--text3:#bdbdbd;
-  --h-acc:#FFC14D;--h-acc2:#FFD37A;--w-acc:#B8DCE0;--w-acc2:#8FBFC5;
-  --h-ink:#FFC14D;--w-ink:#B8DCE0;
+  --h-acc:#FFC14D;--h-acc2:#FFD37A;--w-acc:#B8DCE0;--w-acc2:#8FBFC5;--c-acc:#D3C2EC;--c-acc2:#E4D9F5;
+  --h-ink:#FFC14D;--w-ink:#B8DCE0;--c-ink:#D3C2EC;
   --blue:#7ab8ff;--green:#6be08c;--red:#ff7b7b;--purple:#c4aeff;
 }
 @media(prefers-contrast:more){
@@ -487,8 +494,8 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
     --bg:#000000;--bg2:#1a1a1a;--bg3:#262626;--bg4:#333333;--bg5:#404040;
     --border:rgba(255,255,255,0.30);--border2:rgba(255,255,255,0.45);--border3:rgba(255,255,255,0.65);
     --text:#ffffff;--text2:#d8d8d8;--text3:#bdbdbd;
-    --h-acc:#FFC14D;--h-acc2:#FFD37A;--w-acc:#B8DCE0;--w-acc2:#8FBFC5;
-    --h-ink:#FFC14D;--w-ink:#B8DCE0;
+    --h-acc:#FFC14D;--h-acc2:#FFD37A;--w-acc:#B8DCE0;--w-acc2:#8FBFC5;--c-acc:#D3C2EC;--c-acc2:#E4D9F5;
+    --h-ink:#FFC14D;--w-ink:#B8DCE0;--c-ink:#D3C2EC;
   }
 }
 @media(prefers-color-scheme:light){
@@ -496,7 +503,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
     --bg:#e4e7ee;--bg2:#ffffff;--bg3:#eef0f5;--bg4:#dcdfe7;--bg5:#c9cdd7;
     --border:rgba(0,0,0,0.32);--border2:rgba(0,0,0,0.48);--border3:rgba(0,0,0,0.70);
     --text:#000000;--text2:#33333a;--text3:#3d3d45;
-    --h-ink:#5B3B06;--w-ink:#2C4649;--h-acc2:#5B3B06;--w-acc2:#2C4649;
+    --h-ink:#5B3B06;--w-ink:#2C4649;--c-ink:#33234D;--h-acc2:#5B3B06;--w-acc2:#2C4649;--c-acc2:#33234D;
     --blue:#00429c;--green:#125c25;--red:#a30000;--purple:#3f3199;
   }
   @media(prefers-contrast:more){
@@ -504,7 +511,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
       --bg:#e4e7ee;--bg2:#ffffff;--bg3:#eef0f5;--bg4:#dcdfe7;--bg5:#c9cdd7;
       --border:rgba(0,0,0,0.32);--border2:rgba(0,0,0,0.48);--border3:rgba(0,0,0,0.70);
       --text:#000000;--text2:#33333a;--text3:#3d3d45;
-      --h-ink:#5B3B06;--w-ink:#2C4649;
+      --h-ink:#5B3B06;--w-ink:#2C4649;--c-ink:#33234D;
     }
   }
 }
@@ -524,6 +531,9 @@ body.scroll-locked{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
    through content painted above them. Dropping the filter while any overlay is
    open removes the promotion, and costs nothing — the bar is covered anyway. */
 body.scroll-locked .tab-bar{backdrop-filter:none;-webkit-backdrop-filter:none;}
+/* v8.34: a dimming modal owns the screen — the tab bar must not bleed through
+   its scrim, and must not be draggable into view by an iOS rubber-band. */
+body.modal-dim .tab-bar{opacity:0;visibility:hidden;pointer-events:none;}
 /* v8.23: the 48px tail was pure void — .tab-page already reserves the tab bar
    plus 16px. Cut to 16px so the page ends shortly after its last card. The
    background is load-bearing: it is what hides the colophon parked below the
@@ -2229,9 +2239,10 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- ═══════════ TAB: MÈTRIQUES ═══════════ -->
 <div class="tab-page" id="tabMetriques">
   <h1 class="tab-page-title">Mètriques<span class="tab-page-sub" id="metricsHeroSubTab"></span></h1>
-  <div class="mode-tabs" id="metModeTabs">
+  <div class="mode-tabs three" id="metModeTabs">
     <button class="mode-tab active" data-mode="h" onclick="setSplitMode('met','h')">Força</button>
     <button class="mode-tab" data-mode="w" onclick="setSplitMode('met','w')">WoD</button>
+    <button class="mode-tab" data-mode="c" onclick="setSplitMode('met','c')">Cos</button>
     <span class="mode-underline" id="metModeUnderline"></span>
   </div>
   <div class="bub-row bub-sm" id="metBubbles"></div>
@@ -2816,16 +2827,23 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">El temps</div>
-      <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:12px">
+      <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:4px">
         Mostra la temperatura i una nota d&#39;entrenament a Inici. És l&#39;única funció de PRsonal
-        que envia res fora del teu dispositiu, i només si l&#39;actives:
+        que envia res fora del teu dispositiu, i només si l&#39;actives.
       </div>
-      <ul class="wn-list" style="margin-bottom:14px">
+
+      <div class="xpl" id="xplWx" style="margin-bottom:6px">
+        <button class="xpl-btn" onclick="toggleXpl('xplWx')"><span class="xpl-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align:-0.18em;flex-shrink:0" data-icon="chevron-right"><path d="M9 6l6 6-6 6"/></svg></span>Què s&#39;envia exactament</button>
+        <div class="xpl-body">
+      <ul class="wn-list" style="margin:0">
         <li>Demanem la teva ubicació al navegador i l&#39;<b>arrodonim a ~11 km</b> abans d&#39;enviar-la.</li>
         <li>La consulta va a <b>Open-Meteo</b>, un servei gratuït que no demana cap compte ni clau.</li>
         <li><b>No s&#39;envia cap identificador</b>: ni nom, ni dispositiu, ni res dels teus entrenaments.</li>
         <li>La lectura es guarda <b>només al teu telèfon</b> durant 30 minuts, per no consultar-ho a cada obertura.</li>
       </ul>
+        </div>
+      </div>
+
       <label class="toggle-row">
         <span class="toggle-txt">
           <span class="toggle-t">Mostrar el temps a Inici</span>
@@ -2833,6 +2851,17 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
         </span>
         <input type="checkbox" switch id="wxToggle" onchange="this.checked?wxEnableAndFetch():wxSetEnabled(false)">
       </label>
+    </div>
+
+    <!-- v8.33: the font lab was only reachable from the debug bubble, which Àlex
+         reasonably went looking for in Més instead. A setting lives in settings. -->
+    <div class="card anim-fadeup anim-delay-2">
+      <div class="ctitle">Aparença</div>
+      <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:12px">
+        Prova tipografies diferents. Totes ja són al teu dispositiu: canviar-la no
+        descarrega res ni afecta el funcionament sense connexió.
+      </div>
+      <button class="btn btn-s btn-sm" style="width:100%;justify-content:flex-start;text-align:left" onclick="openFontLab()">Tipografia</button>
     </div>
 
     <div class="card anim-fadeup anim-delay-2">
@@ -2847,13 +2876,13 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <!-- v8.31: where the numbers come from. Users deserve to know which figures
          are measurements, which are estimates, and how far each can be trusted. -->
     <div class="card anim-fadeup anim-delay-2">
-      <div class="ctitle">D'on surten els números</div>
+      <div class="ctitle">D'on surten els números?</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.6;margin:0 0 4px">
         Cada xifra que veus surt d'algun lloc. Aquí tens quin, i fins on t'hi pots refiar.
       </p>
 
       <div class="xpl" id="xplSci1">
-        <button class="xpl-btn" onclick="toggleXpl('xplSci1')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>1RM estimat</button>
+        <button class="xpl-btn" onclick="toggleXpl('xplSci1')"><span class="xpl-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align:-0.18em;flex-shrink:0" data-icon="chevron-right"><path d="M9 6l6 6-6 6"/></svg></span>1RM estimat</button>
         <div class="xpl-body">
           Fem servir l'equació d'<strong>Epley (1985)</strong>: <code>1RM ≈ pes × (1 + reps/30)</code>.
           Amb 1 repetició no estimem res — una sola repetició <em>ja és</em> un màxim.<br><br>
@@ -2866,7 +2895,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
 
       <div class="xpl" id="xplSci2">
-        <button class="xpl-btn" onclick="toggleXpl('xplSci2')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Per què un dia suau no et baixa el 1RM</button>
+        <button class="xpl-btn" onclick="toggleXpl('xplSci2')"><span class="xpl-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align:-0.18em;flex-shrink:0" data-icon="chevron-right"><path d="M9 6l6 6-6 6"/></svg></span>Per què un dia suau no et baixa el 1RM</button>
         <div class="xpl-body">
           Totes aquestes equacions donen per fet que la sèrie va <strong>a prop del fallo</strong>.
           Si et sobraven repeticions, infravaloren sempre: «8 reps» no vol dir el mateix al límit que a mig gas.
@@ -2880,22 +2909,24 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
 
       <div class="xpl" id="xplSci3">
-        <button class="xpl-btn" onclick="toggleXpl('xplSci3')"><span class="xpl-chev">${icSVG('chevron-right',16)}</span>Què és exacte i què és una estimació</button>
+        <button class="xpl-btn" onclick="toggleXpl('xplSci3')"><span class="xpl-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align:-0.18em;flex-shrink:0" data-icon="chevron-right"><path d="M9 6l6 6-6 6"/></svg></span>Què és exacte i què és una estimació</button>
         <div class="xpl-body">
           <strong>Exacte:</strong> el pes que has aixecat de veritat, i els discs del %Calc
           (garantim <code>barra + 2×Σdiscs = total</code>).<br>
           <strong>Estimació:</strong> el 1RM i, per tant, el Wilks, que en depèn.<br>
           <strong>Només orientatiu:</strong> la classificació de força — són múltiples del pes corporal
           triats a mà, no cap norma validada.<br><br>
-          Tens el detall complet, amb les referències, a <code>SCIENCE.md</code> del projecte.
+          Aquí sota tens el document complet, amb totes les fórmules i les referències.
         </div>
       </div>
+
+      <button class="btn btn-s btn-sm" style="width:100%;margin-top:10px;justify-content:flex-start;text-align:left" onclick="openLegal('ciencia')">Llegir el document complet</button>
     </div>
 
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.32<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.34<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3227,6 +3258,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div class="wiz-kicker">Pas 3</div>
       <div class="wiz-q">Quin objectiu?</div>
       <div id="gwCurrent" class="wiz-sum"></div>
+      <div id="gwSuggest" style="display:none;font-size:var(--fs-label);color:var(--text2);line-height:1.5;margin:-2px 0 10px"></div>
       <div class="frow">
         <div><label>Pes (kg)</label><input type="number" id="gwKg" class="fb-field" placeholder="140"></div>
         <div><label>Repeticions</label><input type="number" id="gwReps" class="fb-field" value="1"></div>
@@ -3550,6 +3582,10 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
   background:var(--bg2);border:0.5px solid var(--border);color:var(--text2);
   box-shadow:0 2px 10px rgba(0,0,0,0.14);}
 .dbg-bubble:active{transform:scale(0.92);}
+.legal-body .ltbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:var(--fs-label)}
+.legal-body .ltbl th,.legal-body .ltbl td{text-align:left;padding:7px 8px;border-bottom:0.5px solid var(--border);vertical-align:top}
+.legal-body .ltbl th{color:var(--text3);font-weight:800;font-size:var(--fs-caption)}
+.legal-body .ltbl tr:last-child td{border-bottom:none}
 .fb-field{width:100%;box-sizing:border-box;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;color:var(--text);resize:vertical;}
 </style>
 <div class="dbg-bubble pressable" id="dbgBubble" onclick="openDbgMenu()" title="Enviar comentari o error" aria-label="Enviar comentari o error">
@@ -3579,6 +3615,93 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       <div style="font-size:13px;color:var(--text3);margin-top:2px">0123456789 · AMRAP 12 · 21-15-9</div>
     </div>
     <button class="btn btn-s" style="width:100%;margin-top:14px" onclick="closeFontLab()">Tancar</button>
+  </div>
+</div>
+
+
+<!-- ═══════════ COS / BODY COMPOSITION (v8.33) ═══════════
+     Only `pes` is required. Everything else is optional and stays blank rather
+     than defaulting to 0 — a missing measurement must never be plotted as zero. -->
+<div class="sheet" id="bodySheet">
+  <div class="sheet-in" style="max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div class="stitle" id="bodySheetTitle">Nova mesura</div>
+    <div class="ssub" style="margin:6px 0 14px;line-height:1.5">
+      Només el <b>pes</b> és obligatori. La resta, si te la vols prendre.
+    </div>
+
+    <div class="frow">
+      <div class="fg"><label>Data</label><input type="date" id="bfDate"></div>
+      <div class="fg"><label>Pes (kg) <span style="color:var(--red)">*</span></label><input type="number" step="0.1" inputmode="decimal" id="bfW" placeholder="78,4"></div>
+    </div>
+
+    <div class="bsec">Composició <span class="bsec-opt">opcional</span></div>
+    <div class="frow">
+      <div class="fg"><label>% greix (MG)</label><input type="number" step="0.1" inputmode="decimal" id="bfBf" placeholder="%"></div>
+      <div class="fg"><label>% múscul (MM)</label><input type="number" step="0.1" inputmode="decimal" id="bfMm" placeholder="%"></div>
+    </div>
+    <div class="bhint">Si fas servir una bàscula d&#39;impedància, mesura sempre en les mateixes
+      condicions (mateixa hora, en dejú, abans d&#39;entrenar). El valor absolut no és fiable; la <b>tendència</b> sí.</div>
+
+    <div class="bsec">Perímetres (cm) <span class="bsec-opt">opcional</span></div>
+    <div class="frow">
+      <div class="fg"><label>Braç</label><input type="number" step="0.1" inputmode="decimal" id="bfArm" placeholder="cm"></div>
+      <div class="fg"><label>Cintura</label><input type="number" step="0.1" inputmode="decimal" id="bfWaist" placeholder="cm"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Maluc</label><input type="number" step="0.1" inputmode="decimal" id="bfHip" placeholder="cm"></div>
+      <div class="fg"><label>Cama</label><input type="number" step="0.1" inputmode="decimal" id="bfThigh" placeholder="cm"></div>
+    </div>
+    <div class="bhint">Protocol ISAK: cinta ajustada sense comprimir i paral·lela al terra.
+      <b>Cintura</b> a la part més estreta entre l&#39;última costella i el maluc, al final d&#39;una espiració normal.
+      <b>Maluc</b> a la part més ampla del gluti. <b>Braç</b> relaxat, al punt mig. <b>Cama</b> sota el plec del gluti.</div>
+
+    <div id="bodyErr" style="display:none;color:var(--red);font-size:var(--fs-label);margin-top:10px"></div>
+
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-s" style="flex:1" onclick="closeBodySheet()">Cancel·lar</button>
+      <button class="btn btn-p btn-c" style="flex:1" onclick="saveBodyEntry()">Desar</button>
+    </div>
+    <button class="btn btn-s" id="bodyDelBtn" style="width:100%;margin-top:8px;color:var(--red);display:none" onclick="delBodyEntry()">Eliminar aquesta mesura</button>
+  </div>
+</div>
+
+<style>
+.bsec{font-size:var(--fs-label);font-weight:800;color:var(--text);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+.bsec-opt{font-weight:600;color:var(--text3);font-size:var(--fs-caption)}
+.brow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bhint{font-size:var(--fs-caption);color:var(--text3);line-height:1.5;margin-top:8px}
+.btn-c{background:var(--btn-c);color:var(--btn-ink);border-color:transparent}
+.btn-c:active{background:var(--btn-c2)}
+.cos-warn{background:var(--c-dim);border:0.5px solid var(--c-acc);border-radius:var(--rs);padding:11px 13px;
+  font-size:var(--fs-label);color:var(--text2);line-height:1.5;margin-bottom:14px}
+.btbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
+.btbl{border-collapse:collapse;font-size:var(--fs-label);min-width:100%}
+.btbl th,.btbl td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:0.5px solid var(--border)}
+.btbl th:first-child,.btbl td:first-child{text-align:left;position:sticky;left:0;background:var(--bg2);
+  font-weight:700;color:var(--text2);z-index:1}
+.btbl thead th{color:var(--c-ink);font-weight:800;font-size:var(--fs-caption)}
+.btbl tbody tr:last-child td{border-bottom:none}
+.bchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.bchip{padding:6px 11px;border-radius:var(--r-pill);border:0.5px solid var(--border);background:var(--bg3);
+  font-size:var(--fs-caption);font-weight:700;color:var(--text2);cursor:pointer}
+.bchip.on{background:var(--c-dim);border-color:var(--c-acc);color:var(--c-ink)}
+.bkpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bkpi-c{background:var(--bg3);border-radius:var(--rs);padding:11px 12px}
+.bkpi-l{font-size:var(--fs-caption);color:var(--text3);font-weight:700}
+.bkpi-v{font-size:var(--fs-headline);font-weight:800;color:var(--text);margin-top:3px}
+.bkpi-s{font-size:var(--fs-caption);color:var(--text3);margin-top:2px;line-height:1.4}
+</style>
+
+
+<!-- Goal celebration (v8.34). .wiz so it inherits the scroll lock and the
+     tab-bar hide, like every other dimming modal. -->
+<div class="wiz" id="goalCelebOv">
+  <div class="wiz-card" style="text-align:center">
+    <div style="font-size:44px;line-height:1;margin-bottom:6px">🏆</div>
+    <div class="stitle" style="margin-bottom:2px">Objectiu assolit</div>
+    <div id="goalCelebWhat" style="font-size:var(--fs-title);font-weight:800;color:var(--h-ink);margin:8px 0 2px"></div>
+    <div id="goalCelebDetail" style="font-size:var(--fs-body-sm);color:var(--text2);margin-bottom:18px"></div>
+    <button class="btn btn-p" style="width:100%" onclick="closeGoalCeleb()">Molt bé</button>
   </div>
 </div>
 
@@ -3669,7 +3792,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.32</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.34</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -4222,6 +4345,7 @@ function defaultData(){
     templates:[...DEF_TPL.map(t=>({...t}))],goals:[],tplRemoved:[],seenHints:[],
     // dob, not age: an age typed once is wrong within a year. Everything that
     // needs a number derives it from the date (ageFromDob).
+    bEnt:[],
     profile:{name:'',sex:'male',dob:'',weightKg:0,heightCm:0,setupDone:false,weather:{enabled:false,asked:false}}};
 }
 function migrate(parsed){
@@ -4237,13 +4361,19 @@ function migrate(parsed){
     benchmarks:Array.isArray(parsed.benchmarks)?parsed.benchmarks:d.benchmarks,
     benchEnt:Array.isArray(parsed.benchEnt)?parsed.benchEnt:[],
     calcPcts:Array.isArray(parsed.calcPcts)?parsed.calcPcts:[...ALL_PCTS],
+    // v8.33 body composition. migrate() REBUILDS the object, so a key missing
+    // from `out` is deleted on the next load — this line is what keeps it.
+    bEnt:Array.isArray(parsed.bEnt)?parsed.bEnt:[],
     // These four were absent from `out`, so current-schema (v3) data lost its
     // templates, goals, profile and dismissed hints on EVERY load: the v2/v3
     // branches below only run for older data, and the `!out.profile` guard then
     // rebuilt a blank profile. Carry them through; the branches still override
     // for genuinely old schemas.
     templates:Array.isArray(parsed.templates)?parsed.templates:[],
-    goals:Array.isArray(parsed.goals)?parsed.goals:[],
+    // v8.34: goals finished before the celebration existed count as already
+    // acknowledged — otherwise upgrading lights up a badge for old history.
+    goals:(Array.isArray(parsed.goals)?parsed.goals:[]).map(g=>
+      (g && g.done && g.ack===undefined) ? {...g, ack:true} : g),
     seenHints:Array.isArray(parsed.seenHints)?parsed.seenHints:[],
     profile:(parsed.profile&&typeof parsed.profile==='object')?{...d.profile,...parsed.profile}:null,
     // v8.3: ids of built-in templates the user deleted, so the additive DEF_TPL
@@ -4392,7 +4522,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.32';
+const APP_VERSION='8.34';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -4785,7 +4915,17 @@ function anyModalOpen(){
   for(let i=0;i<els.length;i++) if(modalIsOpen(els[i])) return true;
   return false;
 }
+// Modals that DIM the page. The tab bar is only 28% hidden behind a 0.72 scrim,
+// which reads as a grey band across the bottom of every wizard, and on iOS the
+// rubber-band drags it further into view. Hide it outright while one is open.
+const DIM_SEL = '.sheet, .wiz, #prOv';
+function anyDimModalOpen(){
+  const els = document.querySelectorAll(DIM_SEL);
+  for(let i=0;i<els.length;i++) if(modalIsOpen(els[i])) return true;
+  return false;
+}
 function syncScrollLock(){
+  document.body.classList.toggle('modal-dim', anyDimModalOpen());
   const want = anyModalOpen();
   if(want === scrollLocked) return;
   const b = document.body;
@@ -5133,9 +5273,13 @@ function switchTab(tab) {
   setTimeout(() => {
     if (tab === 'inici') maybeHint(document.querySelector('#tabInici .inici-body'), 'inici');
     else if (tab === 'objectius') maybeHint(document.getElementById('tabObjectiusBody'), 'objectius');
-    else if (tab === 'metriques') maybeHint(document.getElementById('tabMetriquesBody'), 'metriques');
+    // The hint lands AFTER applyMetOcclusion has run, so re-apply the rule that
+    // keeps this Wilks-specific banner off the Cos tab.
+    else if (tab === 'metriques') { maybeHint(document.getElementById('tabMetriquesBody'), 'metriques'); applyMetOcclusion(); }
     else if (tab === 'ajustaments') maybeHint(document.getElementById('ajTabContent'), 'ajustaments');
     else if (tab === 'entrenar') maybeHint(document.getElementById(activeMode==='w'?('w-'+activeWSub):('h-'+activeHSub)), (activeMode==='w'?'w_'+activeWSub:'h_'+activeHSub));
+    // Catches a goal that completed while a modal was still open.
+    maybeCelebrateGoals();
   }, 60);
   
   // Scroll to top
@@ -7710,14 +7854,53 @@ function gwRenderExs(){
   }).join('');
 }
 function gwSetEx(id){ gwS.exId=id; gwS.i=2; gwShow(); }
+// ── Suggested target ──────────────────────────────────────────────────────
+// With a record: 5% above it. Without one: place the athlete using the lifts
+// they HAVE logged — their average standing against the intermediate multiplier
+// carries across to the new lift. Falls back to a bodyweight multiple.
+// Orientation only; SS_STANDARDS is hand-authored (see SCIENCE.md §4).
+const round2h=v=>Math.max(2.5, Math.round(v/2.5)*2.5);
+function suggestGoalKg(exId){
+  const rm=best1RM(exId);
+  if(rm) return {kg:round2h(rm*1.05), why:'un 5% per sobre del teu millor actual'};
+  const prof=D.profile||{}, bw=+prof.weightKg||0;
+  const std=SS_STANDARDS[exId];
+  if(!bw || !std) return null;
+  const key=(prof.sex==='female')?'f':'m';
+  const ratios=[];
+  Object.keys(SS_STANDARDS).forEach(id=>{
+    if(id===exId) return;
+    const r=best1RM(id); if(!r) return;
+    const m=SS_STANDARDS[id][key][2];          // the Intermedi multiplier
+    if(m>0) ratios.push(r/(bw*m));
+  });
+  if(ratios.length){
+    const avg=ratios.reduce((a,b)=>a+b,0)/ratios.length;
+    return {kg:round2h(bw*std[key][2]*avg),
+            why:'estimat a partir de les teves altres marques i el teu pes'};
+  }
+  return {kg:round2h(bw*std[key][1]),
+          why:'punt de partida orientatiu segons el teu pes corporal'};
+}
 function gwRenderCurrent(){
   const ex=D.hEx.find(e=>e.id===gwS.exId);
   const rm=best1RM(gwS.exId);
   document.getElementById('gwCurrent').innerHTML='<b>'+(ex?ex.name:'')+'</b> — '
     +(rm?('ara mateix el teu millor és <b>'+rm.toFixed(1)+' kg</b>'):'encara no hi tens cap marca');
-  if(rm && !document.getElementById('gwKg').value)
-    document.getElementById('gwKg').placeholder=Math.ceil(rm*1.05);
+  const sug=suggestGoalKg(gwS.exId);
+  const host=document.getElementById('gwSuggest');
+  if(host){
+    // The button was inline and wrapped mid-sentence; it gets its own row.
+    host.innerHTML = sug
+      ? '<div>Suggeriment: <b>'+fmtKg(sug.kg)+' kg</b> <span style="color:var(--text3)">— '+sug.why+'</span></div>'
+        +'<button class="ghost btn-sm" style="margin-top:7px;padding:5px 12px" onclick="gwUseSuggestion('+sug.kg+')">Fer servir</button>'
+      : '';
+    host.style.display = sug?'':'none';
+  }
+  const kgEl=document.getElementById('gwKg');
+  if(sug && !kgEl.value) kgEl.placeholder=fmtKg(sug.kg);
 }
+function gwUseSuggestion(kg){ const el=document.getElementById('gwKg'); if(el) el.value=kg; }
 function gwRenderWodNames(){
   const sel=document.getElementById('gwWodName');
   const names=[...new Set([...(D.templates||[]).filter(t=>t.wodBlock).map(t=>t.name),
@@ -7727,6 +7910,7 @@ function gwRenderWodNames(){
 function gwNext(){
   const flow=GW_FLOW[gwS.kind], name=flow[gwS.i];
   if(name==='target'){
+    if(!gwS.exId){ toast('Tria un exercici','error'); gwS.i=1; gwShow(); return; }
     const kg=+document.getElementById('gwKg').value||0;
     if(kg<=0){ toast('Posa un pes objectiu','error'); return; }
     const reps=+document.getElementById('gwReps').value||1;
@@ -7749,6 +7933,11 @@ function gwNext(){
     gwDone();
     return;
   }
+  // v8.34: these two steps had NO validation — tapping "Continua" without
+  // choosing anything walked straight past them and saved a goal with exId null,
+  // which then rendered as "—" and could never complete.
+  if(name==='fam' && !gwS.fam){ toast('Tria una família','error'); return; }
+  if(name==='ex'  && !gwS.exId){ toast('Tria un exercici','error'); return; }
   gwS.i++; gwShow();
 }
 function gwDone(){
@@ -7833,9 +8022,11 @@ const MET_BUBS = {
   // Rècords, which lists unlogged exercises too and still opens showDetail()
   // (the quick-log and goal-creation route). Editing exercises lives in Més.
   h:[{sec:'pr',label:'Rècords',ico:'trophy'},{sec:'prog',label:'Progrés',ico:'bar-chart-2'}],
-  w:[{sec:'bench',label:'Benchmarks',ico:'flame'},{sec:'stats',label:'Rècords',ico:'trophy'},{sec:'exs',label:'Exercicis',ico:'zap'}]
+  w:[{sec:'bench',label:'Benchmarks',ico:'flame'},{sec:'stats',label:'Rècords',ico:'trophy'},{sec:'exs',label:'Exercicis',ico:'zap'}],
+  // Cos has no sub-sections yet — one screen is the whole feature for now.
+  c:[]
 };
-const metSec = { h:null, w:null };
+const metSec = { h:null, w:null, c:null };
 function renderMetBubbles(){
   const mode=splitMode.met;
   const host=document.getElementById('metBubbles');
@@ -7860,6 +8051,12 @@ function applyMetOcclusion(){
   // default cards are hidden while a section is open
   if(mc) mc.style.display=(!showSec && mode==='h')?'':'none';
   if(wodHost) wodHost.style.display=(!showSec && mode==='w')?'':'none';
+  const cosHost=document.getElementById('metCosHost');
+  if(cosHost) cosHost.style.display=(!showSec && mode==='c')?'':'none';
+  // The Mètriques hint is injected at tab level and talks about Wilks, which is
+  // a Força concept — it has no business sitting above the body-composition view.
+  const metHint=document.querySelector('#tabMetriquesBody .hint-banner[data-k="metriques"]');
+  if(metHint) metHint.style.display=(mode==='c')?'none':'';
   if(showSec){
     setModePill(mode);                       // swaps entrH / entrW
     if(mode==='h') showHSub(sec,null); else showWSub(sec,null);
@@ -8012,18 +8209,247 @@ function renderMetriquesTab() {
     wodHost.id = 'metWodHost';
     body.appendChild(wodHost);
   }
+  let cosHost = document.getElementById('metCosHost');
+  if (body && !cosHost) {
+    cosHost = document.createElement('div');
+    cosHost.id = 'metCosHost';
+    body.appendChild(cosHost);
+  }
   if (body && mc && !body.contains(mc)) body.insertBefore(mc, wodHost);
   const showWodM = splitMode.met === 'w';
+  const showCos  = splitMode.met === 'c';
   renderMetBubbles();
   if (showWodM) renderWodMetrics(wodHost);
+  if (showCos)  renderCosTab(cosHost);
   if (metSec[splitMode.met]) { applyMetOcclusion(); return; }   // a section is open
   applyMetOcclusion();
-  if (showWodM) return;
+  if (showWodM || showCos) return;
   if (typeof renderMetricsOverlay === 'function') renderMetricsOverlay();
   restoreXpl();
   if (window.lucide) lucide.createIcons();
   // The tab path never animated its strength/Wilks bars — only the overlay did.
   setTimeout(animateStrengthBars, 80);
+}
+
+
+// ══════════════════════════════════════════
+// COS — BODY COMPOSITION (v8.33, early development)
+// ──────────────────────────────────────────
+// Deliberately conservative. Everything here is either a number the user typed
+// or a ratio of two numbers the user typed; nothing is modelled or predicted.
+// The literature is unambiguous that consumer impedance scales are unreliable
+// for an ABSOLUTE body-fat figure while still being useful for a TREND measured
+// under constant conditions, so the UI leans on direction of travel, never on
+// "your body fat is X". See SCIENCE.md §8.
+// ══════════════════════════════════════════
+const cosAcc=()=>isHighContrast()?(isLightTheme()?'#33234D':'#D3C2EC'):(isLightTheme()?'#7C68A0':'#B3A0D1');
+const cosRGBA=a=>{const c=cosAcc();const n=parseInt(c.slice(1),16);
+  return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';};
+
+// field id -> {label, unit, key}. Order drives BOTH the table rows and the chips.
+const BODY_FIELDS=[
+  {k:'w',    label:'Pes',      unit:'kg'},
+  {k:'bf',   label:'% greix',  unit:'%'},
+  {k:'mm',   label:'% múscul', unit:'%'},
+  {k:'arm',  label:'Braç',     unit:'cm'},
+  {k:'waist',label:'Cintura',  unit:'cm'},
+  {k:'hip',  label:'Maluc',    unit:'cm'},
+  {k:'thigh',label:'Cama',     unit:'cm'},
+];
+let bodyEditId=null;         // null = creating
+let cosMetric='w';           // which series the chart draws
+
+// Newest LAST, so charts read left-to-right in time like every other chart here.
+function bodyEntries(){ return (D.bEnt||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')); }
+function bodyLatest(){ const e=bodyEntries(); return e.length?e[e.length-1]:null; }
+
+// ── Derived figures ───────────────────────────────────────────────────────
+// Each returns null when an input is missing. A missing measurement must never
+// become a zero: zero waist would plot as a spectacular improvement.
+function heightM(){ const h=+((D.profile||{}).heightCm||0); return h>0?h/100:null; }
+function whtr(ent){ const h=(D.profile||{}).heightCm; if(!h||!ent||ent.waist==null) return null; return ent.waist/h; }
+function whr(ent){ if(!ent||ent.waist==null||ent.hip==null||!ent.hip) return null; return ent.waist/ent.hip; }
+function ffm(ent){ if(!ent||ent.w==null||ent.bf==null) return null; return ent.w*(1-ent.bf/100); }
+function ffmi(ent){ const f=ffm(ent), h=heightM(); if(f==null||!h) return null; return f/(h*h); }
+
+// NICE NG246 bands for waist-to-height ratio. These are the published cut-offs,
+// not our invention; the copy says so wherever the band is shown.
+function whtrBand(v){
+  if(v==null) return null;
+  if(v<0.4)  return {label:'Per sota del rang de referència', tone:'var(--text3)'};
+  if(v<0.5)  return {label:'Rang saludable (0,4–0,49)',       tone:'var(--green)'};
+  if(v<0.6)  return {label:'Adipositat central augmentada',   tone:'var(--h-ink)'};
+  return          {label:'Adipositat central alta',           tone:'var(--red)'};
+}
+const bnum=v=>(v==null||v===''||isNaN(+v))?null:+v;
+const bfmt=(v,d)=>v==null?'—':(+v).toFixed(d==null?1:d).replace('.',',');
+
+// ── Entry sheet ───────────────────────────────────────────────────────────
+function openBodySheet(id){
+  bodyEditId = id==null?null:id;
+  const e = id==null?null:(D.bEnt||[]).find(x=>String(x.id)===String(id));
+  document.getElementById('bodySheetTitle').textContent = e?'Editar mesura':'Nova mesura';
+  document.getElementById('bfDate').value = e?e.date:localToday();
+  const map={bfW:'w',bfBf:'bf',bfMm:'mm',bfArm:'arm',bfWaist:'waist',bfHip:'hip',bfThigh:'thigh'};
+  Object.entries(map).forEach(([el,k])=>{
+    const n=document.getElementById(el); if(n) n.value = (e && e[k]!=null)?e[k]:'';
+  });
+  document.getElementById('bodyErr').style.display='none';
+  document.getElementById('bodyDelBtn').style.display = e?'':'none';
+  document.getElementById('bodySheet').classList.add('on');
+}
+function closeBodySheet(){ animClose(document.getElementById('bodySheet')); }
+
+function saveBodyEntry(){
+  const err=document.getElementById('bodyErr');
+  const date=document.getElementById('bfDate').value;
+  const w=bnum(document.getElementById('bfW').value);
+  const fail=m=>{ err.textContent=m; err.style.display=''; return false; };
+  if(!date)        return fail('Falta la data.');
+  if(w==null)      return fail('El pes és obligatori.');
+  if(w<=0||w>400)  return fail('El pes ha de ser un valor real en kg.');
+  const rec={
+    id: bodyEditId!=null?bodyEditId:Date.now(),
+    date, w,
+    bf:bnum(document.getElementById('bfBf').value),
+    mm:bnum(document.getElementById('bfMm').value),
+    arm:bnum(document.getElementById('bfArm').value),
+    waist:bnum(document.getElementById('bfWaist').value),
+    hip:bnum(document.getElementById('bfHip').value),
+    thigh:bnum(document.getElementById('bfThigh').value),
+  };
+  for(const k of ['bf','mm']) if(rec[k]!=null && (rec[k]<0||rec[k]>100)) return fail('Els percentatges han d\'anar de 0 a 100.');
+  for(const k of ['arm','waist','hip','thigh']) if(rec[k]!=null && (rec[k]<=0||rec[k]>250)) return fail('Els perímetres han de ser en cm.');
+
+  D.bEnt = D.bEnt||[];
+  const i = D.bEnt.findIndex(x=>String(x.id)===String(rec.id));
+  if(i>=0) D.bEnt[i]=rec; else D.bEnt.push(rec);
+
+  // The profile already carries a bodyweight (Wilks reads it). Two sources of
+  // truth for the same number is how they drift apart, so the newest measure
+  // wins — but only when it IS the newest, or editing an old row would silently
+  // rewrite today's weight.
+  const last=bodyLatest();
+  if(last && String(last.id)===String(rec.id)){ D.profile=D.profile||{}; D.profile.weightKg=rec.w; }
+
+  save();
+  closeBodySheet();
+  renderMetriquesTab();
+  toast(i>=0?'Mesura actualitzada':'Mesura desada');
+}
+function delBodyEntry(){
+  if(bodyEditId==null) return;
+  D.bEnt=(D.bEnt||[]).filter(x=>String(x.id)!==String(bodyEditId));
+  // Keep the profile weight consistent with whatever is now the newest row.
+  const last=bodyLatest(); if(last){ D.profile=D.profile||{}; D.profile.weightKg=last.w; }
+  save(); closeBodySheet(); renderMetriquesTab(); toast('Mesura eliminada');
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function renderCosTab(host){
+  if(!host) return;
+  const ents=bodyEntries();
+  const last=bodyLatest();
+  const prev=ents.length>1?ents[ents.length-2]:null;
+
+  let h='';
+  h+='<div class="cos-warn"><b>Secció en desenvolupament inicial.</b> Ara mateix registra i '
+   + 'representa les teves mesures, res més. Relacionar-les amb la força i el rendiment '
+   + 'arribarà més endavant, quan hi hagi prou historial per fer-ho amb sentit.</div>';
+
+  h+='<div class="card"><button class="btn btn-p btn-c" style="width:100%" onclick="openBodySheet()">'
+   + icSVG('plus',18)+' Nova mesura</button></div>';
+
+  if(!ents.length){
+    h+='<div class="card" style="text-align:center;padding:26px 18px">'
+     + '<div style="font-size:var(--fs-headline);font-weight:800;margin-bottom:6px">Cap mesura encara</div>'
+     + '<div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55">'
+     + 'Comença pel pes. Els perímetres i els percentatges els pots afegir quan vulguis — '
+     + 'val més una mesura senzilla i constant que una de completa i esporàdica.</div></div>';
+    host.innerHTML=h; renderIcons(host); return;
+  }
+
+  // ── KPI cards: latest value + delta against the previous measurement.
+  const dW = (last&&prev&&last.w!=null&&prev.w!=null)?(last.w-prev.w):null;
+  const wr = whtr(last), band=whtrBand(wr), fi=ffmi(last), hr=whr(last), fm=ffm(last);
+  h+='<div class="card"><div class="ctitle">Última mesura</div>'
+   + '<div style="font-size:var(--fs-caption);color:var(--text3);margin:-4px 0 12px">'+fmt(last.date)+'</div>'
+   + '<div class="bkpi">';
+  h+='<div class="bkpi-c"><div class="bkpi-l">PES</div><div class="bkpi-v">'+bfmt(last.w)+' kg</div>'
+   + '<div class="bkpi-s">'+(dW==null?'primera mesura':(dW>0?'+':'')+bfmt(dW)+' kg des de l\'anterior')+'</div></div>';
+  h+='<div class="bkpi-c"><div class="bkpi-l">MASSA MAGRA</div><div class="bkpi-v">'+(fm==null?'—':bfmt(fm)+' kg')+'</div>'
+   + '<div class="bkpi-s">'+(fm==null?'cal el % de greix':'pes × (1 − %MG)')+'</div></div>';
+  h+='</div>';
+  if(wr!=null||fi!=null||hr!=null){
+    h+='<div class="bkpi" style="margin-top:10px">';
+    if(wr!=null) h+='<div class="bkpi-c"><div class="bkpi-l">CINTURA / ALÇADA</div><div class="bkpi-v">'+bfmt(wr,2)+'</div>'
+      + '<div class="bkpi-s" style="color:'+band.tone+'">'+band.label+'</div></div>';
+    if(hr!=null) h+='<div class="bkpi-c"><div class="bkpi-l">CINTURA / MALUC</div><div class="bkpi-v">'+bfmt(hr,2)+'</div>'
+      + '<div class="bkpi-s">índex de distribució</div></div>';
+    if(fi!=null) h+='<div class="bkpi-c"><div class="bkpi-l">FFMI</div><div class="bkpi-v">'+bfmt(fi)+'</div>'
+      + '<div class="bkpi-s">massa magra / alçada²</div></div>';
+    h+='</div>';
+  }
+  if(wr!=null) h+='<div class="bhint">La franja cintura/alçada segueix la guia <b>NICE NG246</b>: '
+    + 'per sota de 0,5 es considera rang saludable. És un indicador de cribratge, no un diagnòstic.</div>';
+  if(!heightM()) h+='<div class="bhint">Afegeix la teva <b>alçada</b> a Més → Perfil i podrem calcular '
+    + 'la relació cintura/alçada i el FFMI.</div>';
+  h+='</div>';
+
+  // ── Table: one column per measurement date, newest first (left-most).
+  const cols=ents.slice().reverse();
+  h+='<div class="card"><div class="ctitle">Totes les mesures</div>'
+   + '<div style="font-size:var(--fs-caption);color:var(--text3);margin:-4px 0 12px">'
+   + 'Toca una data per editar-la o eliminar-la. Llisca de costat per veure\'n més.</div>'
+   + '<div class="btbl-wrap"><table class="btbl"><thead><tr><th></th>';
+  cols.forEach(e=>{ h+='<th style="cursor:pointer" onclick="openBodySheet(\''+e.id+'\')">'+fmtS(e.date)+'</th>'; });
+  h+='</tr></thead><tbody>';
+  BODY_FIELDS.forEach(f=>{
+    if(!cols.some(e=>e[f.k]!=null)) return;          // hide rows never filled in
+    h+='<tr><td>'+f.label+'</td>';
+    cols.forEach(e=>{ h+='<td>'+(e[f.k]==null?'—':bfmt(e[f.k])+' '+f.unit)+'</td>'; });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+
+  // ── Chart
+  h+='<div class="card"><div class="ctitle">Progressió</div><div class="bchips" id="cosChips"></div>'
+   + '<div style="height:220px;position:relative"><canvas id="cosChart"></canvas></div></div>';
+
+  host.innerHTML=h;
+  renderIcons(host);
+  renderCosChips();
+  drawCosChart();
+}
+
+function renderCosChips(){
+  const host=document.getElementById('cosChips'); if(!host) return;
+  const ents=bodyEntries();
+  const avail=BODY_FIELDS.filter(f=>ents.some(e=>e[f.k]!=null));
+  if(!avail.some(f=>f.k===cosMetric)) cosMetric = avail.length?avail[0].k:'w';
+  host.innerHTML=avail.map(f=>'<button class="bchip'+(f.k===cosMetric?' on':'')
+    +'" onclick="setCosMetric(\''+f.k+'\')">'+f.label+'</button>').join('');
+}
+function setCosMetric(k){ cosMetric=k; renderCosChips(); drawCosChart(); }
+
+let cosCI=null;
+function drawCosChart(){
+  const el=document.getElementById('cosChart'); if(!el||typeof Chart==='undefined') return;
+  if(cosCI){ cosCI.destroy(); cosCI=null; }
+  const f=BODY_FIELDS.find(x=>x.k===cosMetric)||BODY_FIELDS[0];
+  // spanGaps joins across dates where this particular field was left blank,
+  // instead of dropping the line to the axis.
+  const ents=bodyEntries().filter(e=>e[f.k]!=null);
+  if(!ents.length) return;
+  cosCI=new Chart(el,{type:'line',
+    data:{labels:ents.map(e=>fmtS(e.date)),
+      datasets:[{label:f.label,data:ents.map(e=>e[f.k]),
+        borderColor:cosAcc(),backgroundColor:cosRGBA(0.07),pointBackgroundColor:cosAcc(),
+        tension:0.3,fill:true,pointRadius:4,spanGaps:true}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' '+f.unit}}},
+      scales:{x:{ticks:{color:chartInk(),maxRotation:45,autoSkip:true,maxTicksLimit:8},grid:{color:'rgba(128,128,128,0.07)'}},
+              y:{ticks:{color:chartInk()},grid:{color:'rgba(128,128,128,0.07)'}}}}});
 }
 
 // ── AJUSTAMENTS TAB ────────────────────────────────────────────
@@ -8080,12 +8506,48 @@ function renderAjGreeting() {
 // ── SWIPE: Keep Haltero/WoD swipe within Entrenar tab only ────
 
 
+function unackedGoals(){ return (D.goals||[]).filter(g=>g.done && !g.ack); }
 function updateGoalsBadge(){
   const badge=document.getElementById('tabBadgeObj');
   if(!badge) return;
-  const active=(D.goals||[]).filter(g=>!g.done).length;
-  badge.textContent=active;
-  badge.style.display=active>0?'block':'none';
+  // v8.34: was `!g.done` — the count of goals still OUTSTANDING, so the badge lit
+  // up the instant you created one and survived deleting it (nothing refreshed
+  // it on delete). A badge is an unacknowledged achievement, nothing else.
+  const n=unackedGoals().length;
+  badge.textContent=n;
+  badge.style.display=n>0?'block':'none';
+}
+// ── Goal celebration ──────────────────────────────────────────────────────
+// refreshGoalCompletion() has returned the goals that flipped since v8.3, with a
+// comment saying "so the UI can celebrate them". Nothing ever read the return
+// value, so no congratulation was ever shown. This is that missing half.
+let goalCelebQueue=[];
+function maybeCelebrateGoals(){
+  if(document.getElementById('goalCelebOv').classList.contains('on')) return;
+  if(anyModalOpen()) return;               // never stack on top of another modal
+  const pend=unackedGoals();
+  if(!pend.length) return;
+  goalCelebQueue=pend.slice();
+  showGoalCeleb(goalCelebQueue[0]);
+}
+function showGoalCeleb(g){
+  const ex=D.hEx.find(e=>e.id===g.exId);
+  let what='', detail='';
+  if(g.kind==='wodFreq'){ what='Constància'; detail=g.targetCount+' sessions '+(g.per==='week'?'a la setmana':'al mes'); }
+  else if(g.kind==='wodTime'){ what=g.wodName||'WoD'; detail='per sota de '+fmtSecs(g.targetSec); }
+  else { what=ex?ex.name:'Objectiu'; detail=fmtKg(g.targetKg)+' kg'+(g.targetReps>1?(' × '+g.targetReps):''); }
+  document.getElementById('goalCelebWhat').textContent=what;
+  document.getElementById('goalCelebDetail').textContent=detail;
+  document.getElementById('goalCelebOv').classList.add('on');
+}
+function closeGoalCeleb(){
+  const g=goalCelebQueue.shift();
+  if(g){ g.ack=true; save(); }
+  updateGoalsBadge();
+  const ov=document.getElementById('goalCelebOv');
+  if(goalCelebQueue.length){ showGoalCeleb(goalCelebQueue[0]); return; }
+  animClose(ov);
+  if(typeof renderObjectiusTab==='function' && activeTab==='objectius') renderObjectiusTab();
 }
 document.addEventListener('DOMContentLoaded',()=>{
   renderIcons(document);
@@ -10074,7 +10536,7 @@ function deleteGoalById(id){
   if(!D.goals) return false;
   const n=D.goals.length;
   D.goals=D.goals.filter(g=>g.id!==id);
-  if(D.goals.length!==n){ save(); return true; }
+  if(D.goals.length!==n){ save(); updateGoalsBadge(); return true; }
   return false;
 }
 
@@ -10132,14 +10594,14 @@ function refreshGoalCompletion(){
   const done=[];
   (D.goals||[]).forEach(g=>{
     if(g.done) return;
-    if(goalProgress(g)>=100){ g.done=true; g.doneAt=localToday(); done.push(g); }
+    if(goalProgress(g)>=100){ g.done=true; g.doneAt=localToday(); g.ack=false; done.push(g); }
   });
-  if(done.length) save();
+  if(done.length){ save(); updateGoalsBadge(); setTimeout(maybeCelebrateGoals,500); }
   return done;
 }
 function deleteGoal(exId) {
   D.goals = (D.goals || []).filter(g => g.exId !== exId);
-  save();
+  save(); updateGoalsBadge();
 }
 
 
@@ -10426,7 +10888,7 @@ function saveSetup(skip) {
 // ══════════════════════════════════════════
 // LEGAL / PRIVACY — documents, acceptance, in-app screens
 // ══════════════════════════════════════════
-const LEGAL_VERSION = '1.2';   // v8.29: 3.A inventory completed (date of birth, RPE, known maxes, complexes)
+const LEGAL_VERSION = '1.3';   // v8.33: body-composition data declared in 3.A (art. 9 special category)
 const LEGAL_HOLDER = 'Àlex Alemany Muñoz';
 const LEGAL_EMAIL  = 'alexalemanymunoz@gmail.com';
 
@@ -10588,8 +11050,145 @@ async function sendFeedback() {
 }
 
 const LEGAL_DOCS = {
+  // Not a legal document, but the same viewer: a full-screen scrollable page
+  // with a Tornar navbar is exactly what this needed. Mirrors SCIENCE.md.
+  ciencia: { t: "D'on surten els números", h: `
+<div class="lmeta">Correspon a SCIENCE.md del projecte · v8.34</div>
+<p>Cada xifra que et mostrem surt d'algun lloc. Aquí tens quin, i <strong>fins on t'hi pots
+refiar</strong>. Està escrit per ser honest, no per impressionar: tres dels càlculs vénen de
+feina publicada i validada; la resta són decisions raonades a partir d'aquesta literatura,
+però no validades elles mateixes. Van separades i no es barregen mai.</p>
+<p><em>Això no és consell mèdic ni d'entrenament. Vegeu l'apartat 6 de l'Avís Legal.</em></p>
+
+<h2>1. 1RM estimat — equació d'Epley</h2>
+<p><code>1RM ≈ pes × (1 + reps/30)</code>, i amb 1 repetició no estimem res: una sola repetició
+<em>ja és</em> un màxim. Epley ho multiplicaria per 1,033 i s'inventaria un 3,3% que no has aixecat.</p>
+<p><strong>Font:</strong> Epley, B. (1985). <em>Poundage Chart</em>.</p>
+<p><strong>Fins on és fiable:</strong> LeSuer i col·laboradors (1997) van comparar set equacions amb
+màxims reals de 67 persones. Totes correlacionaven molt bé (r &gt; 0,95) i entre <strong>2 i 10
+repeticions</strong> l'error mitjà era d'un ~3%. Però l'error creix amb les repeticions; al
+<strong>squat</strong> Epley no va sortir prou fiable; i <strong>totes set infravaloraven el
+deadlift</strong>, o sigui que el teu màxim real de deadlift probablement és més alt del que et mostrem.</p>
+<p>Fem servir només Epley i no una equació diferent per exercici, perquè canviar-la faria que dos
+exercicis no es poguessin comparar al mateix gràfic.</p>
+
+<h2>2. Quines sessions compten per al teu 1RM</h2>
+<p>Aquesta és una <strong>regla nostra</strong>, no publicada — però surt directament d'una troballa
+que sí que ho és. Totes les equacions donen per fet que la sèrie va <strong>a prop del fallo</strong>.
+Si et sobraven repeticions, infravaloren sempre: «8 reps» no vol dir el mateix al límit que a mig gas.</p>
+<p>Per això la pràctica actual es basa en les <strong>repeticions en reserva (RIR)</strong>. Zourdos i
+col·laboradors (2016) van validar una escala on <strong>RPE 10 = 0 repeticions en reserva</strong>,
+amb correlacions fortes entre velocitat de barra i RPE (r = −0,88 en experimentats).</p>
+<p>Així que <strong>només</strong> dibuixen estimació les sessions on: hi has posat un <strong>%</strong>,
+o la sèrie forta té <strong>RPE ≥ 8</strong>, o (sense RPE) és de <strong>6 repeticions o menys</strong>.
+La resta es guarden i es veuen, però no pretenen mesurar el teu màxim.</p>
+<p>Els llindars exactes (RPE 8, 6 reps) són <strong>criteri nostre</strong> dins del que la literatura
+avala. Sense això, 3×8 al 50% et pintava una caiguda del 37% que no havia passat.</p>
+
+<h2>3. Wilks</h2>
+<p><code>coeficient = 500 / (a + bx + cx² + dx³ + ex⁴ + fx⁵)</code>, amb <em>x</em> = pes corporal.</p>
+<p><strong>Font:</strong> la fórmula <strong>Wilks original</strong> (Robert Wilks, Powerlifting
+Australia, 1994), oficial a l'IPF fins al 2019.</p>
+<p><strong>Dos matisos honestos:</strong> no és la revisió «Wilks-2» del 2020 ni els IPF GL Points, que
+donen números diferents (el codi deia el contrari fins a la v8.31 i era fals). I és una
+<strong>fórmula de federació</strong>, ajustada a dades de competició — no un model fisiològic revisat
+per parells. Com que l'alimentem amb 1RM estimats, n'hereta la incertesa.</p>
+
+<h2>4. Classificació de força</h2>
+<p>Els cinc nivells surten de <strong>múltiples del pes corporal triats a mà</strong>, ajustats per sexe,
+dins del rang que se sol fer servir com a guia de gimnàs.</p>
+<p><strong>No són cap conjunt de dades validat</strong>, i fins a la v8.31 l'app els atribuïa
+incorrectament a Symmetric Strength, que sí que fa un ajust percentil sobre una mostra gran i té en
+compte l'edat. Serveixen per situar-te. No per classificar-te.</p>
+
+<h2>5. Calculadora de percentatges</h2>
+<p>Aquí no hi ha cap estimació: aritmètica i una restricció. L'objectiu és <code>base × %</code>, i
+després busquem el <strong>pes més proper que realment pots carregar</strong> amb la teva barra i els
+teus discs, amb una cerca de camí mínim en passos de 0,5 kg.</p>
+<p>La garantia és <code>barra + 2 × Σ(disc × quantitat) = total mostrat</code>. Triar discs de manera
+cobdiciosa falla quan el joc de discs té forats: una vegada va escriure 48,5 kg sobre discs que sumaven
+48. La cerca no ho fa.</p>
+
+<h2>6. Resultats de WoD</h2>
+<p>No és un model fisiològic, és una regla de comparació. Cada tipus de WoD té una mesura:
+<strong>temps</strong> (For Time, RFT, Chipper), <strong>rondes + reps</strong> (AMRAP),
+<strong>repeticions</strong> (Tabata), <strong>completat</strong> (EMOM). Els resultats només es
+comparen dins de la mateixa mesura i la mateixa <strong>escala</strong>. Un Scaled no supera un Rx.</p>
+<p><strong>Modificat</strong> no genera mai rècord: si el WoD s'ha canviat lliurement, dos intents no
+són la mateixa prova i no hi ha res vàlid a comparar.</p>
+<p><strong>Escales de repeticions:</strong> per a rondes ascendents o descendents calculem el volum
+exacte per moviment: <code>base × N</code> (multiplicant), <code>base + pas × (N−1)</code> (sumant) o
+<code>max(0, base − pas × (N−1))</code> (restant). Set rondes d'1-2-3 / 2-4-6 / 3-6-9… són
+<strong>168 repeticions</strong>, cosa que cap xifra de «7 rondes» no explica.</p>
+
+<h2>7. Composició corporal (Cos)</h2>
+<p>Aquesta secció <strong>registra el que mesures</strong>. No modela res ni infereix res sobre tu, i
+aquesta contenció és deliberada. La massa magra és <code>pes × (1 − %greix/100)</code>, el FFMI és
+<code>massa magra ÷ alçada²</code>, i les dues raons són divisions directes. Tot són operacions sobre
+xifres que has escrit tu.</p>
+<p><strong>Cintura/alçada</strong> és l'única amb un llindar publicat: la guia <strong>NICE NG246</strong>
+(2025) classifica 0,4–0,49 com a rang saludable, 0,5–0,59 com a adipositat central augmentada i ≥0,6
+com a alta. NICE la prefereix precisament perquè te la pots mesurar i interpretar tu mateix. És un
+<strong>indicador de cribratge, no un diagnòstic</strong>, i se li ha criticat que un llindar fix
+penalitza les persones baixes.</p>
+<p><strong>Per què el % de greix hi és però no el destaquem:</strong> les bàscules d'impedància
+domèstiques correlacionen bé amb el DXA però <strong>hi coincideixen malament</strong>. Els marges de
+concordança són amplis fins i tot amb correlacions excel·lents, i l'error no va sempre en la mateixa
+direcció: hi ha aparells que sobreestimen i d'altres que infravaloren. Les diferències mitjanes
+publicades van d'un ~1,8% en adults sans a més d'un 10% en joves amb obesitat, i varien amb la
+hidratació, l'IMC i l'equació propietària de cada fabricant. Per tant: <strong>una lectura aïllada no
+vol dir gaire; la tendència en condicions constants, sí</strong>.</p>
+<p><strong>Per què no dibuixem cap «límit natural» de FFMI:</strong> Kouri i col·laboradors (1995) van
+trobar que els atletes sense dopatge de la seva mostra no passaven de 25, i aquesta xifra circula com
+si fos un sostre. Era <strong>descriptiva d'una mostra del 1995, no diagnòstica</strong>: un estudi
+posterior en jugadors universitaris de futbol americà reporta límits superiors de 28,1 a 31,7. Marcar
+una ratlla al 25 diria a persones reals que són impossibles.</p>
+<p><strong>Protocol:</strong> els perímetres segueixen l'estàndard <strong>ISAK</strong>. Val més un
+protocol constant amb una cinta barata que un d'inconstant amb una cinta bona: el que llegeixes és el
+canvi.</p>
+<p><strong>Cap on va:</strong> la relació entre composició corporal i rendiment és real i mesurable —
+en el <em>Fran</em>, la massa magra i la força prediuen el temps (correlacions de ρ ≈ −0,54 a −0,65
+contra 1RM estimats de squat, deadlift i press). Això apunta a tres coses per construir quan hi hagi
+prou historial: <strong>força per quilo de massa magra</strong> (que separa «he guanyat força» de «he
+guanyat pes»), <strong>superposar les dues línies temporals</strong> (perquè un estancament durant una
+pèrdua de pes es llegeixi com el que sol ser), i <strong>relacionar el canvi de pes amb el Wilks</strong>.
+Res d'això està fet, i res d'això s'hauria de fer amb tres mesures.</p>
+
+<h2>8. Resum: quanta confiança mereix cada xifra</h2>
+<table class="ltbl">
+<tr><th>Xifra</th><th>Base</th><th>Confiança</th></tr>
+<tr><td>Pes aixecat</td><td>Observat directament</td><td><strong>Exacte</strong></td></tr>
+<tr><td>Discs del %Calc</td><td>Aritmètica + cerca</td><td><strong>Exacte</strong></td></tr>
+<tr><td>Perímetres i pes corporal</td><td>Mesurat per tu</td><td><strong>Exacte tal com l'has registrat</strong></td></tr>
+<tr><td>1RM estimat</td><td>Epley (1985), validat per LeSuer (1997)</td><td>Bo amb ≤6 reps; pitjor com més reps</td></tr>
+<tr><td>Quines sessions compten</td><td>Regla nostra sobre Zourdos (2016)</td><td>Raonada; llindars a criteri</td></tr>
+<tr><td>Wilks</td><td>Fórmula original de 1994</td><td>Convenció establerta; hereta la incertesa del 1RM</td></tr>
+<tr><td>% de greix i derivats</td><td>El que digui el teu aparell</td><td><strong>Només tendència</strong></td></tr>
+<tr><td>Cintura/alçada</td><td>Llindars NICE NG246</td><td>Cribratge, no diagnòstic</td></tr>
+<tr><td>Classificació de força</td><td>Múltiples triats a mà</td><td><strong>Només orientatiu</strong></td></tr>
+</table>
+
+<h2>Referències</h2>
+<ol>
+<li>Epley, B. (1985). <em>Poundage Chart</em>. Body Enterprises, Lincoln, NE.</li>
+<li>LeSuer, D.A., McCormick, J.H., Mayhew, J.L., Wasserstein, R.L., &amp; Arnold, M.D. (1997).
+«The Accuracy of Prediction Equations for Estimating 1-RM Performance in the Bench Press, Squat, and
+Deadlift». <em>J Strength Cond Res</em>, 11(4), 211–213.</li>
+<li>Zourdos, M.C., Klemp, A., Dolan, C., et al. (2016). «Novel Resistance Training–Specific Rating of
+Perceived Exertion Scale Measuring Repetitions in Reserve». <em>J Strength Cond Res</em>, 30(1), 267–275.</li>
+<li>Helms, E.R., Cronin, J., Storey, A., &amp; Zourdos, M.C. (2016). «Application of the Repetitions in
+Reserve-Based RPE Scale for Resistance Training». <em>Strength Cond J</em>, 38(4), 42–49.</li>
+<li>Wilks, R. (1994). Coeficient de Wilks. Powerlifting Australia.</li>
+<li>NICE (2025). <em>Overweight and obesity management</em>. Guia NG246.</li>
+<li>Kouri, E.M., Pope, H.G., Katz, D.L., &amp; Oliva, P. (1995). «Fat-free mass index in users and
+nonusers of anabolic-androgenic steroids». <em>Clin J Sport Med</em>, 5(4), 223–228.</li>
+<li>Mangine, G.T., et al. (2022). «Relationships Between Body Composition and Performance in the
+High-Intensity Functional Training Workout Fran…». <em>Front Physiol</em>, 13:893771.</li>
+<li>ISAK. <em>International Standards for Anthropometric Assessment</em>.</li>
+</ol>
+` },
   privacitat: { t: 'Política de Privacitat', h: `
-<div class="lmeta">Última actualització: 6 d'agost de 2026 · v1.2</div>
+<div class="lmeta">Última actualització: 7 d'agost de 2026 · v1.3</div>
 <h2>1. Responsable del tractament</h2>
 <p>D'acord amb el Reglament (UE) 2016/679 (RGPD) i la Llei Orgànica 3/2018 (LOPDGDD):</p>
 <ul><li><strong>Responsable:</strong> ${LEGAL_HOLDER}</li><li><strong>Contacte:</strong> ${LEGAL_EMAIL}</li></ul>
@@ -10598,7 +11197,7 @@ const LEGAL_DOCS = {
 <p>PRsonal és una aplicació autònoma sense compte ni servidor propi. <strong>La immensa majoria de les teves dades no surten mai del teu dispositiu:</strong> es guarden localment al navegador i el Responsable ni les rep ni hi pot accedir. Cap dada que arribi a tercers inclou el teu nom. <strong>L'única funció que envia res fora del dispositiu és «El temps», que està desactivada per defecte</strong> (vegeu 3.B).</p>
 <h2>3. Dades, finalitats i base jurídica</h2>
 <h3>3.A Dades que es guarden només al teu dispositiu</h3>
-<p>Perfil (nom opcional, sexe, <strong>data de naixement</strong>, pes, alçada), registres d'entrenament (sèries, pesos, repeticions, notes, etiquetes i <strong>esforç percebut &mdash; RPE</strong>), <strong>marques màximes que introdueixis manualment</strong>, objectius, plantilles, <strong>complexos</strong>, la configuració del teu gimnàs, preferències i còpies JSON que generis tu. El pes, el sexe, la data de naixement i l'RPE poden considerar-se dades de salut (categoria especial, art. 9 RGPD); es tracten només al teu dispositiu i no es transmeten. El teu nom, si l'introdueixes, es guarda només al dispositiu i no s'envia enlloc.</p>
+<p>Perfil (nom opcional, sexe, <strong>data de naixement</strong>, pes, alçada), registres d'entrenament (sèries, pesos, repeticions, notes, etiquetes i <strong>esforç percebut &mdash; RPE</strong>), <strong>marques màximes que introdueixis manualment</strong>, objectius, plantilles, <strong>complexos</strong>, <strong>composició corporal (pes, percentatge de greix, massa muscular i perímetres del braç, cintura, maluc i cama)</strong>, la configuració del teu gimnàs, preferències i còpies JSON que generis tu. El pes, el sexe, la data de naixement, l'RPE i <strong>especialment les dades de composició corporal</strong> poden considerar-se dades de salut (categoria especial, art. 9 RGPD); es tracten només al teu dispositiu i no es transmeten. El teu nom, si l'introdueixes, es guarda només al dispositiu i no s'envia enlloc.</p>
 <p><strong>Base jurídica:</strong> el teu consentiment (art. 6.1.a) i, per a dades de salut, el consentiment explícit (art. 9.2.a), que atorgues en acceptar aquesta política i introduir les dades. Pots retirar-lo esborrant les dades. <strong>Conservació:</strong> fins que les esborris.</p>
 <h3>3.B Dades que es transmeten a tercers</h3>
 <p><strong>Mètrica d'ús anònima (Google Forms):</strong> en completar o ometre la configuració inicial, s'envia un esdeveniment anònim amb només la data i hora. <strong>No inclou el teu nom ni cap identificador personal.</strong> Finalitat: comptar de forma agregada les configuracions completades. Destinatari: Google.</p>
@@ -11852,6 +12451,13 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.34':['El text científic ja es llegeix dins l\'app: <b>Més → D\'on surten els números → Llegir el document complet</b>.',
+          'Els objectius ja no deixen passar sense triar exercici, i et suggereixen un pes raonable (fins i tot si encara no hi tens cap marca).',
+          'La bombolla d\'avís als Objectius ara només surt quan n\'has <b>assolit</b> un, i desapareix en veure la felicitació.',
+          'La barra de pestanyes ja no es veu per sota dels pop-ups.'],
+  '8.33':['Nova secció <b>Cos</b> a Mètriques: pes, percentatge de greix i de múscul, i perímetres. Està en desenvolupament inicial — de moment registra i dibuixa, res més.',
+          'Només el pes és obligatori; la resta, quan et vingui de gust. Tot es queda al teu telèfon, com sempre.',
+          'La <b>tipografia</b> ara es prova des de Més → Aparença, i «D\'on surten els números» ja es llegeix bé.'],
   '8.32':['Prova de tipografies: toca la icona d\'error (a dalt a la dreta) → <b>Provar tipografies</b>. Cap no es baixa, així que segueix funcionant sense connexió.',
           'També pots provar les <b>xifres d\'amplada fixa</b>, que alineen els números en columna.'],
   '8.31':['A <b>Més</b> hi trobaràs d\'on surt cada número: quines fórmules fem servir, d\'on venen i fins on t\'hi pots refiar.',

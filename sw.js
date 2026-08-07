@@ -11,7 +11,7 @@
  *
  * This file rarely needs to change. Bump CACHE only if you change the SW logic.
  */
-const CACHE = 'prsonal-shell-v34';
+const CACHE = 'prsonal-shell-v36';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
