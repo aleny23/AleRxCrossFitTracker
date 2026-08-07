@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.34</title>
+<title>PRsonal v8.35</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -2853,8 +2853,10 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </label>
     </div>
 
-    <!-- v8.33: the font lab was only reachable from the debug bubble, which Àlex
-         reasonably went looking for in Més instead. A setting lives in settings. -->
+    <!-- v8.35: Àlex settled on San Francisco (the system font), so the picker is
+         withdrawn rather than deleted — openFontLab() and FONT_OPTIONS still work
+         and the debug bubble still reaches them. Restore by un-commenting. -->
+    <!--
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Aparença</div>
       <div style="font-size:var(--fs-body-sm);color:var(--text2);line-height:1.55;margin-bottom:12px">
@@ -2863,6 +2865,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
       </div>
       <button class="btn btn-s btn-sm" style="width:100%;justify-content:flex-start;text-align:left" onclick="openFontLab()">Tipografia</button>
     </div>
+    -->
 
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Legal i privacitat</div>
@@ -2926,7 +2929,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.34<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.35<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3792,7 +3795,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.34</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.35</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -4522,7 +4525,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.34';
+const APP_VERSION='8.35';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -7824,6 +7827,10 @@ function gwShow(){
   if(name==='ex') gwRenderExs();
   if(name==='target') gwRenderCurrent();
   if(name==='wodTime') gwRenderWodNames();
+  // v8.35: on the pick-one steps, choosing an option advances by itself, so the
+  // Continua button had no job — and once it validated, it existed only to say no.
+  const pickStep = (name==='fam' || name==='ex');
+  document.getElementById('gwNext').style.display = pickStep ? 'none' : '';
   document.getElementById('gwNext').textContent = (gwS.i===flow.length-1) ? 'Crear objectiu' : 'Continua →';
   document.getElementById('gwBack').style.visibility = gwS.i===0 ? 'hidden' : 'visible';
   document.getElementById('goalCard').scrollTop=0;
@@ -8610,8 +8617,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     // Modes only exist on the Entrenar tab — don't hijack swipes elsewhere
     if (activeTab !== 'metriques' && activeTab !== 'objectius') return;   // both split tabs
     const sec = activeTab==='objectius' ? 'obj' : 'met';
-    if (dx < 0 && splitMode[sec] === 'h') setSplitMode(sec,'w');
-    else if (dx > 0 && splitMode[sec] === 'w') setSplitMode(sec,'h');
+    // v8.35: was a hardcoded h<->w toggle, which left Cos reachable only by tap.
+    // Order-driven so the gesture matches whatever tabs the section actually has.
+    const order = (sec==='met') ? ['h','w','c'] : ['h','w'];
+    const i = order.indexOf(splitMode[sec]);
+    if (i < 0) return;
+    const j = i + (dx < 0 ? 1 : -1);
+    if (j < 0 || j >= order.length) return;
+    setSplitMode(sec, order[j]);
   }, {passive:true});
 })();
 
@@ -12451,6 +12464,8 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.35':['Ja pots arribar a <b>Cos</b> lliscant el dit, com entre Força i WoD.',
+          'Als objectius, triar la família ja et porta a l\'exercici: fora el botó de continuar que no feia res.'],
   '8.34':['El text científic ja es llegeix dins l\'app: <b>Més → D\'on surten els números → Llegir el document complet</b>.',
           'Els objectius ja no deixen passar sense triar exercici, i et suggereixen un pes raonable (fins i tot si encara no hi tens cap marca).',
           'La bombolla d\'avís als Objectius ara només surt quan n\'has <b>assolit</b> un, i desapareix en veure la felicitació.',
