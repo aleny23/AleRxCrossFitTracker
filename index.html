@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRsonal">
 <meta name="theme-color" content="#9DC0C4">
-<title>PRsonal v8.48</title>
+<title>PRsonal v8.49</title>
 <script>/* Chart.js v4.4.1 (MIT) — inlined for offline use & privacy (no CDN). Source: chartjs.org */
 /*!
  * Chart.js v4.4.1
@@ -137,6 +137,7 @@ if(v==='high'||v==='normal')document.documentElement.dataset.contrast=v;}catch(e
   align-items:flex-end;justify-content:center;}
 .wiz.on{display:flex;}
 .wiz-card{
+  z-index:1;
   background:var(--bg2);width:100%;max-width:480px;
   border-radius:var(--r-card) var(--r-card) 0 0;border-top:1px solid var(--border);
   padding:20px var(--gutter) calc(20px + var(--safe-bottom));
@@ -534,6 +535,27 @@ body.scroll-locked .tab-bar{backdrop-filter:none;-webkit-backdrop-filter:none;}
 /* v8.34: a dimming modal owns the screen — the tab bar must not bleed through
    its scrim, and must not be draggable into view by an iOS rubber-band. */
 body.modal-dim .tab-bar{display:none;}
+/* v8.49: on iOS a strip of page was still visible at the very foot of the screen
+   under an open card, exactly where the tab bar sits. Two attempts at diagnosing
+   the cause (backdrop-filter compositing, then the safe-area inset) were both
+   wrong, and neither reproduces on desktop, where the card measures flush to the
+   viewport bottom.
+   So this stops guessing at the cause and removes the symptom: while a dimming
+   modal is open, the bottom strip of the screen is painted in the CARD's colour.
+   If the card really is flush, this sits underneath it and is invisible; if a gap
+   opens for any reason, it is filled with the colour that should have been there.
+   It goes on the CONTAINER, not on .sheet-in: several cards set overflow-y:auto,
+   which would clip a pseudo-element of their own. */
+.sheet.on::after, .wiz.on::after{
+  content:'';
+  position:fixed;
+  bottom:0; left:50%; transform:translateX(-50%);
+  width:min(100%, 480px);
+  height:140px;                    /* far past any plausible gap */
+  background:var(--bg2);
+  z-index:0;                       /* under the card, over the scrim */
+  pointer-events:none;
+}
 /* v8.23: the 48px tail was pure void — .tab-page already reserves the tab bar
    plus 16px. Cut to 16px so the page ends shortly after its last card. The
    background is load-bearing: it is what hides the colophon parked below the
@@ -835,7 +857,7 @@ select option{background:var(--bg3);}
 /* ─── SHEET (bottom drawer) ─── */
 .sheet{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);align-items:flex-end;}
 .sheet.on{display:flex;}
-.sheet-in{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;padding:18px 14px calc(32px + var(--safe-bottom));width:100%;max-width:480px;margin:0 auto;border-top:0.5px solid var(--border2);}
+.sheet-in{position:relative;z-index:1;background:var(--bg2);border-radius:var(--r) var(--r) 0 0;padding:18px 14px calc(32px + var(--safe-bottom));width:100%;max-width:480px;margin:0 auto;border-top:0.5px solid var(--border2);}
 .stitle{font-size:17px;font-weight:800;margin-bottom:3px;}
 .ssub{font-size:14px;color:var(--text2);margin-bottom:13px;}
 
@@ -2926,7 +2948,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
     <div class="card anim-fadeup anim-delay-2">
       <div class="ctitle">Sobre l'app</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.48<br>
+        <strong style="color:var(--h-ink);font-style:italic">PR</strong><strong style="color:var(--w-ink)">sonal</strong> v8.49<br>
         Creat per <strong style="color:var(--text)">Àlex Alemany Muñoz</strong><br>
         © 2026 · Tots els drets reservats / All rights reserved<br><br>
         <strong style="color:var(--text)"><i data-lucide="alert-triangle" style="width:12px;height:12px;color:var(--h-ink);vertical-align:-1px"></i> App privada en fase de proves. No distribuir.</strong><br><br>
@@ -3818,7 +3840,7 @@ a[href^="mailto"]{display:inline-block;padding:6px 0;}
 <!-- FOOTER -->
 <footer class="cc-footer" id="appFooter">
   <img id="footerLogo" src="" alt="">
-  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.48</div>
+  <div><span style="color:var(--h-ink);font-style:italic;font-weight:700">PR</span><span style="color:var(--w-ink);font-weight:700">sonal</span> · v8.49</div>
   <div style="margin-top:2px;font-size:12px;opacity:0.7">© 2026 Àlex Alemany Muñoz · Tots els drets reservats</div>
 </footer>
 
@@ -4567,7 +4589,7 @@ function migrate(parsed){
 const DB_BAK='alerx_data_bak';
 const LAST_EXPORT='alerx_last_export';
 const SEEN_VER='alerx_seen_version';
-const APP_VERSION='8.48';
+const APP_VERSION='8.49';
 let _recoveredFromMirror=false;
 
 const entryCount=o=>(((o&&o.hEnt)||[]).length)+(((o&&o.wEnt)||[]).length);
@@ -12712,6 +12734,7 @@ function renderBackupNudge(){
 
 // ── "What's new": shown once after the version changes (never on first run).
 const WHATS_NEW={
+  '8.49':['La targeta dels pop-ups ara arriba fins a baix de tot de la pantalla, sense cap franja per sota.'],
   '8.48':['A Inici, ara pots tocar qualsevol dia dels últims catorze, no només els que tenen activitat: els de descans et diuen que no en tenen.'],
   '8.47':['Si ja tens un objectiu obert per a un exercici, l\u2019app t\u2019ho diu abans de crear-ne un altre, i t\u2019explica que a la fitxa només hi surt el més alt.'],
   '8.46':['Si vas registrar un WoD deixant el resultat en blanc però el vas escriure a la nota, ara l\u2019app el llegeix i el WoD entra als teus rècords.'],
